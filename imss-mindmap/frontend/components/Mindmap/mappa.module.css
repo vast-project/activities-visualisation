@@ -1,0 +1,222 @@
+/* Input Container */
+
+.opposto{
+    background:url(../../public/opposito-bubble.png) center/contain no-repeat;
+    padding: 32px;
+    border: none;
+    text-align: center;
+    margin: 12px;
+    outline: none;
+    color: #555;
+    font-family: 'Curvy Thins';
+    font-size: 20px;
+}
+.opposto::placeholder{
+    color: #9c0056;
+    opacity: 0.55;
+}
+
+.equivalenza{
+    background:url(../../public/equivalent-bubble.png) center/contain no-repeat;
+    padding: 32px;
+    border: none;
+    text-align: center;
+    margin: 12px;
+    outline: none;
+    color: #555;
+    font-family: 'Curvy Thins';
+    font-size: 20px;
+}
+.equivalenza::placeholder{
+    color:#4e6904;
+    opacity: 0.55;
+}
+
+.consequenza{
+    background:url(../../public/consequence-bubble.png) center/contain no-repeat;
+    padding: 32px;
+    border: none;
+    text-align: center;
+    margin: 8px;
+    outline: none;
+    color: #555;
+    font-family: 'Curvy Thins';
+    font-size: 20px;
+}
+.consequenza::placeholder{
+    color: #a16100;
+    opacity: 0.55;
+}
+
+.inputContainer{
+    text-align: center;
+}
+
+.inputContainer:nth-of-type(2) .consequenza{
+    transform: translateX(-2.5vw);
+}
+.inputContainer:nth-of-type(3) .consequenza{
+    transform: translateX(-5vw);
+}
+.inputContainer:nth-of-type(3) .equivalenza{
+    transform: translateX(5vw);
+}
+.inputContainer:nth-of-type(2) .equivalenza{
+    transform: translateX(2.5vw);
+}
+.inputContainer:nth-of-type(2) .opposto{
+    transform: translateY(3vh);
+}
+.inputContainer:nth-of-type(3) .opposto,
+.inputContainer:nth-of-type(1) .opposto{
+    transform: translateY(-3vh);
+}
+
+/* Section Container */
+.sectionContainer{
+    border: none;
+    outline: none;
+    text-align: center;
+    font-family: 'Curvy Thins';
+}
+
+.sectionContainer:nth-of-type(1){
+    grid-column: 3/6;
+    grid-row:1/2;
+}
+.sectionContainer:nth-of-type(2){
+    grid-column: 8/11;
+    grid-row:1/2;
+}
+
+.sectionContainer:nth-of-type(3) .sectionContainerHeadline{
+    transform: translate(75px, 35px);
+}
+
+.sectionContainer:nth-of-type(3){
+    grid-row: 2/3;
+    grid-column:4/10;
+    display: flex;
+    justify-content: center;
+}
+
+.centerBubble{
+    grid-column: 6/8;
+    grid-row:1/2;
+    align-self: end;
+    transform: scale(1.6);
+}
+@media screen and (max-width:1240px){
+    .centerBubble{
+        transform: scale(1.5);
+    }
+}
+
+.btnSubmit{
+    grid-row: 4/5;
+    grid-column: 6/8;
+    padding: 20px 28px;
+    font-family: 'Curvy Thins';
+    letter-spacing: 0.03em;
+    font-size: 24px;
+    border-radius: 5px;
+    background-color: #F39200;
+    border: 2px solid #F39200;
+    color: #fff;
+    margin: 64px 0;
+    cursor: pointer;
+    transition: all .3s ease-in;
+}
+
+.btnSubmit:hover{
+    background: #fff;
+    border: 2px solid #333;
+    color:#333;
+}
+
+.sectionContainerHeadline{
+    font-size: 32px;
+    color: #444;
+}
+
+/* Mappa Form */
+.mindmapContainer{
+    background: #F6EFE5;
+    padding: 1vw;
+    border-radius: 7px;
+    box-shadow: 3px 3px 15px rgba(0,0,0,0.15);
+    height: 100%;
+    max-width: 1400px;;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.formContainer{
+    position: relative;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(12,1fr);
+}
+
+@media screen and (max-width: 1100px){
+    .mindmapContainer{
+        padding: 5vw 0;
+    }
+    .formContainer{
+        transform: scale(0.9);
+    }
+}
+
+@media screen and (max-width: 1000px){
+
+    .formContainer{
+        transform: scale(0.8);
+    }
+}
+@media screen and (max-width: 900px){
+    .formContainer{
+        transform: scale(0.75);
+    }
+}
+@media screen and (max-width: 800px){
+    .formContainer{
+        transform: scale(0.7);
+    }
+}
+@media screen and (max-width: 700px){
+    .formContainer{
+        transform: scale(0.65);
+    }
+}
+
+/* Mindmap */
+.headlineContainer{
+    font-family: 'Curvy Thins';
+    /* color: #333; */
+    text-align: center;
+    width: 100%;
+    margin: 24px auto;
+}
+
+.headlineContainer h1{
+    font-size: 40px;
+    color: #F39200;
+}
+.headlineContainer h2{
+    color: #555;
+    width: 50%;
+    text-align: center;
+    margin: 4px auto;
+}
+
+.tertiaryHeadline{
+    font-size: 16px;
+    display: block;
+    color: #555;
+}
+
+.logoContainer{
+    text-align: center;
+}

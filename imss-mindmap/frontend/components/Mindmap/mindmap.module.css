@@ -1,0 +1,256 @@
+@font-face {
+    font-family: "Curvy Thins";
+    src: url('../../fonts/Curvy-Thins.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.container{
+    font-family: "Curvy Thins";
+    max-width: 1400px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    justify-content: center;
+    align-items: center;
+    padding: 70px;
+    box-shadow: 5px 5px 25px rgba(0,0,0,0.15);
+    background-color: #fcf9f6;
+}
+
+.formContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.primary{
+    font-size: 48px;
+    font-weight: 300;
+    color: #0e173f;
+}
+
+.mindmapInput{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background: #8d95b6; */
+    /* width: 40%; */
+}
+
+.curvyTextHeadline{
+    font-size: 52px;
+    color: rgb(255, 123, 0);
+    width: 50%;
+    text-align: center;
+}
+
+.curvyText{
+    font-size: 40px;
+    color: #555;
+    width: 50%;
+    text-align: center;
+}
+.curvyTextSmall{
+    font-size: 24px;
+    color: #555;
+    margin-top: -24px;
+}
+
+.mindmapInputOpposite,
+.mindmapInputSequence,
+.mindmapInputEquivalent{
+    text-align: center;
+    padding: 40px;
+    border: none;
+    font-family: "Curvy Thins";
+    color: #555;
+    letter-spacing: 1px;
+    font-weight: 700;
+    font-size: 28px;
+    margin: 16px;
+    border-radius: 3px;
+}
+
+.mindmapInputOpposite{  
+    background: url(../../public/opposito-bubble.png) center/contain no-repeat;
+}
+.mindmapInputSequence{
+    background: url(../../public/consequence-bubble.png) center/contain no-repeat;
+}
+.mindmapInputEquivalent{
+    background: url(../../public/equivalent-bubble.png) center/contain no-repeat;
+}
+
+.mindmapInputOpposite:focus,
+.mindmapInputSequence:focus,
+.mindmapInputEquivalent:focus{
+    outline: none;
+}
+
+.plusIcon{
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.addBtn,
+.removeBtn{
+    background-color: transparent;
+    border: none;
+    font-weight: 700;
+    padding: 16px;
+}
+
+.addBtn{
+    font-size: 34px;
+    color: rgba(253, 127, 10, 0.911);
+}
+.removeBtn{
+    font-size: 30px;
+    color: #ffd8b2;
+    cursor: pointer;
+}
+
+.btnContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+    margin-top: 32px;
+}
+
+.btnSubmit{
+    padding: 20px 28px;
+    font-family: 'Curvy Thins';
+    letter-spacing: 0.03em;
+    font-size: 24px;
+    border-radius: 5px;
+    background-color: #F39200;
+    border: 2px solid #F39200;
+    color: #fff;
+    margin: 64px auto;
+    cursor: pointer;
+    transition: all .3s ease-in;
+}
+
+.addBtnOpposite,
+.addBtnSequence,
+.addBtnEquivalent{
+    font-family: "Curvy Thins";
+    color: #fff;
+    letter-spacing: 0.03em;
+    display: flex;
+    width: 60%;
+    align-items: center;
+    padding: 12px;
+    justify-content: center;
+    border-radius: 5px;
+    gap: 8px;
+    font-size: 24px;
+    border: none;
+    cursor: pointer;
+}
+
+.addBtnOpposite{
+    background-color: #E6007E;    
+}
+.addBtnSequence{
+    background-color: #F39200;
+}
+.addBtnEquivalent{
+    background-color: #95C11F;
+}
+
+@media screen and (max-width: 1200px){
+    .curvyText{
+        width: 80%;
+    }
+}
+@media screen and (max-width: 1000px){
+    .mindmap{
+        width: 604px;
+        height: auto;
+    }
+}
+@media screen and (max-width: 800px){
+    .curvyText{
+        font-size: 32px;
+    }
+}
+@media screen and (max-width: 700px){
+    .container{
+        width: 100%;
+    }
+
+    .btnContainer{
+        /* flex-direction: column; */
+        gap: 12px;
+    }
+    .mindmapInputOpposite,
+    .mindmapInputSequence,
+    .mindmapInputEquivalent{
+        margin-left: 24px;
+    }
+    .curvyTextHeadline{
+        font-size: 44px;
+        width: 100%;
+    }
+    .curvyText{
+        font-size: 28px;
+        width: 100%;
+    }
+    .curvyTextSmall{
+        font-size: 16px;
+    }
+}
+
+@media screen and (max-width: 500px){
+    .btnContainer{
+        flex-direction: column;
+        width: 100%;
+    }
+    .addBtnOpposite,
+    .addBtnSequence,
+    .addBtnEquivalent{
+        width: 200px;
+        width: 75%;
+    }
+}
+
+@media screen and (max-width: 400px){
+    .curvyTextHeadline{
+        font-size: 36px;
+        width: 100%;
+    }
+    .curvyText{
+        font-size: 20px;
+        width: 100%;
+    }
+    .curvyTextSmall{
+        font-size: 16px;
+    }
+    .addBtnOpposite,
+    .addBtnSequence,
+    .addBtnEquivalent{
+        width: 80%;
+        font-size: 24px;
+        margin: 0 5%;
+    }
+    .mindmapInputOpposite,
+    .mindmapInputSequence,
+    .mindmapInputEquivalent{
+        text-align: center;
+        padding: 32px;
+        border: none;
+        font-family: "Curvy Thins";
+        color: #555;
+        letter-spacing: 1px;
+        font-weight: 700;
+        font-size: 20px;
+        margin: 12px;
+        border-radius: 3px;
+}
+}
