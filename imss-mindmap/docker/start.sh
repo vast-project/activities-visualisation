@@ -16,5 +16,5 @@ fi
 
 ${DOCKER_COMPOSE} --project-name activity-visualisation-imss-mindmap \
                   -f docker-compose.yml \
-                  up -d 
+                  up -d
 exit 0
