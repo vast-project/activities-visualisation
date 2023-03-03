@@ -6,7 +6,7 @@
 	require("/usr/share/php/PHPMailer/src/Exception.php");
 
 	// Create connection
-	$db_conn = mysqli_connect("host = $hostname port = $port dbname = $dbname user = $username password = $pass ") or die ("Could not connect to server \n");
+	$db_conn = pg_connect(" host = $hostname port = $port dbname = $dbname user = $username password = $pass ") or die ("Could not connect to server \n");
 
 	if (!$db_conn){
 		echo "Error: Unable to open database\n:";
@@ -17,23 +17,23 @@
 		$password = $_POST['newpass'];
 		$curdate = date("Y-m-d");
 		$query = "SELECT password, email, companyid from public.users WHERE id= ".$userid.";";
-		$result = mysqli_query($db_conn, $query);
-		$row = mysqli_fetch_row($result);
+		$result = pg_query($db_conn, $query);
+		$row = pg_fetch_row($result);
 		$email=$row[1];
 		$companyid = $row['2'];
 		$hashedpass = password_hash($password, PASSWORD_DEFAULT);
 		$query = "UPDATE public.users SET password= $$".$password."$$, active=1, termsdate='".$curdate."', termsrev='1', resetlinktoken='' WHERE id= ".$userid.";";
-		$result = mysqli_query($db_conn, $query);
+		$result = pg_query($db_conn, $query);
 
-		if (mysqli_affected_rows($result) >= 1){
+		if (pg_affected_rows($result) >= 1){
 			$query = "SELECT name, countryid from public.distributors WHERE id= ".$companyid.";";
-			$result = mysqli_query($db_conn, $query);
-			$row = mysqli_fetch_row($result);
+			$result = pg_query($db_conn, $query);
+			$row = pg_fetch_row($result);
 			$companyname=$row['0'];
 			$companycountry=$row['1'];
 			$query = "SELECT name from public.countrycodes WHERE id= ".$companycountry.";";
-			$result = mysqli_query($db_conn, $query);
-			$row = mysqli_fetch_row($result);
+			$result = pg_query($db_conn, $query);
+			$row = pg_fetch_row($result);
 			$companycountry=$row['0'];
 			$mail = new PHPMailer\PHPMailer\PHPMailer();
 			$mail->CharSet =  'utf-8';

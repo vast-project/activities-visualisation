@@ -3,7 +3,7 @@ session_start();
 include 'settings.php';
 
 // Create connection
-$db_conn = mysqli_connect($hostname, $username, $pass, $dbname) or die ("Could not connect to server \n".mysqli_connect_error());
+$db_conn = pg_connect(" host = $hostname port = $port dbname = $dbname user = $username password = $pass ") or die ("Could not connect to server \n");
 if (!$db_conn){
 	echo "Error: Unable to open database\n:";
 }
@@ -13,9 +13,9 @@ else
 	$password = $_POST['password'];
 	$hashedpass = password_hash($password, PASSWORD_DEFAULT);
 	$query = "SELECT id, password, typeid, active FROM adminusers WHERE email = '".$email."'";
-	$result = mysqli_query($db_conn, $query);
+	$result = pg_query($db_conn, $query);
 	
-	while ($row = mysqli_fetch_row($result))
+	while ($row = pg_fetch_row($result))
 	{
 		$userid = $row[0];
 		$dbpass = $row[1];
@@ -24,9 +24,9 @@ else
 	}
 	if ($active == 0)
 	{
-		//echo '<script type="text/javascript">';
-		//echo 'if (confirm("User does not exist or is not active")){document.location="index.php"}';
-		//echo '</script>';
+		echo '<script type="text/javascript">';
+		echo 'if (confirm("User does not exist or is not active")){document.location="index.php"}';
+		echo '</script>';
 	}
 	else if (($dbpass == $password) || ($hashedpass == $dbpass))
 	{	
@@ -40,6 +40,6 @@ else
 		echo '</script>';
 	}
 }
-mysqli_close($db_conn);
+pg_close($db_conn);
 //header("Location: mainpage.php");
 ?>

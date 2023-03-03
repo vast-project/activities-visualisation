@@ -1,7 +1,7 @@
 <?php
 session_start();
 include 'settings.php';
-	$db_conn = mysqli_connect($hostname, $username, $pass, $dbname) or die ("Could not connect to server \n".mysqli_connect_error());
+  $db_conn = pg_connect(" host = $hostname port = $port dbname = $dbname user = $username password = $pass ") or die ("Could not connect to server \n");
 ?>
 <!DOCTYPE html>
 <html>
@@ -26,8 +26,8 @@ include 'settings.php';
 							else
 							{
 								$query = "SELECT fullname FROM adminusers WHERE id = ". $_SESSION['user'];
-								$result = mysqli_query($db_conn, $query);
-								$row = mysqli_fetch_row($result);
+								$result = pg_query($db_conn, $query);
+								$row = pg_fetch_row($result);
 								echo $row[0];
 							}
 							?>
@@ -87,15 +87,15 @@ include 'settings.php';
 					else
 					{
 						$query = "SELECT * FROM adminusers ORDER BY id";
-						$result = mysqli_query($db_conn, $query);
-						while ($row = mysqli_fetch_row($result))
+						$result = pg_query($db_conn, $query);
+						while ($row = pg_fetch_row($result))
 						{
 							$queryorg = "SELECT name FROM organizations WHERE id=".$row[3];
-							$resultorg = mysqli_query($db_conn, $queryorg);
-							$roworg = mysqli_fetch_row($resultorg);
+							$resultorg = pg_query($db_conn, $queryorg);
+							$roworg = pg_fetch_row($resultorg);
 							$querytype = "SELECT type FROM usertypes WHERE id=".$row[9];
-							$resulttype = mysqli_query($db_conn, $querytype);
-							$rowtype = mysqli_fetch_row($resulttype);
+							$resulttype = pg_query($db_conn, $querytype);
+							$rowtype = pg_fetch_row($resulttype);
 							echo '
 							<tr>
 								<td>'.$row[0].'</td>
@@ -118,8 +118,9 @@ include 'settings.php';
 				</tbody>
 			</table>
 		</form>
+    <br>
 		<form action="mainpage.php" method="post">	
-			</br><button type="submit" id="back" name="back">Back</button>
+      <button type="submit" id="back" name="back">Back</button>
 		</form>
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

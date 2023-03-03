@@ -1,13 +1,12 @@
 <?php
-$mapurl = "https://keen-rugelach-c54d6d.netlify.app";
+$mapurl = "localhost:6071";
 
 //db data
-//$hostname = "188.40.64.40";
-$hostname = "chdamianou.eu";
-$port = "3306";
-$dbname = "tasks";
-$username = "tasksuser";
-$pass = "HemoGels3!@#";
+$hostname = "db";
+$port = "5432";
+$dbname = "tasks_f755";
+$username = "tasksuser_x354";
+$pass = "uWb47SYz5isC07qWAEYEiu";
 
 
 

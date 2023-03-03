@@ -1,12 +1,12 @@
 <?php
 session_start();
 include 'db_connect.php';
-$db_conn = mysqli_connect(" host = $hostname port = $port dbname = $dbname user = $username password = $pass ") or die ("Could not connect to server \n");
+$db_conn = pg_connect(" host = $hostname port = $port dbname = $dbname user = $username password = $pass ") or die ("Could not connect to server \n");
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Intelligo Free Distributors' Area</title>
+	<title>Activities' Visualization</title>
 	<link rel="stylesheet" type="text/css" href="css/complaint_style.css">
 	<link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
 </head>
@@ -23,8 +23,8 @@ $db_conn = mysqli_connect(" host = $hostname port = $port dbname = $dbname user 
 						else
 						{
 							$query = "SELECT id, fullname FROM users WHERE id = ". $_SESSION['user'];
-							$result = mysqli_query($db_conn, $query);
-							$row = mysqli_fetch_row($result);
+							$result = pg_query($db_conn, $query);
+							$row = pg_fetch_row($result);
 							echo $row[1];
 						}
 						?>

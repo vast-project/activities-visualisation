@@ -1,7 +1,7 @@
 <?php
 session_start();
-include 'db_connect.php';
-$db_conn = mysqli_connect($hostname, $username, $pass, $dbname) or die ("Could not connect to server \n".mysqli_connect_error());
+include 'settings.php';
+$db_conn = pg_connect(" host = $hostname port = $port dbname = $dbname user = $username password = $pass ") or die ("Could not connect to server \n");
 ?>
 <!DOCTYPE html>
 <html>
@@ -26,8 +26,8 @@ $db_conn = mysqli_connect($hostname, $username, $pass, $dbname) or die ("Could n
 							else
 							{
 								$query = "SELECT fullname, typeid FROM adminusers WHERE id = ". $_SESSION['user'];
-								$result = mysqli_query($db_conn, $query);
-								$row = mysqli_fetch_row($result);
+								$result = pg_query($db_conn, $query);
+								$row = pg_fetch_row($result);
 								echo $row[0];
 								$usertype = $row[1];
 							}
@@ -114,9 +114,9 @@ $db_conn = mysqli_connect($hostname, $username, $pass, $dbname) or die ("Could n
 							else
 							{
 								$query = "SELECT events.id, datetime,visitor,noofvisitors,educationlevel.level FROM events INNER JOIN educationlevel ON educationlevel.id=events.educationlevel ORDER BY datetime asc";
-								$result = mysqli_query($db_conn, $query);
-								if (mysqli_num_rows($result)==0) { echo ('<tr><td colspan="5">No Data Available</td></tr>'); }
-								while ($row = mysqli_fetch_row($result))
+								$result = pg_query($db_conn, $query);
+								if (pg_num_rows($result)==0) { echo ('<tr><td colspan="5">No Data Available</td></tr>'); }
+								while ($row = pg_fetch_row($result))
 								{
 									echo ('<tr><td>');
 									echo $row[0];

@@ -1,7 +1,7 @@
 <?php
 session_start();
 include 'settings.php';
-$db_conn = mysqli_connect($hostname, $username, $pass, $dbname) or die ("Could not connect to server \n".mysqli_connect_error());
+$db_conn = pg_connect(" host = $hostname port = $port dbname = $dbname user = $username password = $pass ") or die ("Could not connect to server \n");
 ?>
 <!DOCTYPE html>
 <html>
@@ -26,8 +26,8 @@ $db_conn = mysqli_connect($hostname, $username, $pass, $dbname) or die ("Could n
 							else
 							{
 								$query = "SELECT fullname FROM adminusers WHERE id = ". $_SESSION['user'];
-								$result = mysqli_query($db_conn, $query);
-								$row = mysqli_fetch_row($result);
+								$result = pg_query($db_conn, $query);
+								$row = pg_fetch_row($result);
 								echo $row[0];
 							}
 							?>
@@ -75,8 +75,8 @@ $db_conn = mysqli_connect($hostname, $username, $pass, $dbname) or die ("Could n
 								else
 								{
 									$query = "SELECT id, level FROM educationlevel ORDER BY level asc";
-									$result = mysqli_query($db_conn, $query);
-									while ($row = mysqli_fetch_row($result))
+									$result = pg_query($db_conn, $query);
+									while ($row = pg_fetch_row($result))
 									{
 										echo ('<option value="');
 										echo $row[0];

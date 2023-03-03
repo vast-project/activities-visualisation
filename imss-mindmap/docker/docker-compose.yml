@@ -2,15 +2,18 @@ version: '3.9'
 
 services:
   db:
-    image: mysql
-    volumes:
-      - /var/vast/platform/activities-visualisation/imss-mindmap/mysql:/var/lib/mysql:Z
+    image: postgres
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: tGwBP2fq2XRUIIdygVXWVX
-      MYSQL_DATABASE: tasks_f755
-      MYSQL_USER: tasksuser_x354
-      MYSQL_PASSWORD: uWb47SYz5isC07qWAEYEiu
+      POSTGRES_USER: tasksuser_x354
+      POSTGRES_PASSWORD: uWb47SYz5isC07qWAEYEiu
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  admin:    
+    image: adminer    
+    ports:      
+      - "8080:8080"
 
   backend-admin:
     depends_on:
@@ -27,3 +30,4 @@ services:
     ports:
       - "6071:3000"
     restart: always
+    

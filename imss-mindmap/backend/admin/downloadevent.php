@@ -2,7 +2,7 @@
 	session_start();
 	include 'settings.php';
 	
-$db_conn = mysqli_connect($hostname, $username, $pass, $dbname) or die ("Could not connect to server \n".mysqli_connect_error());
+	$db_conn = pg_connect(" host = $hostname port = $port dbname = $dbname user = $username password = $pass ") or die ("Could not connect to server \n");
 	if (!$db_conn){
 		echo "Error: Unable to open database\n:";
 	}
@@ -10,8 +10,8 @@ $db_conn = mysqli_connect($hostname, $username, $pass, $dbname) or die ("Could n
 	{
 		$eventid=$_POST['eventid'];
 		$query = "SELECT * FROM events WHERE id=".$eventid;
-		$result = mysqli_query($db_conn, $query);
-		$row = mysqli_fetch_row($result);
+		$result = pg_query($db_conn, $query);
+		$row = pg_fetch_row($result);
 		$variables = "id=".$row[0]."'datetime=".$row[1]."'visitor=".$row[2]."'noofparticipants=".$row[3]."'educationlevel=".$row[4];
 		
 		header("Content-type: application/vnd.ms-word");

@@ -1,11 +1,11 @@
 <?php
 	include 'db_connect.php';
-	$db_conn = mysqli_connect(" host = $hostname port = $port dbname = $dbname user = $username password = $pass ") or die ("Could not connect to server \n");
+	$db_conn = pg_connect(" host = $hostname port = $port dbname = $dbname user = $username password = $pass ") or die ("Could not connect to server \n");
 ?>
 <!doctype html>
 <html>
 <head>
-	<title>Intelligo Free Distributors' Area</title>
+	<title>Activities' Visualization</title>
 	<link rel="stylesheet" type="text/css" href="css/complaint_style.css">
 	<link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
 </head>
@@ -17,10 +17,10 @@ if($_GET['key'] && $_GET['token'])
 	$email = $_GET['key'];
 	$token = $_GET['token'];
 	$query = "SELECT * FROM users WHERE resetlinktoken='".$token."' and id='".$email."';";
-	$result = mysqli_query($db_conn, $query);
+	$result = pg_query($db_conn, $query);
 	$curDate = date("Y-m-d H:i:s");
-	if (mysqli_num_rows($result) > 0) {
-		$row = mysqli_fetch_array($result);
+	if (pg_num_rows($result) > 0) {
+		$row = pg_fetch_array($result);
 		//if(($row['expdate'] >= $curDate)||($row['expdate'] =='')){ 
 			echo '<form action="resetpass2db.php" method="post">			
 			<table width="95%">
