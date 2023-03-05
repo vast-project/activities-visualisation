@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS public.organizations (
   name character varying COLLATE pg_catalog."default" NOT NULL,
   phone integer,
   address character varying COLLATE pg_catalog."default",
+  frontendurl character varying COLLATE pg_catalog."default" NOT NULL,
   CONSTRAINT organizations_pkey PRIMARY KEY (id)
 )
 TABLESPACE pg_default;
@@ -48,7 +49,7 @@ INSERT INTO adminusers (email, password, organization, active, fullname, typeid)
 INSERT INTO adminusers (email, password, organization, active, fullname, typeid) VALUES ('user@museum.org', 'Abc@12345', 2, 1, 'VAST Admin User',2);
 INSERT INTO educationlevel (level) VALUES ('PRIMARY SCHOOL');
 INSERT INTO educationlevel (level) VALUES ('HIGH SCHOOL');
-INSERT INTO organizations (name) VALUES ('VAST');
-INSERT INTO organizations (name) VALUES ('Galileo Museum');
+INSERT INTO organizations (name, frontendurl) VALUES ('VAST', 'http://localhost:6071/');
+INSERT INTO organizations (name, frontendurl) VALUES ('Galileo Museum', 'http://localhost:6071/');
 INSERT INTO usertypes (type) VALUES ('VAST User');
 INSERT INTO usertypes (type) VALUES ('Organization User');

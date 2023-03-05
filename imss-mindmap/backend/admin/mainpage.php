@@ -81,6 +81,11 @@ $db_conn = pg_connect(" host = $hostname port = $port dbname = $dbname user = $u
 						<form action="events.php" method="post">
 							<button type="submit">Add new Event</button>
 						</form>
+					</td>
+					<td>
+						<form action="users.php" method="post">
+							<button type="submit">Add new User</button>
+						</form>
 					</td>';
 					}
 					?>

@@ -25,12 +25,11 @@ $db_conn = pg_connect(" host = $hostname port = $port dbname = $dbname user = $u
 							}
 							else
 							{
-								$query = "SELECT fullname, typeid, organization FROM adminusers WHERE id = ". $_SESSION['user'];
+								$query = "SELECT fullname, typeid FROM adminusers WHERE id = ". $_SESSION['user'];
 								$result = pg_query($db_conn, $query);
 								$row = pg_fetch_row($result);
 								echo $row[0];
 								$usertype = $row[1];
-								$organization = $row[2];
 							}
 							?>
 						</label>
@@ -48,56 +47,25 @@ $db_conn = pg_connect(" host = $hostname port = $port dbname = $dbname user = $u
 				</tr>
 			</table>
 		</div>
-		<form action="addusertodb.php" method="post">
+		<form action="addorgtodb.php" method="post">
 			<table table width="95%">
 				<tr>
-					<th colspan="2">Add New User - New User Details</th>
+					<th colspan="2">Add New Organization</th>
 				</tr>
 				<tr>
-					<td><label>Full Name</label></td>
-					<td><input type="text" name="fullname" placeholder="Full Name" required></td>
+					<td><label>Organization Name</label></td>
+					<td><input type="text" name="orgname" placeholder="Organization Name" required></td>
+				</tr>
+                <tr>
+					<td><label>Organization Phone</label></td>
+					<td><input type="text" name="orgphone" placeholder="Organization Phone Number"></td>
+				</tr>
+                <tr>
+					<td><label>Organization Address</label></td>
+					<td><input type="text" name="orgaddress" placeholder="Organization Address"></td>
 				</tr>
 				<tr>
-					<td><label>Email</label></td>
-					<td><input type="text" name="email" placeholder="Email" required></td>
-				</tr>
-				<tr>
-					<td><label>Phone Number</label></td>
-					<td><input type="text" name="phone" placeholder="Phone Number"></td>
-				</tr>
-				<tr>
-					
-							<?php
-								if (!$db_conn){
-									echo "Error: Unable to open database\n:";
-								}
-								else
-								{
-									if ($organization==1) {
-										echo '<td><label>Organization</label></td>
-										<td><select name="organization" id="organization" placeholder="Organization" required aria-invalid="false" >
-										<option value="" selected>--- Select Organization ---</option>';
-										$query = "SELECT id, name FROM organizations order by name asc";
-										$result = pg_query($db_conn, $query);
-										while ($row = pg_fetch_row($result))
-										{
-											echo ('<option value="');
-											echo $row[0];
-											echo ('">');
-											echo $row[1];
-											echo ('</option>\n');
-										}
-										echo '</select></td>';
-									}
-									else
-									{
-										$_SESSION['organization'] = $organization;
-									}
-								}
-							?>
-				</tr>
-				<tr>
-					<td><button type="submit" name="savesubmit" value="adduser" >Add User</button></td>
+					<td><button type="submit" name="savesubmit" value="addorganization">Add Organization</button></td>
 					<td><button type="submit" name="savesubmit" value="back" formnovalidate="formnovalidate">Cancel</button></td>
 				</tr>
 			</table>

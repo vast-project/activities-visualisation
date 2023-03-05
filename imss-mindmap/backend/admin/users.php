@@ -25,7 +25,7 @@ include 'settings.php';
 							}
 							else
 							{
-								$query = "SELECT fullname FROM adminusers WHERE id = ". $_SESSION['user'];
+								$query = "SELECT fullname, organization FROM adminusers WHERE id = ". $_SESSION['user'];
 								$result = pg_query($db_conn, $query);
 								$row = pg_fetch_row($result);
 								echo $row[0];
@@ -86,7 +86,8 @@ include 'settings.php';
 					}
 					else
 					{
-						$query = "SELECT * FROM adminusers ORDER BY id";
+						if ($row[1] == 1) {$query = "SELECT * FROM adminusers ORDER BY id";}
+            else {$query = "SELECT * FROM adminusers WHERE organization = ".$row[1]." ORDER BY id";}
 						$result = pg_query($db_conn, $query);
 						while ($row = pg_fetch_row($result))
 						{

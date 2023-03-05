@@ -17,7 +17,9 @@
 			$fullname = $_POST['date'].' '.$_POST['fullname'];
 			$email = $_POST['email'];
 			$phone = $_POST['phone'];
-			$organization = $_POST['organization'];
+			if (isset($_POST['organization']))
+			{$organization = $_POST['organization'];}
+			else {$organization = $_SESSION['organization'];}
 			if ($organization==1) {$typeid=1;} else {$typeid=2;}
 			
 			$query = "INSERT INTO adminusers(email, password, organization, active, fullname, ";

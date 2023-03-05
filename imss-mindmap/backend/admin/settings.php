@@ -1,5 +1,4 @@
 <?php
-$mapurl = "localhost:6071";
 
 //db data
 $hostname = "db";

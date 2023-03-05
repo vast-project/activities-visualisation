@@ -8,6 +8,11 @@
 	}
 	else
 	{
+		$query = "SELECT frontendurl FROM organizations INNER JOIN adminusers ON adminusers.organization = organizations.id WHERE adminusers.id = ". $_SESSION['user'];
+		$result = pg_query($db_conn, $query);
+		$row = pg_fetch_row($result);
+		$mapurl = $row[0];
+
 		$eventid=$_POST['eventid'];
 		$query = "SELECT * FROM events WHERE id=".$eventid;
 		$result = pg_query($db_conn, $query);
