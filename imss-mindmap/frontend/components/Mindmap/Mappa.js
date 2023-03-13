@@ -6,13 +6,23 @@ import centerBubbleEng from '../../public/center-bubble-eng.svg';
 import logo from '../../public/logo.png'
 import {motion} from 'framer-motion'
 import Congratulations from '../Congratulations/Congratulations'
+import { randomid } from '../Form/Form'
+import { eventid } from '../Form/Form'
 
 function Mappa({isItalian}) {
     const [submitForm, setSubmitForm] = useState(false);
     const [formData, setFormData] = useState([]);
   
     const handleSubmit = (e) => {
-      e.preventDefault();   
+      e.preventDefault();
+      console.log(randomid);
+      console.log(eventid);      
+
+      fetch('http://localhost:6070/frontendrequests/updateeventtodbs.php', {
+      method: 'post',
+      headers: {'Content-Type':'application/json'},
+    }); 
+    
       setSubmitForm(true)
       console.log(formData);
     }

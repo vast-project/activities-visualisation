@@ -11,7 +11,8 @@ import Loading from '../Loading/Loading'
 import {motion} from 'framer-motion'
 import Input from '../Input/Input'
 import Mappa from '../Mindmap/Mappa'
-//import express from 'express'
+export const randomid = Math.round(Math.random()*10000000000)
+export var eventid
 
 function Form() {
   const [isValid, setIsValid] = useState(false);
@@ -35,7 +36,7 @@ function Form() {
   var variables = router.query["variables"];
   if (typeof variables !== 'undefined') {
     var params = variables.split("'");
-    var id = params[0];
+    eventid = params[0];
     var datetime = params[1].split(" ");
     var date = datetime[0].split("=")[1];
     var time = datetime[1].substring(0,datetime[1].length-3);;
@@ -54,7 +55,32 @@ function Form() {
   const {register, formState: {errors}, handleSubmit} = useForm();
   const onSubmit = (data) =>{
     console.log(data);
-    setIsValid(true)
+    setIsValid(true);
+    if (eventid !== undefined) {
+      var item = {
+        'eventid': eventid,
+        'randomid': randomid,
+        'eventdatafromdb': variables,
+        'userformdata': JSON.stringify(data)
+      };
+    }
+    else
+    {
+      var item = {
+        'randomid': randomid,
+        'userformdata': JSON.stringify(data)
+      };
+    }
+    fetch ('./postgresql_connection/activity', {
+      method: (item.eventid) ? 'PUT' : 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(item)
+    });
+    console.log(item);
+
   }
 
   useEffect(() => {

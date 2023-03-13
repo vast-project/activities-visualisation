@@ -45,6 +45,16 @@ CREATE TABLE IF NOT EXISTS public.usertypes (
   CONSTRAINT usertypes_pkey PRIMARY KEY (id)
 )
 TABLESPACE pg_default;
+CREATE TABLE IF NOT EXISTS public.activitiesdata (
+    id serial NOT NULL,
+    eventid integer,
+    randomid integer,
+    eventdatafromdb character varying COLLATE pg_catalog."default",
+    userformdata character varying COLLATE pg_catalog."default",
+    activitydata character varying COLLATE pg_catalog."default",
+    CONSTRAINT activitiesdata_pkey PRIMARY KEY (id)
+)
+TABLESPACE pg_default;
 INSERT INTO adminusers (email, password, organization, active, fullname, typeid) VALUES ('adminuser@vast.org', 'Abc@12345', 1, 1, 'VAST Admin User',1);
 INSERT INTO adminusers (email, password, organization, active, fullname, typeid) VALUES ('user@museum.org', 'Abc@12345', 2, 1, 'VAST Admin User',2);
 INSERT INTO educationlevel (level) VALUES ('PRIMARY SCHOOL');

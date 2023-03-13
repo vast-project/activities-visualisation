@@ -11,10 +11,10 @@ services:
       - /var/vast/platform/activities-visualisation/imss-mindmap/postgresql:/var/lib/postgresql/data:Z
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:Z
 
-#  admin:    
-#    image: adminer    
-#    ports:      
-#      - "8080:8080"
+  admin:    
+    image: adminer    
+    ports:      
+      - "8080:8080"
 
   backend-admin:
     depends_on:
