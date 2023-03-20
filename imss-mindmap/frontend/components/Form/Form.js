@@ -11,7 +11,7 @@ import Loading from '../Loading/Loading'
 import {motion} from 'framer-motion'
 import Input from '../Input/Input'
 import Mappa from '../Mindmap/Mappa'
-export const randomid = Math.round(Math.random()*10000000000)
+export const randomid = Math.round(Math.random()*1000000000)
 export var eventid
 
 function Form() {
@@ -35,14 +35,18 @@ function Form() {
   var router = useRouter();
   var variables = router.query["variables"];
   if (typeof variables !== 'undefined') {
-    var params = variables.split("'");
-    eventid = params[0];
+    var params = variables.split(",");
+    var eventid = params[0].split(":")[1];
+    eventid = eventid.substring(1,eventid.length-1);
+    console.log(eventid);
     var datetime = params[1].split(" ");
-    var date = datetime[0].split("=")[1];
-    var time = datetime[1].substring(0,datetime[1].length-3);;
-    var visitor = params[2].split("=")[1];
+    var date = datetime[0].split(":")[1].substring(1,datetime[0].length);
+    var time = datetime[1].substring(0,datetime[1].length-4);
+    var visitor = params[2].split(":")[1];
+    visitor = visitor.substring(1,visitor.length-1);
     var noofparticipants = params[3].split("=")[1];
-    var educationlevel = params[4].split("=")[1];
+    var educationlevel = params[4].split(":")[1];
+    educationlevel = educationlevel.substring(1,educationlevel.length-2);
   }
   
   useEffect(() => {
@@ -71,16 +75,19 @@ function Form() {
         'userformdata': JSON.stringify(data)
       };
     }
-    fetch ('./postgresql_connection/activity', {
-      method: (item.eventid) ? 'PUT' : 'POST',
+
+    fetch ('http://localhost:6072/api/activity', {
+      method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(item)
-    });
+    })
+    .then((response) => response.json())
+    .catch((err) => console.log(err));
+      
     console.log(item);
-
   }
 
   useEffect(() => {

@@ -17,7 +17,7 @@
 		$query = "SELECT * FROM events WHERE id=".$eventid;
 		$result = pg_query($db_conn, $query);
 		$row = pg_fetch_row($result);
-		$variables = "id=".$row[0]."'datetime=".$row[1]."'visitor=".$row[2]."'noofparticipants=".$row[3]."'educationlevel=".$row[4];
+		$variables = '{"eventid":"'.$row[0].'","datetime":"'.$row[1].'","visitor":"'.$row[2].'","noofparticipants":"'.$row[3].'","educationlevel":"'.$row[4].'"}';
 		
 		header("Content-type: application/vnd.ms-word");
 		header("Content-Disposition: attachment;Filename=QR_Code_for_Event.doc");

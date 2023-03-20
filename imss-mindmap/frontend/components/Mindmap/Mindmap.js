@@ -26,10 +26,22 @@ function Mindmap({isItalian}) {
     console.log(randomid);
     console.log(eventid);      
 
-    fetch('http://localhost:6070/frontendrequests/updateeventtodbs.php', {
-      method: 'post',
-      headers: {'Content-Type':'application/json'},
-    });
+    var data = {
+      'randomid': randomid,
+      'activitydata': JSON.stringify(nodes)
+    };
+
+    console.log(data);
+    fetch ('http://localhost:6072/api/activity', {
+      method: (randomid) ? 'PUT': 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type':'application/json'
+        },
+        body: JSON.stringify(data),
+      })
+      .then((response) => response.json())
+      .then((data) => console.log(data)); 
     
     setSubmitForm(true);
     console.log(nodes);
