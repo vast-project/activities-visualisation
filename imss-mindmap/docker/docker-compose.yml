@@ -27,7 +27,7 @@ services:
   backend-httprequests:
     depends_on:
       - db
-    build: ../backend/
+    build: ../backend-httprequests/
     ports:
       - "6073:6072"
     restart: always
@@ -45,7 +45,6 @@ services:
     depends_on:
       - backend-admin
       - backend-httprequests
-
     build: ../values-workshop/
     ports:
       - "6072:3000"
