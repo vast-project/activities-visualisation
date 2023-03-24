@@ -1,0 +1,18 @@
+.container{
+
+    position: relative;
+}
+
+.biglogo{
+    position: absolute;
+    top: 50%;
+    /* left: -10%; */
+    z-index: -1000;
+    opacity: 0.075;
+}
+
+.logo{ 
+    position: absolute;
+    bottom: 3%;
+    right: 3%;
+}

@@ -1,0 +1,19 @@
+.btn{
+    padding: 12px 40px;
+    width: clamp(200px, 70vw, 350px);
+    /* width: 150px;
+    max-width: 350px; */
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}

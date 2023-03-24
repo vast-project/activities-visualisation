@@ -1,0 +1,30 @@
+.inputContainer{
+    margin-bottom: 32px;
+}
+
+.inputContainer input{
+    padding: 4px;
+    border: 1px solid #96969691;
+    max-width: 300px;
+    width: 100%;
+    height: 40px;
+}
+
+.inputContainer input:focus{
+    outline:1px solid #f39200;
+}
+
+.inputContainer label{
+    display: block;
+    font-size: 18px;
+    color: #0e173f;
+    font-weight: 400;
+}
+
+@media (max-width: 800px){
+
+    .inputContainer input{
+        width: 100%;
+        max-width: none;
+    }
+}

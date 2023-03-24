@@ -1,0 +1,48 @@
+{
+    "event":{
+        "groupId":"groudpid",
+        "userId": "userid",
+        "levels":{
+            "primary": [{
+                "text":"text",
+                "value":"value"
+            }],
+            "secondary": [
+                {
+                "text":"text",
+                "value":"value"
+                }, 
+                {
+                    "text":"text",
+                    "value":"value"
+                }, 
+                {
+                    "text":"text",
+                    "value":"value"
+                }
+            ],
+            "tertiary": [
+                {
+                "text":"text",
+                "value":"value"
+                }, 
+                {
+                    "text":"text",
+                    "value":"value"
+                }, 
+                {
+                    "text":"text",
+                    "value":"value"
+                }, 
+                {
+                    "text":"text",
+                    "value":"value"
+                }, 
+                {
+                    "text":"text",
+                    "value":"value"
+                }
+            ]
+        }
+    }
+}

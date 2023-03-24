@@ -1,0 +1,113 @@
+.text{
+    font-size: 16px;
+    color: rgb(71, 71, 71);
+    letter-spacing: .5px;
+    line-height: 1.25;
+    margin-bottom: 40px;
+}
+
+.selectedText{
+    font-size: 24px;
+    margin-bottom: 24px;
+    font-weight: 700;
+    font-style: oblique;
+    color: #555;
+
+}
+
+.valueContainer{
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.valueTitle{
+    color: #333;
+    font-size: 24px;
+}
+
+.commentsList{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.commentsItem{
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    border-bottom: .5px solid #dddddd;
+    padding: 8px 0;
+}
+
+.commentsValue{
+    font-size: 20px;
+    color: #333;
+    text-transform: capitalize;
+    font-weight: 700;
+    padding: 4px 0;
+}
+
+.commentsText{
+    font-size: 12px;
+    color: #a698eb;
+    font-style: oblique;
+}
+
+.tooltip{
+    display: flex;
+    flex-direction: column;
+    width:100%;
+    height: 175px;
+    border: 1px solid rgb(66, 0, 128);
+    border-radius: 5px;
+    padding: 16px;
+    justify-content: space-around;
+    background: #fff;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+    margin-bottom: 24px;
+}
+
+.tooltipTextarea{
+    border: 1px solid rgb(66, 0, 128);
+    height: 75px;
+    border-radius: 3px;
+    font-size: 20px;
+    color: #555;
+    font-family: sans-serif;
+    font-weight: 700;
+    padding: 12px;
+}
+.tooltipTextarea:focus{
+    outline: 1px solid rgb(119, 14, 218);
+}
+
+.btnContainer{
+    display: flex;
+    gap: 24px;
+}
+
+.tooltipBtn{
+    border: 1px solid #5C47C2;
+    color: #fff;
+    background: #5C47C2;
+    padding: 12px 0;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 700;
+    flex-grow: 1;
+    flex-basis: 40%
+}
+.tooltipCancelBtn{
+    border: none;
+    color: #333;
+    border: 1px solid #333;
+    background: #fff;
+    padding: 12px 0;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 700;
+    flex-grow: 1;
+    flex-basis: 40%
+}

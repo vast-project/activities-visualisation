@@ -56,10 +56,13 @@ CREATE TABLE IF NOT EXISTS public.activitiesdata (
 )
 TABLESPACE pg_default;
 INSERT INTO adminusers (email, password, organization, active, fullname, typeid) VALUES ('adminuser@vast.org', 'Abc@12345', 1, 1, 'VAST Admin User',1);
-INSERT INTO adminusers (email, password, organization, active, fullname, typeid) VALUES ('user@museum.org', 'Abc@12345', 2, 1, 'VAST Admin User',2);
+INSERT INTO adminusers (email, password, organization, active, fullname, typeid) VALUES ('user@museum.org', 'Abc@12345', 2, 1, 'Galileo User',2);
+INSERT INTO adminusers (email, password, organization, active, fullname, typeid) VALUES ('user@valuesworkshop.org', 'Abc@12345', 3, 1, 'Values Workshop User',2);
 INSERT INTO educationlevel (level) VALUES ('PRIMARY SCHOOL');
 INSERT INTO educationlevel (level) VALUES ('HIGH SCHOOL');
+INSERT INTO educationlevel (level) VALUES ('UNIVERSITY');
 INSERT INTO organizations (name, frontendurl) VALUES ('VAST', 'http://localhost:6071/');
 INSERT INTO organizations (name, frontendurl) VALUES ('Galileo Museum', 'http://localhost:6071/');
+INSERT INTO organizations (name, frontendurl) VALUES ('Values Workshop', 'http://localhost:6073/');
 INSERT INTO usertypes (type) VALUES ('VAST User');
 INSERT INTO usertypes (type) VALUES ('Organization User');
