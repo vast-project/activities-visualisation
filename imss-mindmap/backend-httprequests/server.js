@@ -17,7 +17,7 @@ app.use('/', router);
 
 //Create a server
 const server = app.listen(6072, function(){
-    let host = 'localhost' //server.address().address
+    let host = server.address().address
     let port = server.address().port
     console.log("App listening at http://%s:%s", host, port);
 })
