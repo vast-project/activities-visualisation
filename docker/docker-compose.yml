@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: tasksuser_x354
       POSTGRES_PASSWORD: uWb47SYz5isC07qWAEYEiu
     volumes:
-      - /var/vast/platform/activities-visualisation/imss-mindmap/postgresql:/var/lib/postgresql/data:Z
+      - /var/vast/platform/activities-visualisation/postgresql:/var/lib/postgresql/data:Z
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:Z
 
   admin:    
@@ -24,19 +24,19 @@ services:
       - "6070:80"
     restart: always
 
-  backend-httprequests:
-    depends_on:
-      - db
-    build: ../backend-httprequests/
-    ports:
-      - "6072:6072"
-    restart: always
+  #backend-httprequests:
+  #  depends_on:
+  #    - db
+  #  build: ../backend-httprequests/
+  #  ports:
+  #    - "6072:6072"
+  #  restart: always
 
   galileo-frontend-nextjs:
     depends_on:
       - backend-admin
       - backend-httprequests
-    build: ../galileo/
+    build: ../imss-mindmap/
     ports:
       - "6071:3000"
     restart: always
