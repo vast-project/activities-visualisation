@@ -11,10 +11,10 @@ services:
       - /var/vast/platform/activities-visualisation/postgresql:/var/lib/postgresql/data:Z
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:Z
 
-  admin:    
-    image: adminer    
-    ports:      
-      - "8080:8080"
+  #admin:    
+  #  image: adminer    
+  #  ports:      
+  #    - "8080:8080"
 
   backend-admin:
     depends_on:
@@ -24,13 +24,13 @@ services:
       - "6070:80"
     restart: always
 
-  #backend-httprequests:
-  #  depends_on:
-  #    - db
-  #  build: ../backend-httprequests/
-  #  ports:
-  #    - "6072:6072"
-  #  restart: always
+  backend-httprequests:
+    depends_on:
+      - db
+    build: ../backend-httprequests/
+    ports:
+      - "8080:8080"
+    restart: always
 
   galileo-frontend-nextjs:
     depends_on:
