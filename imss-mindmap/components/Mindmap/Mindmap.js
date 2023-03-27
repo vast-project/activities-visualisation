@@ -32,7 +32,7 @@ function Mindmap({isItalian}) {
     };
 
     console.log(data);
-    fetch ('http://localhost:6072/api/activity', {
+    fetch ('/api/activity', {
       method: (randomid) ? 'PUT': 'POST',
       headers: {
         'Accept': 'application/json',

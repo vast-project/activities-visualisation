@@ -44,7 +44,6 @@ function Form() {
     var time = datetime[1].substring(0,datetime[1].length-4);
     var visitor = params[2].split(":")[1];
     visitor = visitor.substring(1,visitor.length-1);
-    var noofparticipants = params[3].split("=")[1];
     var educationlevel = params[4].split(":")[1];
     educationlevel = educationlevel.substring(1,educationlevel.length-2);
   }
@@ -76,9 +75,9 @@ function Form() {
       };
     }
 
-    fetch ('http://localhost:6072/api/activity', {
-      method: 'POST',
-      headers: {
+      fetch('/api/activity', {
+        method: 'POST',
+        headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
