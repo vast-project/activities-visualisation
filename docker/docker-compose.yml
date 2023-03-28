@@ -29,16 +29,16 @@ services:
       - db
     build: ../backend-httprequests/
     ports:
-      - "8080:8080"
+      - "6071:8080"
     restart: always
 
-  galileo-frontend-nextjs:
+  imss-mindmap-frontend-nextjs:
     depends_on:
       - backend-admin
       - backend-httprequests
     build: ../imss-mindmap/
     ports:
-      - "6071:3000"
+      - "6072:3000"
     restart: always
 
   values-workshop-frontend-nextjs:
