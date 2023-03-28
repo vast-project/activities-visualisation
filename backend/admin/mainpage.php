@@ -67,6 +67,11 @@ $db_conn = pg_connect(" host = $hostname port = $port dbname = $dbname user = $u
 						</form>
 					</td>
 					<td>
+						<form action="viewdbdata.php" method="post">
+							<button type="submit">View Data from Activities</button>
+						</form>
+					</td>
+					<td>
 						<form action="undercon.php" method="post">
 							<button type="submit">Reports</button>
 						</form>
