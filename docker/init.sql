@@ -52,8 +52,6 @@ CREATE TABLE IF NOT EXISTS public.activitiesdata (
     eventdatafromdb character varying COLLATE pg_catalog."default",
     userformdata character varying COLLATE pg_catalog."default",
     activitydata character varying COLLATE pg_catalog."default",
-    createdAt character varying COLLATE pg_catalog."default",
-    updatedAt character varying COLLATE pg_catalog."default",
     CONSTRAINT activitiesdata_pkey PRIMARY KEY (id)
 )
 TABLESPACE pg_default;
