@@ -39,7 +39,7 @@ function Third({userid, selectedValuesfirst, selectedValuessecond, selectedWords
         var data = {
             'activitydata': JSON.stringify(activitydata)
         };
-        fetch ('http://localhost:6072/api/activity', {
+        fetch ('/api/activity', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
