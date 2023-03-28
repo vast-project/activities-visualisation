@@ -3,7 +3,7 @@ FROM node:18-alpine AS base
 # Install dependencies only when needed
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+#RUN apk add --no-cache libc6-compat
 WORKDIR /backend-httprequests
 # RUN npm cache clean -force
 # RUN npm i sharp
@@ -17,12 +17,11 @@ RUN \
   else echo "Lockfile not found." && exit 1; \
   fi
 
-
 # Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /backend-httprequests
-COPY --from=deps /backend-httprequests/node_modules ./node_modules
-COPY . .
+# FROM base AS builder
+# WORKDIR /backend-httprequests
+# COPY --from=deps /backend-httprequests/node_modules ./node_modules
+# COPY . .
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
@@ -32,7 +31,7 @@ COPY . .
 # RUN yarn build
 
 # If using npm comment out above and use below instead
-RUN npm run build
+# RUN npm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -49,8 +48,9 @@ RUN adduser --system --uid 1001 nextjs
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder --chown=nextjs:nodejs /backend-httprequests/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /backend-httprequests/.next/static ./.next/static
+COPY --from=deps --chown=nextjs:nodejs /backend-httprequests/node_modules ./node_modules
+#COPY --from=builder --chown=nextjs:nodejs /backend-httprequests/ ./
+COPY --chown=nextjs:nodejs . .
 
 USER nextjs
 
