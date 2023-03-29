@@ -17,7 +17,7 @@ function Layout({children}) {
     <section className={styles.layoutContainer} >
       
       <div className={styles.flagContainer}>
-          <button className={styles.flagBtn} onClick={handleSetItalian}>
+          <button className={styles.flagBtnIt} onClick={handleSetItalian}>
 //             <Image src={italy} alt="italian" width={50} height={45} />
             <span style={{color:"#333333", fontSize:"24px"}}>IT</span>
           </button>
