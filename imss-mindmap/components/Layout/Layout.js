@@ -17,11 +17,11 @@ function Layout({children}) {
     <section className={styles.layoutContainer} >
       
       <div className={styles.flagContainer}>
-          <button className={styles.flagBtnIt} onClick={handleSetItalian}>
+          <button className={styles.flagBtn} onClick={handleSetItalian}>
 //             <Image src={italy} alt="italian" width={50} height={45} />
             <span style={{color:"#333333", fontSize:"24px"}}>IT</span>
           </button>
-          <button className={styles.flagBtn} onClick={handleSetEnglish}>
+          <button className={styles.flagBtn} style={{marginTop:"-2px"}} onClick={handleSetEnglish}>
 //             <Image src={uk} alt="English" width={50} height={45} />
             <span style={{color:"#333333", fontSize:"24px"}}>EN</span>
           </button>
