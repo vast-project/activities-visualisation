@@ -22,7 +22,7 @@ function Layout({children}) {
             <span style={{color:"#333333", fontSize:"24px"}}>IT</span>
           </button>
           <button className={styles.flagBtn} style={{marginTop:"-2px"}} onClick={handleSetEnglish}>
-//             <Image src={uk} alt="English" width={50} height={45} />
+//             <Image src={uk} alt="English" style={{marginTop:"-2px"}} width={50} height={45} />
             <span style={{color:"#333333", fontSize:"24px"}}>EN</span>
           </button>
         </div>
