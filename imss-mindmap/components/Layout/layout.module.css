@@ -29,6 +29,10 @@
 }
 
 }
-.flagBtn:last-child{
+.flagBtnIt{
     margin-top: -2px;
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
 }
