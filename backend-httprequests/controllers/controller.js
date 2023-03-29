@@ -42,7 +42,7 @@ exports.updateActivity = async(req, res)=> {
         if (!activity){
             //return response to client
             res.status(404).json({
-                message: "Not found for updating an activity with randomid = " + req.params.id,
+                message: "Not found for updating an activity with id = " + req.params.id,
                 error: "404"
             });
         }
@@ -58,7 +58,7 @@ exports.updateActivity = async(req, res)=> {
                 });
             if(!result) {
                 res.status(500).json({
-                    message: "Error -> Cannot update an activity with randomid = " + req.params.id,
+                    message: "Error -> Cannot update an activity with id = " + req.params.id,
                     error: "Cannot Update"
                 })
             }
@@ -68,7 +68,7 @@ exports.updateActivity = async(req, res)=> {
     catch
     {
         res.status(500).json({
-            message: "Error -> Cannot update an activity with randomid = " + req.params.id,
+            message: "Error -> Cannot update an activity with id = " + req.params.id,
             error: "Cannot Update 2"
         });
     }
