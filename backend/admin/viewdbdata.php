@@ -51,20 +51,6 @@ include 'settings.php';
 				<th colspan="3">Users' Management</th>
 			</tr>
 		</table>
-		<table>
-			<tr>
-				<td>
-					<form action="addorganization.php" method="post">
-						<button type="submit">Add New Organization</button>
-					</form>
-				</td>
-				<td>
-					<form action="mainpage.php" method="post">	
-						<button type="submit" id="back" name="back">Back</button>
-					</form>
-				</td>
-			</tr>
-		</table>
 		<form action="userstodb.php" method="post">
 			<table width="100%" border="1" class="sortable">
 				<thead>
@@ -74,6 +60,8 @@ include 'settings.php';
 						<th><button type="button"class="sortbtn">Activity Data from DB<span aria-hidden="true"></span></button></th>
 						<th><button type="button"class="sortbtn">User Data<span aria-hidden="true"></span></button></th>
 						<th><button type="button"class="sortbtn">Activity Data<span aria-hidden="true"></span></button></th>
+						<th><button type="button"class="sortbtn">Created At<span aria-hidden="true"></span></button></th>
+						<th><button type="button"class="sortbtn">Updated At<span aria-hidden="true"></span></button></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -95,6 +83,8 @@ include 'settings.php';
 									<td>'.$row[3].'</td>
 									<td>'.$row[4].'</td>
 									<td>'.$row[5].'</td>
+									<td>'.$row[6].'</td>
+									<td>'.$row[7].'</td>
 								</tr>';
 							}
 						}

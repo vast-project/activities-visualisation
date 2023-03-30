@@ -74,18 +74,14 @@ function Form() {
         'userformdata': JSON.stringify(data)
       };
     }
-
-      fetch('/api/activity', {
-        method: 'POST',
-        headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
+    
+    fetch('/api/server/', {
+      method: 'POST',
       body: JSON.stringify(item)
     })
     .then((response) => response.json())
     .catch((err) => console.log(err));
-      
+    
     console.log(item);
   }
 

@@ -32,17 +32,12 @@ function Mindmap({isItalian}) {
     };
 
     console.log(data);
-    fetch ('/api/activity', {
-      method: (randomid) ? 'PUT': 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type':'application/json'
-        },
-        body: JSON.stringify(data),
-      })
-      .then((response) => response.json())
-      .then((data) => console.log(data)); 
-    
+    fetch('/api/requestshandler/', {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    })
+    .then((response) => response.json())
+    .catch((err) => console.log(err));
     setSubmitForm(true);
     console.log(nodes);
   }

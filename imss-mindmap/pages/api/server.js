@@ -25,12 +25,12 @@ const server = app.listen(6071, function(){
 db.sequelize.sync({}).then(() => {
     console.log('Drop and Resync with {force: true}');
     Activity.sync().then(() => {
-    //const activities = [
-    //    {eventid: 1, randomid: 000000000, eventdatafromdb: 'DATA RETRIEVED FROM TABLE EVENTS', userformdata: 'DATA INSERTED FROM COMPONENT FORM', ACTIVITYDATA: 'DATA INSERTED FROM COMPONENT MINDMAP'},
-    //    {randomid: 000000000, userformdata: 'DATA INSERTED FROM COMPONENT FORM', ACTIVITYDATA: 'DATA INSERTED FROM COMPONENT MINDMAP'}
-    //]
-    //for (let i=0; i<activities.length; i++){
-    //    Activity.create(activities[i]);
-    //}
+    const activities = [
+        {eventid: 1, randomid: 546743, eventdatafromdb: 'DATA RETRIEVED FROM TABLE EVENTS', userformdata: 'DATA INSERTED FROM COMPONENT FORM', ACTIVITYDATA: 'DATA INSERTED FROM COMPONENT MINDMAP'},
+        {randomid: 456, userformdata: 'DATA INSERTED FROM COMPONENT FORM', ACTIVITYDATA: 'DATA INSERTED FROM COMPONENT MINDMAP'}
+    ]
+    for (let i=0; i<activities.length; i++){
+        Activity.create(activities[i]);
+    }
     })
 });

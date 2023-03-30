@@ -10,12 +10,6 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "keywords": [
-    "nodejs",
-    "crud",
-    "postgresql",
-    "example"
-  ],
   "license": "ISC",
   "dependencies": {
     "next": "^13.1.2",
