@@ -18,11 +18,11 @@ function Layout({children}) {
       
       <div className={styles.flagContainer}>
           <button className={styles.flagBtn} onClick={handleSetItalian}>
-//             <Image src={italy} alt="italian" width={50} height={45} />
+//             <Image src={italy} alt="italian" width={37} height={33} />
             <span style={{color:"#333333", fontSize:"24px"}}>IT</span>
           </button>
-          <button className={styles.flagBtn} style={{marginTop:"-2px"}} onClick={handleSetEnglish}>
-//             <Image src={uk} alt="English" style={{marginTop:"-2px"}} width={50} height={47} />
+          <button className={styles.flagBtn} onClick={handleSetEnglish}>
+//             <Image src={uk} alt="English" width={37} height={33} />
             <span style={{color:"#333333", fontSize:"24px"}}>EN</span>
           </button>
         </div>
