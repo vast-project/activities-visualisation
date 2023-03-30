@@ -2,8 +2,8 @@ const env = {
     database: 'tasks_f755',
     username: 'tasksuser_x354',
     password: 'uWb47SYz5isC07qWAEYEiu',
-    host: 'localhost',
-    dialect: 'db',
+    host: 'db',
+    dialect: 'postgres',
     pool: {
         max: 5,
         min: 0,
