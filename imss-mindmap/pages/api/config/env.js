@@ -3,7 +3,7 @@ const env = {
     username: 'tasksuser_x354',
     password: 'uWb47SYz5isC07qWAEYEiu',
     host: 'localhost',
-    dialect: 'postgres',
+    dialect: 'db',
     pool: {
         max: 5,
         min: 0,
