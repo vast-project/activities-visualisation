@@ -1,41 +1,47 @@
 version: '3.9'
 
 services:
-  db:
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_USER: tasksuser_x354
-      POSTGRES_PASSWORD: uWb47SYz5isC07qWAEYEiu
-    volumes:
-      - /var/vast/platform/activities-visualisation/postgresql:/var/lib/postgresql/data:Z
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:Z
+  #db:
+  #  image: postgres
+  #  restart: always
+  #  environment:
+  #    POSTGRES_USER: tasksuser_x354
+  #    POSTGRES_PASSWORD: uWb47SYz5isC07qWAEYEiu
+  #  volumes:
+  #    - /var/vast/platform/activities-visualisation/postgresql:/var/lib/postgresql/data:Z
+  #    - ./init.sql:/docker-entrypoint-initdb.d/init.sql:Z
 
   #admin:    
   #  image: adminer    
   #  ports:      
   #    - "8080:8080"
 
-  backend-admin:
-    depends_on:
-      - db
-    build: ../backend/
-    ports:
-      - "6070:80"
-    restart: always
+  db:
+    image: postgres
+    volumes:
+      - ../data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=tasksuser_x354
+      - POSTGRES_PASSWORD=uWb47SYz5isC07qWAEYEiu
 
-  backend-httprequests:
+  backend-admin:
+    build: ../activities-backend/
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ..:/code
+    ports:
+      - "6071:8000"
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=tasksuser_x354
+      - POSTGRES_PASSWORD=uWb47SYz5isC07qWAEYEiu
     depends_on:
       - db
-    build: ../backend-httprequests/
-    ports:
-      - "6071:8080"
-    restart: always
 
   imss-mindmap-frontend-nextjs:
     depends_on:
       - backend-admin
-      - backend-httprequests
     build: ../imss-mindmap/
     ports:
       - "6072:3000"
@@ -44,7 +50,6 @@ services:
   values-workshop-frontend-nextjs:
     depends_on:
       - backend-admin
-      - backend-httprequests
     build: ../values-workshop/
     ports:
       - "6073:3000"
