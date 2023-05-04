@@ -1,0 +1,23 @@
+URL: https://activities_backend.vast-project.eu/api/saveproduct
+
+{
+    "name":"test name",
+    "userid":"test userid",
+    "age":1,
+    "gender":2,
+    "motherLanguage":3,
+    "activity":1,
+    "created_by":4
+}
+
+
+URL: https://activities_backend.vast-project.eu/api/savevisitor
+
+{
+    "name":"test name",
+    "name_local":"test name",
+    "description":"test description",
+    "description_local":"test description",
+    "created_by":1,
+    "activity_step":1
+}

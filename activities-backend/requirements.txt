@@ -1,3 +1,8 @@
-Django>=3.0,<4.0
-psycopg2>=2.8
-djangorestframework>=3.9.2
+Django
+djangorestframework
+django-allauth
+django-extensions
+django-environ
+psycopg
+pillow
+qrcode

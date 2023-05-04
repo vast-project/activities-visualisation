@@ -1,6 +1,10 @@
 from django.db import models
 from datetime import datetime
 from django.conf import settings
+import qrcode
+from io import BytesIO
+from django.core.files import File
+from PIL import Image, ImageDraw
 
 class AutoUpdateTimeFields(models.Model):
     created     = models.DateTimeField(auto_now_add=True)
@@ -87,8 +91,23 @@ class Activity(VASTObject):
     context     = models.ForeignKey('Context',      on_delete=models.DO_NOTHING)
     language    = models.ForeignKey('Language',     on_delete=models.DO_NOTHING, related_name='activity_language')
     nature      = models.ForeignKey('Nature',       on_delete=models.DO_NOTHING)
+    qr_code = models.ImageField(upload_to='qr_codes', blank=True)
     class Meta:
         verbose_name_plural = 'Activities'
+        
+    def save(self, *args, **kwargs):
+        url = 'ffff.com'
+        qrcode_img = qrcode.make(url)
+        canvas = Image.new('RGB',(450, 450), 'white')
+        draw = ImageDraw.Draw(canvas)
+        canvas.paste(qrcode_img)
+        fname = f'qr_code-{self.name}.png'
+        buffer = BytesIO()
+        canvas.save(buffer, 'PNG')
+        self.qr_code.save(fname, File(buffer), save=False)
+        canvas.close()
+        super().save(*args, **kwargs)
+        
 
 # Visitors...
 class Visitor(AutoUpdateTimeFields):
