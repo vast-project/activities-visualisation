@@ -46,18 +46,19 @@ services:
       db:
         condition: service_healthy
 
-# imss-mindmap-frontend-nextjs:
-#   depends_on:
-#     - backend-admin
-#   build: ../imss-mindmap/
-#   ports:
-#     - "6072:3000"
-#   restart: always
-#
-# values-workshop-frontend-nextjs:
-#   depends_on:
-#     - backend-admin
-#   build: ../values-workshop/
-#   ports:
-#     - "6073:3000"
-#   restart: always
+  imss-mindmap-frontend-nextjs:
+    depends_on:
+      - backend-admin
+    build: ../imss-mindmap/
+    ports:
+      - "6072:3000"
+    restart: always
+
+  values-workshop-frontend-nextjs:
+    depends_on:
+      - backend-admin
+    build: ../values-workshop/
+    ports:
+      - "6073:3000"
+    restart: always
+    
