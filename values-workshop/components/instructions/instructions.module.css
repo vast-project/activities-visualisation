@@ -3,7 +3,6 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    width: min(100%, 800px);
 }
 
 .primaryHeadline{
@@ -55,10 +54,4 @@
     align-items: center;
     gap: 12px;
     background:#fff;
-}
-
-.leftArrow{
-    font-size: 32px;
-    margin-bottom: 24px;
-    color: #4c37b4;
 }

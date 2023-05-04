@@ -2,8 +2,6 @@
     display: flex;
     flex-direction: column;
     gap: 32px;
-    width: min(100%, 900px);
-    margin: 0 auto;
 }
 
 .valuesContainer{
@@ -93,10 +91,4 @@
     letter-spacing: 0.03em;
     font-size: 20px;
     border-radius: 5px;
-}
-
-.leftArrow{
-    font-size: 32px;
-    margin-bottom: 24px;
-    color: #E5446D;
 }

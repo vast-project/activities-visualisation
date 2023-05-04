@@ -1,39 +1,24 @@
-.container{
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    width: min(100%, 900px);
-    margin: 0 auto;
-}
-
 .text{
     font-size: 16px;
     color: rgb(71, 71, 71);
     letter-spacing: .5px;
     line-height: 1.25;
     margin-bottom: 40px;
-    
 }
 
 .selectedText{
-    font-size: 18px;
+    font-size: 24px;
     margin-bottom: 24px;
-    font-weight: 600;
+    font-weight: 700;
     font-style: oblique;
-    line-height: 1.2;
     color: #555;
+
 }
 
 .valueContainer{
     display: flex;
     flex-direction: column;
     gap: 24px;
-    padding: 32px;
-    border-radius: 5px;
-    width: min(100%, 500px);
-    background-color: #fdfaff;
-    margin: 32px 0;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
 }
 
 .valueTitle{
@@ -73,14 +58,14 @@
 .tooltip{
     display: flex;
     flex-direction: column;
-    width:min(100%, 500px);
+    width:100%;
     height: 175px;
     border: 1px solid rgb(66, 0, 128);
     border-radius: 5px;
     padding: 16px;
     justify-content: space-around;
     background: #fff;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
     margin-bottom: 24px;
 }
 
@@ -125,22 +110,4 @@
     font-weight: 700;
     flex-grow: 1;
     flex-basis: 40%
-}
-
-.alertText{
-    font-size:20px;
-    border-radius: 5px;    
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #fff;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
-    padding: 24px 48px;
-}
-
-.leftArrow{
-    font-size: 32px;
-    margin-bottom: 24px;
-    color: #4c37b4;
 }

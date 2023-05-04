@@ -10,7 +10,7 @@ import mindmap from '../../public/congratulations-mindmap.svg'
 function Congratulations({isItalian}) {
   return (
     <motion.div className={styles.container} transition={{ duration: 1 }} initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}>
-        <h1 className={styles.primaryHeadline}>{isItalian ? 'Congratulazioni' : 'Congratulations'}</h1>
+        <h1 className={styles.primaryHeadline}>{isItalian ? 'Congratulazioni' : 'Congratulation'}</h1>
         <h3 className={styles.secondaryHeadline}>{isItalian ? 'Grazie per aver completato la mappa mentale' : 'Thank you for completing the mindmap'}</h3>
 
         <Image alt="Mindmap"  src={mindmap} width={364} height={247}></Image>

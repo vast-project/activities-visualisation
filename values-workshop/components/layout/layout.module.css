@@ -1,13 +1,6 @@
 .container{
-    position: relative;
-    width: min(100%, 1200px);
-    margin-inline: auto;
-}
 
-.flagContainer{
-    position: absolute;
-    top: 3%;
-    right: 3%;
+    position: relative;
 }
 
 .biglogo{
