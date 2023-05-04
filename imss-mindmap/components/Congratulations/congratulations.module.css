@@ -7,22 +7,24 @@
     gap: 2rem;
     justify-content: center;
     align-items: center;
-    padding: 100px;
+    padding: 70px;
     box-shadow: 5px 5px 25px rgba(0,0,0,0.15);
     background-color: #fcf9f6;
     text-align: center;
-    height: 90vh;
+    height: 80vh;
     margin: auto;
 }
 
 .secondaryHeadline{
     color: #555;
     font-size: 32px;
+    letter-spacing: 0.03em;
 }
 
 .primaryHeadline{
     color: #F39200;
-    font-size: 48px;
+    font-size: 52px;
+    letter-spacing: 0.05em;
 }
 
 .euContainer{

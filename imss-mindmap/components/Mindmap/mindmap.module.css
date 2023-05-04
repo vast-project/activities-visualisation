@@ -61,7 +61,8 @@
 
 .mindmapInputOpposite,
 .mindmapInputSequence,
-.mindmapInputEquivalent{
+.mindmapInputEquivalent,
+.mindmapInputNewValue{
     text-align: center;
     padding: 40px;
     border: none;
@@ -83,10 +84,16 @@
 .mindmapInputEquivalent{
     background: url(../../public/equivalent-bubble.png) center/contain no-repeat;
 }
+.mindmapInputNewValue{
+    background: url(../../public/equivalent-bubble.png) center/contain no-repeat;
+    /* filter: hue-rotate(-180deg); */
+    filter: grayscale(1)
+}
 
 .mindmapInputOpposite:focus,
 .mindmapInputSequence:focus,
-.mindmapInputEquivalent:focus{
+.mindmapInputEquivalent:focus,
+.mindmapInputNewValue:focus{
     outline: none;
 }
 
@@ -115,11 +122,12 @@
 
 .btnContainer{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
     gap: 32px;
-    margin-top: 32px;
+    margin: 2rem 0;
+    width: 100%;
 }
 
 .btnSubmit{
@@ -138,12 +146,14 @@
 
 .addBtnOpposite,
 .addBtnSequence,
-.addBtnEquivalent{
+.addBtnEquivalent,
+.addBtn,
+.createBtn{
     font-family: "Curvy Thins";
     color: #fff;
     letter-spacing: 0.03em;
     display: flex;
-    width: 60%;
+    width: 80%;
     align-items: center;
     padding: 12px;
     justify-content: center;
@@ -152,6 +162,62 @@
     font-size: 24px;
     border: none;
     cursor: pointer;
+}
+
+.btnCustom{
+    font-family: "Curvy Thins";
+    color: #fff;
+    /* background:#000; */
+    letter-spacing: 0.03em;
+    display: flex;
+    width: 80%;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    gap: 8px;
+    font-size: 24px;
+    border: none;
+    cursor: pointer;
+}
+
+.addBtn{
+    border: 2px solid #333;
+    color:#333;
+    width: 100%;
+}
+
+.createdBtnsContainer{
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.textAndBtnContainer{
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    width: min(100%, 500px);
+}
+
+.textInput{
+    padding: 1rem;
+    border: 2px solid #333;
+    border-radius: 3px;
+    font-size: 1.25rem;
+}
+
+.createBtn{
+    background: #707070;
+    border: 2px solid #707070;
+    color: #fff;
+    border-radius: 3px;
+    width: 100%;
+}
+
+.textInsertedValues{
+    font-family: sans-serif;
+    color: #333;
+    font-size: 1.25rem;
 }
 
 .addBtnOpposite{
@@ -163,6 +229,26 @@
 .addBtnEquivalent{
     background-color: #95C11F;
 }
+
+.flagContainer{
+    position: absolute;
+    right: 2%;
+    top: 2%;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.flagBtn{
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.logo{
+    margin-top: 3rem;
+}
+
 
 @media screen and (max-width: 1200px){
     .curvyText{
@@ -214,9 +300,9 @@
     }
     .addBtnOpposite,
     .addBtnSequence,
-    .addBtnEquivalent{
-        width: 200px;
-        width: 75%;
+    .addBtnEquivalent,
+    .btnCustom{
+        width: 100%;
     }
 }
 

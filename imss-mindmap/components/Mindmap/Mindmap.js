@@ -6,49 +6,54 @@ import Image from 'next/image'
 import styles from './mindmap.module.css'
 import {motion} from 'framer-motion'
 import Congratulations from '../Congratulations/Congratulations'
-import {AiFillPlusCircle} from 'react-icons/ai';
+import {v4} from 'uuid';
 import {FaTrash} from 'react-icons/fa';
 import {BsPlus} from 'react-icons/bs';
-import { randomid } from '../Form/Form'
-import { eventid } from '../Form/Form'
 
-function Mindmap({isItalian}) {
+import italy from '../../public/ita-flag.png'
+import uk from '../../public/uk-flag.png'
+
+function Mindmap({isItalian,setIsItalian}) {
   const [submitForm, setSubmitForm] = useState(false);
+  const [textInputValue, setTextInputValue] = useState("");
+  const [createdButtons, setCreatedButtons] = useState([]);
+  let messageText = isItalian ? 'Si prega di compilare questo campo' : 'Please Fill Out This Field';
 
-  const [nodes, setNodes] = useState([
-    { id: 1, category:"opposto", text: "Opposites", input: "OPPOSTO"},
-    { id: 2, category:"conseguenza", text: "sequences", input: "CONSEGUENZA"},
-    { id: 3, category:"equivalenza", text: "equivalents", input: "EQUIVALENZA"},
-  ]);
+  const inputData = [
+    { id: 1, category:"opposto", text: "Opposites", input: isItalian ? "OPPOSTO" : "OPPOSITE"},
+    { id: 2, category:"conseguenza", text: "sequences", input: isItalian ? "CONSEGUENZA" : "CONSEQUENCE"},
+    { id: 3, category:"equivalenza", text: "equivalents", input: isItalian ? "EQUIVALENZA" : "equivalent"},
+  ];
+  const [nodes, setNodes] = useState(inputData);
 
-  const handleSubmit = (e) =>{
-    e.preventDefault();
-    console.log(randomid);
-    console.log(eventid);      
-
-    var data = {
-      'randomid': randomid,
-      'activitydata': JSON.stringify(nodes)
-    };
-
-    console.log(data);
-    fetch('/api/requestshandler/', {
-      method: 'PUT',
-      body: JSON.stringify(data)
-    })
-    .then((response) => response.json())
-    .catch((err) => console.log(err));
-    setSubmitForm(true);
-    console.log(nodes);
+  // Set Language
+  const handleSetItalian = () => {
+    setIsItalian(true);
+  }
+  const handleSetEnglish = () => {
+    setIsItalian(false);
   }
 
   const newValue = isItalian ? "Nuovo Valore" : "New Value";
 
+  // Functions
+
   const addNode = (value) => {
-    const newId = nodes.length + 1;
+    const newId = v4();
     const newNode = { id: newId, category:value, text: "New Value", input: newValue };
     setNodes([...nodes, newNode]);
   };
+  const addNewNode = (value) => {
+    const newId = v4();
+    const newNode = { id: newId, category:value, text: "New Value", input: newValue };
+    setNodes([...nodes, newNode]);
+  };
+
+  const handleSubmit = (e) =>{
+    e.preventDefault();
+    setSubmitForm(true);
+    console.log(nodes);
+  }
 
   const handleDeleteNode = (nodeId) => {
     setNodes(nodes.filter((node) => node.id !== nodeId));
@@ -70,6 +75,17 @@ function Mindmap({isItalian}) {
     )
   }
 
+  // Functions for Creating new Relations
+  const handleTextInputChange = (event) => {
+    setTextInputValue(event.target.value);
+  };
+
+  const handleButtonClick = () => {
+    const button = <button className={styles.addBtn}>{textInputValue}<BsPlus className={styles.plusIcon} /></button>;
+    setCreatedButtons([...createdButtons, button]);
+    setTextInputValue("");
+  };
+
   return (
       <motion.div className={styles.container} transition={{ duration: 1 }} initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }}>
         <p className={styles.curvyTextHeadline}>
@@ -80,39 +96,74 @@ function Mindmap({isItalian}) {
         </p>
         <p className={styles.curvyTextSmall}>ALBERT EINSTEIN</p>
 
-        
         <form className={styles.formContainer} onSubmit={handleSubmit}>
-          <button className={styles.btnSubmit} type="submit">{isItalian ? "creare una mappa mentale" : "create mindmap"}</button>
+          
             {nodes.map((node) => (
-              <form className={styles.mindmapInput} key={node.id} >
+              <div className={styles.mindmapInput} key={node.id} >
                 <input
-                  className={node.category === "opposto" ? styles.mindmapInputOpposite : node.category === "conseguenza" ? styles.mindmapInputSequence : styles.mindmapInputEquivalent}
+                  className={
+                    node.category === "opposto" ? styles.mindmapInputOpposite 
+                    : node.category === "conseguenza" ? styles.mindmapInputSequence 
+                    : node.category === "equivalenza" ? styles.mindmapInputEquivalent 
+                    : styles.mindmapInputNewValue}
                   type="text"
-                  placeholder={node.input}
+                  placeholder={newValue}
                   onChange={(e) => handleInputChange(e, node.id)}
+                  onInvalid={e => e.target.setCustomValidity(messageText)}
+                  onInput={e => e.target.setCustomValidity('')}
+                  required
                 />
                 <button className={styles.removeBtn} onClick={() => handleDeleteNode(node.id)}>
                   <FaTrash />
                 </button>
-              </form>
+              </div>
             ))}
         </form>
 
         <div className={styles.btnContainer}>
-            <button className={styles.addBtnOpposite} onClick={() => addNode("opposto")} >
-            {isItalian ? "OPPOSTO" : "OPPOSITE"}
-              <BsPlus className={styles.plusIcon} />
-            </button>
-            <button className={styles.addBtnSequence} onClick={() => addNode("conseguenza")}>
-            {isItalian ? "CONSEGUENZA" : "CONSEQUENCE"}
-              <BsPlus className={styles.plusIcon} />
-            </button>
-            <button className={styles.addBtnEquivalent} onClick={() => addNode("equivalenza")}>
-            {isItalian ? "EQUIVALENZA" : "EQUIVALENT"}
-              <BsPlus className={styles.plusIcon} />
-            </button>
-          </div>
+          <button className={styles.addBtnOpposite} onClick={() => addNode("opposto")} >
+          {isItalian ? "OPPOSTO" : "OPPOSITE"}
+            <BsPlus className={styles.plusIcon} />
+          </button>
+          <button className={styles.addBtnSequence} onClick={() => addNode("conseguenza")}>
+          {isItalian ? "CONSEGUENZA" : "CONSEQUENCE"}
+            <BsPlus className={styles.plusIcon} />
+          </button>
+          <button className={styles.addBtnEquivalent} onClick={() => addNode("equivalenza")}>
+          {isItalian ? "EQUIVALENZA" : "EQUIVALENT"}
+            <BsPlus className={styles.plusIcon} />
+          </button>
+          {createdButtons.map((btn,index) => {
+              return <button className={styles.btnCustom} onClick={() => addNewNode("")} key={index}>{btn}</button>
+            })}
+          
+        </div>
+
+        <div className={styles.textAndBtnContainer}>
+          <p className={styles.textInsertedValues}>{isItalian ? 'Inserisci le tue Relazioni' : 'Insert your own relations'}</p>
+          <input className={styles.textInput} type="text" value={textInputValue} onChange={handleTextInputChange} />
+          <button className={styles.createBtn} onClick={handleButtonClick}>{isItalian ? 'Crea un pulsante' : 'Create Button'}</button>
+          {/* <div className={styles.createdBtnsContainer}>
+            {createdButtons.map((btn,index) => {
+              return <div onClick={() => addNewNode("")} key={index}>{btn}</div>
+            })}
+          </div> */}
+        </div>
+
+        <button className={styles.btnSubmit} type="submit">
+            {isItalian ? "creare una mappa mentale" : "create mindmap"}
+          </button>
+
         <Image alt="Logo Vast" className={styles.logo} src={logo} width={188} height={64}></Image>
+
+        <div className={styles.flagContainer}>
+          <button className={styles.flagBtn} onClick={handleSetItalian}>
+            <Image src={italy} alt="italian" width={37} height={32} />
+          </button>
+          <button className={styles.flagBtn} onClick={handleSetEnglish}>
+            <Image src={uk} alt="English" width={37} height={32} />
+          </button>
+        </div>
       </motion.div>
     );
 }

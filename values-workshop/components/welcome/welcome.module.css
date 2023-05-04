@@ -4,13 +4,20 @@
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
+    width: min(90%, 900px);
+    margin: 0 auto;
+
+
+    padding: 4rem 2rem;
+
 }
 
 .primaryHeadline{
     color: #36353E;
     font-size: 40px;
-    line-height:1.1;
+    line-height:1;
     font-weight: 700;
+    margin-bottom: 12px;
 }
 .secondaryHeadline{
     color: #81818d;
@@ -34,8 +41,10 @@
 }
 
 .inputContainer label{
-    font-size: 12px;
+    font-size: 14px;
     color: #666;
+    margin-bottom: 8px;
+    font-weight: 700;
 }
 
 .input{

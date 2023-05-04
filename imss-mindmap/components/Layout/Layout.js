@@ -1,34 +1,35 @@
 import React, { useEffect, useRef, useState } from 'react'
+
 import styles from './layout.module.css'
-import italy from '../../public/italy-flag.png'
-import uk from '../../public/eng-flag.png'
 import Image from 'next/image'
+import logo from '../../public/logo.png'
+import italy from '../../public/ita-flag.png'
+import uk from '../../public/uk-flag.png'
+import { createContext } from 'react'
 
-function Layout({children}) {
-  const [isItalian, setIsItalian] = useState(true);
+export const LanguageContext = createContext();
 
-  const handleSetItalian = () => {
-    setIsItalian(true);
-  }
-  const handleSetEnglish = () => {
-    setIsItalian(false);
-  }
+const Layout = ({children}) => {
+    const [isItalian, setIsItalian] = useState(true);
+
+    const handleSetItalian = () => {
+        setIsItalian(true);
+      }
+      const handleSetEnglish = () => {
+        setIsItalian(false);
+      }
   return (
-    <section className={styles.layoutContainer} >
-      
-      <div className={styles.flagContainer}>
+    <LanguageContext.Provider value={isItalian}>
+        <div className={styles.flagContainer}>
           <button className={styles.flagBtn} onClick={handleSetItalian}>
-//             <Image src={italy} alt="italian" width={37} height={33} />
-            <span style={{color:"#333333", fontSize:"24px"}}>IT</span>
+            <Image src={italy} alt="italian" width={37} height={31} />
           </button>
           <button className={styles.flagBtn} onClick={handleSetEnglish}>
-//             <Image src={uk} alt="English" width={37} height={33} />
-            <span style={{color:"#333333", fontSize:"24px"}}>EN</span>
+            <Image src={uk} alt="English" width={37} height={31} />
           </button>
         </div>
-
         {children}
-    </section>
+    </LanguageContext.Provider>
   )
 }
 

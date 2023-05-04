@@ -1,9 +1,7 @@
 .btn{
     padding: 12px 40px;
-    width: clamp(200px, 70vw, 350px);
-    /* width: 150px;
-    max-width: 350px; */
     border-radius: 5px;
+    width: min(100%, 280px);
     border: none;
     outline: none;
     color: #fff;
@@ -16,4 +14,10 @@
     margin-bottom: 32px;
     text-transform: uppercase;
     letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: all .25s ease-in-out;
+}
+
+.btn:hover{
+    background-color: #333!important;
 }
