@@ -10,23 +10,44 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+import mimetypes
+mimetypes.add_type("application/javascript", ".js", True)
+
+import environ
+import secrets
+# https://django-environ.readthedocs.io/en/latest/#django-environ
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, True),
+    ALLOWED_HOSTS=(list, ["activities_backend.vast-project.eu", "*"]),
+    DEFAULT_FROM_EMAIL=(str, ''),
+    DEFAULT_FROM_EMAIL_NO_REPLY=(str, ''),
+    LANGUAGE_CODE=(str, 'en-us'),
+    TIME_ZONE=(str, 'Europe/Athens'),
+    SECRET_KEY=(str, secrets.token_urlsafe(64)),
+    DATABASE_URL=(str, ''),
+    DJANGO_MEDIA_DATA_LAKE_BASE_DIR=(str, ""),
+    DJANGO_SECRET_KEY=(str, "django-insecure-2q7=d0y^nq-tbez6b_#%i8#c&gtqygkeq&4-38u"),
+)
+# reading .env file
+environ.Env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-2q7=d0y^nq-tbez6b_#%i8#c&gtqygkeq&4-38u*e@0!dqan2('
+SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
 # Application definition
 
@@ -37,6 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'qrcode',
     'rest_framework',
     'activity_data',
 ]
@@ -74,6 +96,10 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+
+#DATABASES = {
+#    'default': env.db()
+#}
 
 DATABASES = {
     'default': {
@@ -123,3 +149,10 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#CSRF settings
+CSRF_TRUSTED_ORIGINS = ['https://activities_backend.vast-project.eu','https://*.127.0.0.1']
+
+#MEDIA FILES SETTINGS
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media_roo")

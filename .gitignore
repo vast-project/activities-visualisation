@@ -17,3 +17,4 @@ node_modules
 *.swp
 out
 imss-mindmap/mysql/
+docker/.env
