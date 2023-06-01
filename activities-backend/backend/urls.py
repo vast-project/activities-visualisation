@@ -21,13 +21,32 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 router = routers.DefaultRouter()
-router.register(r'users',  views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
+router.register(r'organisation_types',   views.OrganisationTypeViewSet)
+router.register(r'classes',              views.ClassViewSet)
+router.register(r'organisations',        views.OrganisationViewSet)
+router.register(r'events',               views.EventViewSet)
+router.register(r'stimuli',              views.StimulusViewSet)
+router.register(r'products',             views.ProductViewSet)
+router.register(r'contexts',             views.ContextViewSet)
+router.register(r'languages',            views.LanguageViewSet)
+router.register(r'ages',                 views.AgeViewSet)
+router.register(r'genders',              views.GenderViewSet)
+router.register(r'educations',           views.EducationViewSet)
+router.register(r'nationalities',        views.NationalityViewSet)
+router.register(r'natures',              views.NatureViewSet)
+router.register(r'activity_steps',       views.ActivityStepViewSet)
+router.register(r'activities',           views.ActivityViewSet)
+router.register(r'visitors',             views.VisitorViewSet)
+router.register(r'visitor_groups',       views.VisitorGroupViewSet)
+router.register(r'users',                views.UserViewSet)
+router.register(r'groups',               views.GroupViewSet)
 
 urlpatterns = [
     path('admin/',    admin.site.urls),
+    path('accounts/', include('allauth.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/',      include('activity_data.urls')),
+    path('rest/',     include(router.urls), name="rest"),
     path('', include(router.urls))
 ]
 

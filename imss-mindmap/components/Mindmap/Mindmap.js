@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useRouter } from 'next/router'
 import mindmap from '../../public/mindmap.png'
 import mappa from '../../public/mappa-mentale.png'
 import logo from '../../public/logo.png'
@@ -13,11 +14,44 @@ import {BsPlus} from 'react-icons/bs';
 import italy from '../../public/ita-flag.png'
 import uk from '../../public/uk-flag.png'
 
+async function saveproduct(data) { 
+  try {
+    const response = await fetch('https://activities_backend.vast-project.eu/api/saveproduct', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (!response.ok) {
+       console.log(response)
+      throw new Error(`Error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result;
+  }
+  catch (err) {
+    console.log(err);
+  }
+}
+
 function Mindmap({isItalian,setIsItalian}) {
   const [submitForm, setSubmitForm] = useState(false);
   const [textInputValue, setTextInputValue] = useState("");
   const [createdButtons, setCreatedButtons] = useState([]);
   let messageText = isItalian ? 'Si prega di compilare questo campo' : 'Please Fill Out This Field';
+  var router = useRouter();
+  var vstepid = router.query["activitystepid"];
+    var jsondata = {
+      name: null,
+      name_local: null,
+      created_by: 2,
+      description: null,
+      description_local: null,
+      activity_step:vstepid,
+      visitor: null,
+      data: null
+    };
 
   const inputData = [
     { id: 1, category:"opposto", text: "Opposites", input: isItalian ? "OPPOSTO" : "OPPOSITE"},
@@ -50,9 +84,25 @@ function Mindmap({isItalian,setIsItalian}) {
   };
 
   const handleSubmit = (e) =>{
+    jsondata={
+      name: "IMSS Web App Product",
+      name_local: null,
+      created_by: 2,
+      description: null,
+      description_local: null,
+      activity_step:vstepid,
+      visitor: 2,
+      data: JSON.stringify(formData)
+    }
+    console.log("JSON DATA")
+    console.log(JSON.stringify(jsondata))
+    saveproduct(jsondata)
+    
     e.preventDefault();
     setSubmitForm(true);
     console.log(nodes);
+    e.target.reset()
+
   }
 
   const handleDeleteNode = (nodeId) => {

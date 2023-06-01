@@ -25,7 +25,7 @@ import secrets
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, True),
-    ALLOWED_HOSTS=(list, ["activities_backend.vast-project.eu", "*"]),
+    ALLOWED_HOSTS=(list, ['activities_backend.vast-project.eu', '*']),
     DEFAULT_FROM_EMAIL=(str, ''),
     DEFAULT_FROM_EMAIL_NO_REPLY=(str, ''),
     LANGUAGE_CODE=(str, 'en-us'),
@@ -61,6 +61,16 @@ INSTALLED_APPS = [
     'qrcode',
     'rest_framework',
     'activity_data',
+    'corsheaders',
+
+    # django-allauth
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    #'allauth.socialaccount.providers.google', # for Google OAuth 2.0
+    'vast_auth2',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +81,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -78,7 +89,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -93,20 +104,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'backend.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-#DATABASES = {
-#    'default': env.db()
-#}
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if len(env.db()) > 0:
+    DATABASES = {
+        'default': env.db()
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -127,23 +138,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = env('LANGUAGE_CODE')
+TIME_ZONE = env('TIME_ZONE')
 USE_I18N = True
-
+USE_L10N = True
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -156,3 +164,76 @@ CSRF_TRUSTED_ORIGINS = ['https://activities_backend.vast-project.eu','https://*.
 #MEDIA FILES SETTINGS
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media_roo")
+
+#CORS ALLOWED ORIGINS
+CORS_ORIGIN_ALLOW_ALL=True
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.DjangoModelPermissions",
+    ],
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "logs/debug.log",
+        },
+    },
+    "root": {
+        "handlers": ["console", "file"],
+        "level": "DEBUG" if DEBUG else "INFO",
+        "propagate": True,
+    },
+}
+
+##
+## Allauth
+##
+
+## https://dev.to/mdrhmn/django-google-authentication-using-django-allauth-18f8
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
+]
+
+SITE_ID = 3
+LOGIN_REDIRECT_URL = '/'
+
+# Additional configuration settings
+SOCIALACCOUNT_QUERY_EMAIL = True
+ACCOUNT_LOGOUT_ON_GET= True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "none"
+#ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+#SOCIALACCOUNT_ADAPTER = 'vast_auth2.adapter.VASTAuth2SocialAccountAdapter'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'vastauth2': {
+        'AUTH_URL': 'https://login.vast-project.eu/openam/oauth2/realms/root/realms/VAST_Tools',
+        'BASE_URL': 'https://login.vast-project.eu/openam',
+    },
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+

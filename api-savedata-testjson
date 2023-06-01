@@ -1,3 +1,6 @@
+etc/httpd/conf.d/my_vast_platform.conf
+https://imss_activity.vast-project.eu/?school=Test%20Visitor%20Organisation%201&museum=Test%20Host%20Organisation%201&edulevel=&age=%7D
+
 URL: https://activities_backend.vast-project.eu/api/saveproduct
 
 {
