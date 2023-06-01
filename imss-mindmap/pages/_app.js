@@ -1,3 +1,4 @@
+import Layout from '@/components/Layout/Layout'
 import '@/styles/globals.css'
 import localFont from '@next/font/local'
 const myFont = localFont({src: '../fonts/Curvy-Thins.ttf'})

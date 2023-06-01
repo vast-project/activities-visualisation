@@ -19,3 +19,4 @@ out
 imss-mindmap/mysql/
 docker/.env
 activities-backend/vast_rdf/.env
+data/
