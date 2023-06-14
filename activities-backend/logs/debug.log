@@ -18058,3 +18058,5 @@ RDFStoreVAST(): save(): class: Predicate, obj: concequence
 RDFStoreVAST(): save(): method: <bound method RDFStoreVAST.Predicate of <vast_rdf.vast_repository.RDFStoreVAST object at 0x7f49b6c03f50>>
 RDFStoreVAST(): save(): class: Statement, obj: MindMap.1.Default Activity Step.value 1.equivalent.value 2
 RDFStoreVAST(): save(): method: <bound method RDFStoreVAST.Statement of <vast_rdf.vast_repository.RDFStoreVAST object at 0x7f49b5e4c390>>
+/var/vast/platform/activities-visualisation/activities-backend/activity_data/admin.py changed, reloading.
+Watching for file changes with StatReloader

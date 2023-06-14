@@ -8,3 +8,4 @@ pillow
 qrcode
 django-cors-headers
 rdflib
+python-dotenv
