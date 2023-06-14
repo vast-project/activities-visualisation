@@ -3,14 +3,14 @@ from rest_framework import serializers
 
 from activity_data.models import *
 
+class LanguageSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Language
+        fields = '__all__'
+
 class OrganisationTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = OrganisationType
-        fields = '__all__'
-
-class ClassSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Class
         fields = '__all__'
 
 class OrganisationSerializer(serializers.HyperlinkedModelSerializer):
@@ -23,24 +23,34 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         model = Event
         fields = '__all__'
 
-class StimulusSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Stimulus
-        fields = '__all__'
-
-class ProductSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Product
-        fields = '__all__'
-
 class ContextSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Context
         fields = '__all__'
 
-class LanguageSerializer(serializers.HyperlinkedModelSerializer):
+class NatureSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Language
+        model = Nature
+        fields = '__all__'
+
+class EducationSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Education
+        fields = '__all__'
+
+class ActivitySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Activity
+        fields = '__all__'
+
+class StimulusSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Stimulus
+        fields = '__all__'
+
+class ActivityStepSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ActivityStep
         fields = '__all__'
 
 class AgeSerializer(serializers.HyperlinkedModelSerializer):
@@ -53,34 +63,14 @@ class GenderSerializer(serializers.HyperlinkedModelSerializer):
         model = Gender
         fields = '__all__'
 
-class EducationSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Education
-        fields = '__all__'
-
 class NationalitySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Nationality
         fields = '__all__'
 
-class NatureSerializer(serializers.HyperlinkedModelSerializer):
+class ClassSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Nature
-        fields = '__all__'
-
-class ActivityStepSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = ActivityStep
-        fields = '__all__'
-
-class ActivitySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Activity
-        fields = '__all__'
-
-class VisitorSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Visitor
+        model = Class
         fields = '__all__'
 
 class VisitorGroupSerializer(serializers.HyperlinkedModelSerializer):
@@ -88,11 +78,40 @@ class VisitorGroupSerializer(serializers.HyperlinkedModelSerializer):
         model = VisitorGroup
         fields = '__all__'
 
+class VisitorSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Visitor
+        fields = '__all__'
+
+class ProductTypeSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProductType
+        fields = '__all__'
+
+class ProductSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+class ConceptSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Concept
+        fields = '__all__' 
+
+class PredicateSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Predicate
+        fields = '__all__' 
+  
+class StatementSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Statement
+        fields = '__all__' 
+          
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ['url', 'username', 'email', 'groups']
-
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

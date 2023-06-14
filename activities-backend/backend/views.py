@@ -4,20 +4,20 @@ from rest_framework import permissions
 from backend.serializers import *
 from activity_data.models import *
 
+class LanguageViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Language objects to be viewed or edited.
+    """
+    queryset = Language.objects.all()
+    serializer_class = LanguageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
 class OrganisationTypeViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows OrganisationTypes to be viewed or edited.
     """
     queryset = OrganisationType.objects.all()
     serializer_class = OrganisationTypeSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-class ClassViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows Class objects to be viewed or edited.
-    """
-    queryset = Class.objects.all()
-    serializer_class = ClassSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 class OrganisationViewSet(viewsets.ModelViewSet):
@@ -36,22 +36,6 @@ class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class StimulusViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows Stimulus objects to be viewed or edited.
-    """
-    queryset = Stimulus.objects.all()
-    serializer_class = StimulusSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-class ProductViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows Product objects to be viewed or edited.
-    """
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
 class ContextViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Context objects to be viewed or edited.
@@ -60,12 +44,44 @@ class ContextViewSet(viewsets.ModelViewSet):
     serializer_class = ContextSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class LanguageViewSet(viewsets.ModelViewSet):
+class NatureViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows Language objects to be viewed or edited.
+    API endpoint that allows Nature objects to be viewed or edited.
     """
-    queryset = Language.objects.all()
-    serializer_class = LanguageSerializer
+    queryset = Nature.objects.all()
+    serializer_class = NatureSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class EducationViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Education objects to be viewed or edited.
+    """
+    queryset = Education.objects.all()
+    serializer_class = EducationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class ActivityViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Activity objects to be viewed or edited.
+    """
+    queryset = Activity.objects.all()
+    serializer_class = ActivitySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class StimulusViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Stimulus objects to be viewed or edited.
+    """
+    queryset = Stimulus.objects.all()
+    serializer_class = StimulusSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class ActivityStepViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows ActivityStep objects to be viewed or edited.
+    """
+    queryset = ActivityStep.objects.all()
+    serializer_class = ActivityStepSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 class AgeViewSet(viewsets.ModelViewSet):
@@ -84,14 +100,6 @@ class GenderViewSet(viewsets.ModelViewSet):
     serializer_class = GenderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class EducationViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows Education objects to be viewed or edited.
-    """
-    queryset = Education.objects.all()
-    serializer_class = EducationSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
 class NationalityViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Nationality objects to be viewed or edited.
@@ -100,28 +108,20 @@ class NationalityViewSet(viewsets.ModelViewSet):
     serializer_class = NationalitySerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class NatureViewSet(viewsets.ModelViewSet):
+class ClassViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows Nature objects to be viewed or edited.
+    API endpoint that allows Class objects to be viewed or edited.
     """
-    queryset = Nature.objects.all()
-    serializer_class = NatureSerializer
+    queryset = Class.objects.all()
+    serializer_class = ClassSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class ActivityStepViewSet(viewsets.ModelViewSet):
+class VisitorGroupViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows ActivityStep objects to be viewed or edited.
+    API endpoint that allows VisitorGroup objects to be viewed or edited.
     """
-    queryset = ActivityStep.objects.all()
-    serializer_class = ActivityStepSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-class ActivityViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows Activity objects to be viewed or edited.
-    """
-    queryset = Activity.objects.all()
-    serializer_class = ActivitySerializer
+    queryset = VisitorGroup.objects.all()
+    serializer_class = VisitorGroupSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 class VisitorViewSet(viewsets.ModelViewSet):
@@ -132,12 +132,44 @@ class VisitorViewSet(viewsets.ModelViewSet):
     serializer_class = VisitorSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class VisitorGroupViewSet(viewsets.ModelViewSet):
+class ProductTypeViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows VisitorGroup objects to be viewed or edited.
+    API endpoint that allows ProductType objects to be viewed or edited.
     """
-    queryset = VisitorGroup.objects.all()
-    serializer_class = VisitorGroupSerializer
+    queryset = ProductType.objects.all()
+    serializer_class = ProductTypeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class ProductViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Product objects to be viewed or edited.
+    """
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class ConceptViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Concept objects to be viewed or edited.
+    """
+    queryset = Concept.objects.all()
+    serializer_class = ConceptSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class PredicateViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Predicate objects to be viewed or edited.
+    """
+    queryset = Predicate.objects.all()
+    serializer_class = PredicateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+class StatementViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Context objects to be viewed or edited.
+    """
+    queryset = Statement.objects.all()
+    serializer_class = StatementSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 class UserViewSet(viewsets.ModelViewSet):

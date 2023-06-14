@@ -30,6 +30,7 @@ class ProductModelTests(TestCase):
             r = client.get(location)
             print("GET:", location, "Response:", response.status_code, "Content:", response.content)
             print()
+        self.assertIs(response.status_code < 400, True)
         return response
 
     def login(self):
@@ -200,10 +201,51 @@ class ProductModelTests(TestCase):
             "age":  "/ages/1/",
             "gender": "/genders/1/",
             "date_of_visit": "2023-01-01T09:45",
+            "nationality": "/nationalities/2/",
             "mother_language": "/languages/3/",
             "activity": "/activities/1/",
             "group": "/visitor_groups/1/",
             "school": "1st School in Florence",
+        })
+
+    def setUp_product_type_add(self):
+        response = self.post("/rest/product_types/", data={
+            "name": "MindMap",
+        })
+
+    def setUp_product_add(self):
+        response = self.post("/rest/products/", data={
+            "product_type": "/product_types/1/",
+            "visitor": "/visitors/1/",
+            "activity_step": "/activity_steps/1/",
+        })
+
+    def setUp_concept_add(self):
+        response = self.post("/rest/concepts/", data={
+            "name": "value 1",
+            "name_local": "italian value 1",
+            "language_local": "/languages/3/", # Italian
+        })
+        response = self.post("/rest/concepts/", data={
+            "name": "value 2",
+            "name_local": "italian value 2",
+            "language_local": "/languages/3/", # Italian
+        })
+
+    def setUp_predicate_add(self):
+        response = self.post("/rest/predicates/", data={
+            "name": "equivalent",
+        })
+        response = self.post("/rest/predicates/", data={
+            "name": "concequence",
+        })
+
+    def setUp_statement_add(self):
+        response = self.post("/rest/statements/", data={
+            "product": "/products/1/",
+            "subject": "/concepts/1/",
+            "predicate": "/predicates/1/",
+            "object": "/concepts/2/",
         })
 
     def test_1(self):
@@ -222,6 +264,12 @@ class ProductModelTests(TestCase):
         self.setUp_nationality_add()
         self.setUp_visitor_group_add()
         self.setUp_visitor_add()
+        self.setUp_product_type_add()
+        self.setUp_product_add()
+        self.setUp_concept_add()
+        self.setUp_predicate_add()
+        self.setUp_statement_add()
+
 
 #    def test_20_create_new_product(self):
 #        response = client.post("/api/products", content_type="application/json", data={

@@ -40,7 +40,7 @@ class VASTObject(AutoUpdateTimeFields):
     created           = models.DateTimeField(auto_now_add=True, null=True)
     updated           = models.DateTimeField(auto_now=True, null=True)
     created_by        = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=True, on_delete=models.DO_NOTHING, default=1)
-    
+
     def __str__(self):
         return f'{self.name}'
 
@@ -60,7 +60,7 @@ class Organisation(VASTObject):
     type              = models.ForeignKey('OrganisationType', on_delete=models.DO_NOTHING)
     subtype           = models.ForeignKey('OrganisationType', on_delete=models.DO_NOTHING, related_name='subtype', null=True, blank=True)
     location          = models.CharField(max_length=255, default=None)
-    is_visitor        = models.CharField(max_length=3, choices=[('Yes','Yes'),('No','No')], default=None)
+    is_visitor        = models.CharField(max_length=3, choices=[('Yes','Yes'),('No','No')], default='Yes')
 
 class Class(VASTObject):
     pass
@@ -68,18 +68,6 @@ class Class(VASTObject):
 ##Activities - Data
 class Event(VASTObject):
     host_organisation = models.ForeignKey('Organisation', on_delete=models.DO_NOTHING, default=None)
-
-class Stimulus(VASTObject):
-    uriref            = models.CharField(max_length=512, default=None, null=True, blank=True)
-    stimulus_type     = models.CharField(max_length=16, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Video','Video'),('Tool','Tool')], default=None)
-
-    class Meta:
-        verbose_name_plural = 'Stimuli'
-
-class Product(VASTObject):
-    activity_step     = models.ForeignKey('ActivityStep', on_delete=models.DO_NOTHING, default=None)
-    visitor           = models.ForeignKey('Visitor', on_delete=models.DO_NOTHING, default=None)
-    data              = models.CharField(max_length=255, default=None)
 
 class Context(VASTObject):
     pass
@@ -106,43 +94,81 @@ class Nationality(VASTObject):
 class Nature(VASTObject):
     pass
 
-class ActivityStep(VASTObject):
-    activity          = models.ForeignKey('Activity',     on_delete=models.DO_NOTHING, default=None)
-    stimulus          = models.ForeignKey('Stimulus',     on_delete=models.DO_NOTHING, default=None)
-
 class Activity(VASTObject):
-    event             = models.ForeignKey('Event',     on_delete=models.DO_NOTHING)
+    event             = models.ForeignKey('Event',        on_delete=models.DO_NOTHING)
+    date              = models.DateTimeField(default=None, null=True, blank=True)
     date_from         = models.DateTimeField(default=None, null=True, blank=True)
     date_to           = models.DateTimeField(default=None, null=True, blank=True)
     context           = models.ForeignKey('Context',      on_delete=models.DO_NOTHING)
     language          = models.ForeignKey('Language',     on_delete=models.DO_NOTHING, related_name='activity_language')
     nature            = models.ForeignKey('Nature',       on_delete=models.DO_NOTHING)
-    education         = models.ForeignKey('Education', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    
+    education         = models.ForeignKey('Education',    on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+
     class Meta:
         verbose_name_plural = 'Activities'
-   
+
+class Stimulus(VASTObject):
+    uriref            = models.CharField(max_length=512, default=None, null=True, blank=True)
+    stimulus_type     = models.CharField(max_length=16, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool')])
+
+    class Meta:
+        verbose_name_plural = 'Stimuli'
+
+class ActivityStep(VASTObject):
+    activity          = models.ForeignKey('Activity',     on_delete=models.DO_NOTHING, default=None)
+    stimulus          = models.ForeignKey('Stimulus',     on_delete=models.DO_NOTHING, default=None)
+
 # Visitors...
-class Visitor(VASTObject):
-    userid            = models.CharField(max_length=255, default=None, null=True, blank=True)
-    age               = models.ForeignKey('Age', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    gender            = models.ForeignKey('Gender', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    date_of_visit     = models.DateTimeField(default=None, null=True, blank=True)
-    education         = models.ForeignKey('Education', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    nationality       = models.ForeignKey('Nationality', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    mother_language   = models.ForeignKey('Language', on_delete=models.DO_NOTHING, default=None, null=True, blank=True, related_name='mother_language')
-    activity          = models.ForeignKey('Activity', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    group             = models.ForeignKey('VisitorGroup', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    school            = models.CharField(max_length=255, default=None, null=True, blank=True)
-   
 class VisitorGroup(VASTObject):
     composition          = models.IntegerField(default=None, null=True, blank=True)
-    event                = models.ForeignKey('Event', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    education            = models.ForeignKey('Education', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    nationality          = models.ForeignKey('Nationality', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    mother_language      = models.ForeignKey('Language', on_delete=models.DO_NOTHING, default=None, null=True, blank=True, related_name='visitor_group_language')
+    event                = models.ForeignKey('Event',        on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    education            = models.ForeignKey('Education',    on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    nationality          = models.ForeignKey('Nationality',  on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    mother_language      = models.ForeignKey('Language',     on_delete=models.DO_NOTHING, default=None, null=True, blank=True, related_name='visitor_group_language')
     visitor_organisation = models.ForeignKey('Organisation', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    age                  = models.ForeignKey('Age', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    age                  = models.ForeignKey('Age',          on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+
+class Visitor(VASTObject):
+    userid            = models.CharField(max_length=255,  default=None, null=True, blank=True)
+    age               = models.ForeignKey('Age',          on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    gender            = models.ForeignKey('Gender',       on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    date_of_visit     = models.DateTimeField(default=None, null=True, blank=True)
+    education         = models.ForeignKey('Education',    on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    nationality       = models.ForeignKey('Nationality',  on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    mother_language   = models.ForeignKey('Language',     on_delete=models.DO_NOTHING, default=None, null=True, blank=True, related_name='mother_language')
+    activity          = models.ForeignKey('Activity',     on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    group             = models.ForeignKey('VisitorGroup', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    school            = models.CharField(max_length=255,  default=None, null=True, blank=True)
+
+class ProductType(VASTObject):
+    pass
+
+class Product(VASTObject):
+    product_type      = models.ForeignKey('ProductType',  on_delete=models.DO_NOTHING, default=None)
+    visitor           = models.ForeignKey('Visitor',      on_delete=models.DO_NOTHING, default=None)
+    activity_step     = models.ForeignKey('ActivityStep', on_delete=models.DO_NOTHING, default=None)
+
+    # We must generate a "unique" name
+    def save(self, *args, **kwargs):
+        self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
+        super().save(*args, **kwargs)
+
+class Concept(VASTObject):
+    pass
+
+class Predicate(VASTObject):
+    pass
+
+class Statement(VASTObject):
+    product           = models.ForeignKey('Product',   on_delete=models.DO_NOTHING, default=None)
+    subject           = models.ForeignKey('Concept',   on_delete=models.DO_NOTHING, default=None, related_name='subject')
+    predicate         = models.ForeignKey('Predicate', on_delete=models.DO_NOTHING, default=None)
+    object            = models.ForeignKey('Concept',   on_delete=models.DO_NOTHING, default=None, related_name='object')
+     # We must generate a "unique" name
+    def save(self, *args, **kwargs):
+        self.name = ".".join([self.product.name, self.subject.name, self.predicate.name, self.object.name])
+        super().save(*args, **kwargs)
+
 
 class VisitorGroupQRCode(VASTObject):
     event             = models.ForeignKey('Event', on_delete=models.DO_NOTHING, default=None)
@@ -151,7 +177,7 @@ class VisitorGroupQRCode(VASTObject):
     visitor_group     = models.ForeignKey('VisitorGroup',     on_delete=models.DO_NOTHING, default=None)
     url               = models.CharField(max_length=255, default=None)
     qr_code           = models.ImageField(upload_to='qr_codes', default=None, null=True, blank=True)
-    
+
     def save(self, *args, **kwargs):
         vgroup = self.visitor_group
         vgroupid = vgroup.id
@@ -203,4 +229,4 @@ class VisitorGroupQRCode(VASTObject):
         self.qr_code.save(fname, File(buffer), save=False)
         canvas.close()
         super().save(*args, **kwargs)
-      
+

@@ -263,6 +263,35 @@ class ContextAdmin(admin.ModelAdmin):
             return alldata.filter(pk__in=qslist)
         else:
             return alldata
+ 
+class StatementAdmin(admin.ModelAdmin):
+    def get_changeform_initial_data(self, request):
+        get_data = super(StatementAdmin, self).get_changeform_initial_data(request)
+        get_data['created_by'] = request.user.pk
+        return get_data
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return ["created_by"]
+        else:
+            return []
+ 
+    def get_queryset(self, request): 
+        # For Django < 1.6, override queryset instead of get_queryset
+        alldata = super(StatementAdmin, self).get_queryset(request) 
+        requsergroups = request.user.groups.all()
+        if not request.user.is_superuser:
+            qslist = []
+            for group in requsergroups:
+                users = User.objects.filter(groups__name=group)
+                for user in users:
+                    userdata=alldata.filter(created_by=user)
+                    for dat in userdata:
+                        qslist.append(dat.id)
+            qslist = list(dict.fromkeys(qslist))
+            return alldata.filter(pk__in=qslist)
+        else:
+            return alldata
       
 class LanguageAdmin(admin.ModelAdmin):
     def get_changeform_initial_data(self, request):
@@ -447,6 +476,7 @@ admin.site.register(Event, EventAdmin)
 admin.site.register(Stimulus,StimulusAdmin)
 admin.site.register(Product,ProductAdmin)
 admin.site.register(Context,ContextAdmin)
+admin.site.register(Statement,StatementAdmin)
 admin.site.register(Language,LanguageAdmin)
 admin.site.register(Age,AgeAdmin)
 admin.site.register(Gender,GenderAdmin)
