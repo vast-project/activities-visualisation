@@ -18060,3 +18060,11 @@ RDFStoreVAST(): save(): class: Statement, obj: MindMap.1.Default Activity Step.v
 RDFStoreVAST(): save(): method: <bound method RDFStoreVAST.Statement of <vast_rdf.vast_repository.RDFStoreVAST object at 0x7f49b5e4c390>>
 /var/vast/platform/activities-visualisation/activities-backend/activity_data/admin.py changed, reloading.
 Watching for file changes with StatReloader
+/var/vast/platform/activities-visualisation/activities-backend/activity_data/models.py changed, reloading.
+Watching for file changes with StatReloader
+/var/vast/platform/activities-visualisation/activities-backend/activity_data/models.py changed, reloading.
+Watching for file changes with StatReloader
+/var/vast/platform/activities-visualisation/activities-backend/activity_data/models.py changed, reloading.
+Watching for file changes with StatReloader
+/var/vast/platform/activities-visualisation/activities-backend/activity_data/models.py changed, reloading.
+Watching for file changes with StatReloader

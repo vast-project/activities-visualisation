@@ -32,7 +32,7 @@ class AutoUpdateTimeFields(models.Model):
 class VASTObject(AutoUpdateTimeFields):
     uuid              = models.UUIDField(default = uuid.uuid4, editable = False)
     name              = models.CharField(max_length=255, default=None)
-    name_md5          = models.CharField(max_length=16,  default=None, null=True, blank=True, editable=False)
+    name_md5          = models.CharField(max_length=64,  default=None, null=True, blank=True, editable=False)
     description       = models.CharField(max_length=255, default=None, null=True, blank=True)
     name_local        = models.CharField(max_length=255, default=None, null=True, blank=True)
     description_local = models.CharField(max_length=255, default=None, null=True, blank=True)
