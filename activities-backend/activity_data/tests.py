@@ -1,14 +1,11 @@
 from django.test import TestCase
 
 from django.test.utils import setup_test_environment
-#setup_test_environment()
 
 from django.contrib.auth.models import User
-#my_admin = User.objects.create_superuser("admin", password="admin123")
 
 from django.test import Client
 client = Client()
-#client.login(username="admin", password="praxis")
 
 # import logging
 # logger = logging.getLogger("RDFStoreVAST")
@@ -269,28 +266,3 @@ class ProductModelTests(TestCase):
         self.setUp_concept_add()
         self.setUp_predicate_add()
         self.setUp_statement_add()
-
-
-#    def test_20_create_new_product(self):
-#        response = client.post("/api/products", content_type="application/json", data={
-#            "name":              "IMSS Web App Product",
-#            "name_local":        None,
-#            "created_by":        2,
-#            "description":       None,
-#            "description_local": None,
-#            "activity_step":     2,
-#            "date" : "2023-02-24 20:50:00",
-#            "visitor": 2,
-#            "data": {"consequence1": "wd",
-#                     "consequence2": "wewd",
-#                     "consequence3": "dd",
-#                     "opposite1":    "ds",
-#                     "opposite2":    "s",
-#                     "opposite3":    "s",
-#                     "equivalent1":  "v",
-#                     "equivalent2":  "v",
-#                     "equivalent3":  "v",
-#                     }
-#            }
-#        )
-#        print("--->", response.status_code)

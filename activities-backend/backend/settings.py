@@ -25,15 +25,14 @@ import secrets
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, True),
-    ALLOWED_HOSTS=(list, ['activities_backend.vast-project.eu', '*']),
+    ALLOWED_HOSTS=(list, ['.vast-project.eu', '127.0.0.1', 'localhost']),
     DEFAULT_FROM_EMAIL=(str, ''),
     DEFAULT_FROM_EMAIL_NO_REPLY=(str, ''),
     LANGUAGE_CODE=(str, 'en-us'),
     TIME_ZONE=(str, 'Europe/Athens'),
-    SECRET_KEY=(str, secrets.token_urlsafe(64)),
     DATABASE_URL=(str, ''),
     DJANGO_MEDIA_DATA_LAKE_BASE_DIR=(str, ""),
-    DJANGO_SECRET_KEY=(str, "django-insecure-2q7=d0y^nq-tbez6b_#%i8#c&gtqygkeq&4-38u"),
+    DJANGO_SECRET_KEY=(str, secrets.token_urlsafe(64)),
 )
 # reading .env file
 environ.Env.read_env()
@@ -48,6 +47,10 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+
+# Setup support for proxy headers
+USE_X_FORWARDED_HOST = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
@@ -159,7 +162,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #CSRF settings
-CSRF_TRUSTED_ORIGINS = ['https://activities_backend.vast-project.eu','https://*.127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://*.vast-project.eu','https://*.127.0.0.1']
 
 #MEDIA FILES SETTINGS
 MEDIA_URL = '/media/'

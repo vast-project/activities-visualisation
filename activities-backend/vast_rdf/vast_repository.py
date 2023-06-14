@@ -394,4 +394,3 @@ class RDFStoreVAST:
         robj.predicate  = self.getURIRef(self.vast.vastPredicate, obj.predicate)
         robj.object     = self.getURIRef(self.vast.vastConcept,   obj.object)
         robj.add(self.g)
-            
