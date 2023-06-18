@@ -1,11 +1,13 @@
+psycopg[binary,pool]
 Django
 djangorestframework
 django-allauth
 django-extensions
 django-environ
-psycopg
+django-filter
+django-cors-headers
 pillow
 qrcode
-django-cors-headers
 rdflib
 python-dotenv
+requests

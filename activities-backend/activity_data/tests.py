@@ -62,7 +62,7 @@ class ProductModelTests(TestCase):
             "description": "An organisation that organises an event",
             "name_local": "Host Organisation",
             "description_local": "An organisation that organises an event",
-            "language_local": "/languages/1/",  # English
+            "language_local": "/rest/languages/1/",  # English
         })
         response = self.post("/rest/organisation_types/", data={
             "name": "School",
@@ -75,15 +75,15 @@ class ProductModelTests(TestCase):
             "description": "Museo Galileo - Instituto e Museo di Storia della Scienza",
             "name_local": "Museo Galileo",
             "description_local": "Museo Galileo - Instituto e Museo di Storia della Scienza",
-            "language_local": "/languages/3/",  # Italian
-            "type": "/organisation_types/1/",   # Host Organisation
+            "language_local": "/rest/languages/3/",  # Italian
+            "type": "/rest/organisation_types/1/",   # Host Organisation
             "location": "Florence",
             "is_visitor": "No"
         })
         response = self.post("/rest/organisations/", data={
             "name": "School in Florence",
             "description": "A school from Florence",
-            "type": "/organisation_types/2/",   # School
+            "type": "/rest/organisation_types/2/",   # School
             "location": "Florence",
             "is_visitor": "Yes"
         })
@@ -94,8 +94,8 @@ class ProductModelTests(TestCase):
             "description": "An event by Museo Galileo",
             "name_local": "Museo Galileo Event",
             "description_local": "An event by Museo Galileo in Italian",
-            "language_local": "/languages/3/",          # Italian
-            "host_organisation": "/organisations/1/",   # Museo Galileo
+            "language_local": "/rest/languages/3/",          # Italian
+            "host_organisation": "/rest/organisations/1/",   # Museo Galileo
         })
 
     def setUp_context_add(self):
@@ -104,7 +104,7 @@ class ProductModelTests(TestCase):
             "description": "A context for running activities in Museo Galileo",
             "name_local": "Museo Galileo VAST Participation",
             "description_local": "A context for running activities in Museo Galileo in Italian",
-            "language_local": "/languages/3/" # Italian
+            "language_local": "/rest/languages/3/" # Italian
         })
 
     def setUp_nature_add(self):
@@ -122,7 +122,7 @@ class ProductModelTests(TestCase):
         response = self.post("/rest/educations/", data={
             "name": "Secondary School",
             "name_local": "Scuola secondaria di secondo grado",
-            "language_local": "/languages/3/" # Italian
+            "language_local": "/rest/languages/3/" # Italian
         })
 
     def setUp_activity_add(self):
@@ -131,12 +131,12 @@ class ProductModelTests(TestCase):
             "description": "A default activity in Museo Galileo",
             "name_local": "Museo Galileo Default Activity",
             "description_local": "A default activity in Museo Galileo in Italian",
-            "language_local": "/languages/3/", # Italian
-            "event": "/events/1/",             # Museo Galileo Event
-            "context": "/contexts/1/",         # Museo Galileo VAST Participation
-            "language": "/languages/3/",       # Italian
-            "nature": "/natures/2/",           # On-site
-            "education": "/educations/1/",     # Secondary School
+            "language_local": "/rest/languages/3/", # Italian
+            "event": "/rest/events/1/",             # Museo Galileo Event
+            "context": "/rest/contexts/1/",         # Museo Galileo VAST Participation
+            "language": "/rest/languages/3/",       # Italian
+            "nature": "/rest/natures/2/",           # On-site
+            "education": "/rest/educations/1/",     # Secondary School
             "date_from": "2020-12-01T00:00:00",
             "date_to":   "2024-02-24T23:59:59"
         })
@@ -153,8 +153,8 @@ class ProductModelTests(TestCase):
         response = self.post("/rest/activity_steps/", data={
             "name": "Default Activity Step",
             "description": "The only activity step in activity",
-            "activity": "/activities/1/",
-            "stimulus": "/stimuli/1/"
+            "activity": "/rest/activities/1/",
+            "stimulus": "/rest/stimuli/1/"
         })
 
     def setUp_age_add(self):
@@ -185,23 +185,23 @@ class ProductModelTests(TestCase):
         response = self.post("/rest/visitor_groups/", data={
             "name": "Group for Activity",
             "composition": 30,
-            "age":  "/ages/1/",
-            "education": "/educations/1/",
-            "nationality": "/nationalities/2/",
-            "mother_language": "/languages/3/",
-            "visitor_organisation": "/organisations/2/"
+            "age":  "/rest/ages/1/",
+            "education": "/rest/educations/1/",
+            "nationality": "/rest/nationalities/2/",
+            "mother_language": "/rest/languages/3/",
+            "visitor_organisation": "/rest/organisations/2/"
         })
 
     def setUp_visitor_add(self):
         response = self.post("/rest/visitors/", data={
             "name": "Georgios Petasis",
-            "age":  "/ages/1/",
-            "gender": "/genders/1/",
+            "age":  "/rest/ages/1/",
+            "gender": "/rest/genders/1/",
             "date_of_visit": "2023-01-01T09:45",
-            "nationality": "/nationalities/2/",
-            "mother_language": "/languages/3/",
-            "activity": "/activities/1/",
-            "group": "/visitor_groups/1/",
+            "nationality": "/rest/nationalities/2/",
+            "mother_language": "/rest/languages/3/",
+            "activity": "/rest/activities/1/",
+            "group": "/rest/visitor_groups/1/",
             "school": "1st School in Florence",
         })
 
@@ -212,21 +212,21 @@ class ProductModelTests(TestCase):
 
     def setUp_product_add(self):
         response = self.post("/rest/products/", data={
-            "product_type": "/product_types/1/",
-            "visitor": "/visitors/1/",
-            "activity_step": "/activity_steps/1/",
+            "product_type": "/rest/product_types/1/",
+            "visitor": "/rest/visitors/1/",
+            "activity_step": "/rest/activity_steps/1/",
         })
 
     def setUp_concept_add(self):
         response = self.post("/rest/concepts/", data={
             "name": "value 1",
             "name_local": "italian value 1",
-            "language_local": "/languages/3/", # Italian
+            "language_local": "/rest/languages/3/", # Italian
         })
         response = self.post("/rest/concepts/", data={
             "name": "value 2",
             "name_local": "italian value 2",
-            "language_local": "/languages/3/", # Italian
+            "language_local": "/rest/languages/3/", # Italian
         })
 
     def setUp_predicate_add(self):
@@ -239,10 +239,10 @@ class ProductModelTests(TestCase):
 
     def setUp_statement_add(self):
         response = self.post("/rest/statements/", data={
-            "product": "/products/1/",
-            "subject": "/concepts/1/",
-            "predicate": "/predicates/1/",
-            "object": "/concepts/2/",
+            "product": "/rest/products/1/",
+            "subject": "/rest/concepts/1/",
+            "predicate": "/rest/predicates/1/",
+            "object": "/rest/concepts/2/",
         })
 
     def test_1(self):
