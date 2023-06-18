@@ -16,7 +16,7 @@ class AutoUpdateTimeFields(models.Model):
     uuid              = models.UUIDField(default = uuid.uuid4, editable = False)
     created           = models.DateTimeField(auto_now_add=True, null=True)
     updated           = models.DateTimeField(auto_now=True, null=True)
-    created_by        = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=True, on_delete=models.DO_NOTHING, default=1)
+    created_by        = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=False, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
@@ -39,7 +39,7 @@ class VASTObject(AutoUpdateTimeFields):
     language_local    = models.ForeignKey('Language', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
     created           = models.DateTimeField(auto_now_add=True, null=True)
     updated           = models.DateTimeField(auto_now=True, null=True)
-    created_by        = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=True, on_delete=models.DO_NOTHING, default=1)
+    created_by        = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=False, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.name}'
@@ -52,49 +52,61 @@ class VASTObject(AutoUpdateTimeFields):
             self.name_md5 = hashlib.md5(self.name.encode('utf-8')).hexdigest()
         super().save(*args, **kwargs)
 
+class VASTObject_NameUnique(VASTObject):
+    name              = models.CharField(max_length=255, default=None, unique=True)
+    class Meta:
+        abstract = True
+
+class VASTObject_NameUserGroupUnique(VASTObject):
+    class Meta:
+        abstract = True
+        # Enforce a policy for the name to be unique (for each user)
+        unique_together = [["name", "created_by"]]
+
+class Language(AutoUpdateTimeFields):
+    code              = models.CharField(max_length=6,   default=None, unique=True)
+    name              = models.CharField(max_length=255, default=None, unique=True)
+    description       = models.CharField(max_length=255, default=None)
+    def __str__(self):
+        return f'{self.name}'
+
 ## Organisations...
-class OrganisationType(VASTObject):
+class OrganisationType(VASTObject_NameUnique):
     pass
 
-class Organisation(VASTObject):
+class Organisation(VASTObject_NameUserGroupUnique):
     type              = models.ForeignKey('OrganisationType', on_delete=models.DO_NOTHING)
     subtype           = models.ForeignKey('OrganisationType', on_delete=models.DO_NOTHING, related_name='subtype', null=True, blank=True)
     location          = models.CharField(max_length=255, default=None)
     is_visitor        = models.CharField(max_length=3, choices=[('Yes','Yes'),('No','No')], default='Yes')
 
-class Class(VASTObject):
+class Class(VASTObject_NameUnique):
     pass
 
 ##Activities - Data
-class Event(VASTObject):
+class Event(VASTObject_NameUserGroupUnique):
     host_organisation = models.ForeignKey('Organisation', on_delete=models.DO_NOTHING, default=None)
 
-class Context(VASTObject):
+class Context(VASTObject_NameUserGroupUnique):
     pass
 
-class Language(AutoUpdateTimeFields):
-    code              = models.CharField(max_length=6,   default=None)
-    name              = models.CharField(max_length=255, default=None)
-    description       = models.CharField(max_length=255, default=None)
-    def __str__(self):
-        return f'{self.name}'
-
-class Age(VASTObject):
+class Age(VASTObject_NameUnique):
     pass
 
-class Gender(VASTObject):
+class Gender(VASTObject_NameUnique):
+    pass
+         
+class Education(VASTObject_NameUserGroupUnique):
     pass
 
-class Education(VASTObject):
+class Nationality(VASTObject_NameUnique):
+    class Meta:
+        verbose_name_plural = 'Nationalities'
+
+class Nature(VASTObject_NameUnique):
     pass
 
-class Nationality(VASTObject):
-    pass
-
-class Nature(VASTObject):
-    pass
-
-class Activity(VASTObject):
+class Activity(VASTObject_NameUserGroupUnique):
     event             = models.ForeignKey('Event',        on_delete=models.DO_NOTHING)
     date              = models.DateTimeField(default=None, null=True, blank=True)
     date_from         = models.DateTimeField(default=None, null=True, blank=True)
@@ -107,19 +119,19 @@ class Activity(VASTObject):
     class Meta:
         verbose_name_plural = 'Activities'
 
-class Stimulus(VASTObject):
+class Stimulus(VASTObject_NameUserGroupUnique):
     uriref            = models.CharField(max_length=512, default=None, null=True, blank=True)
     stimulus_type     = models.CharField(max_length=16, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool')])
 
     class Meta:
         verbose_name_plural = 'Stimuli'
 
-class ActivityStep(VASTObject):
+class ActivityStep(VASTObject_NameUserGroupUnique):
     activity          = models.ForeignKey('Activity',     on_delete=models.DO_NOTHING, default=None)
     stimulus          = models.ForeignKey('Stimulus',     on_delete=models.DO_NOTHING, default=None)
 
 # Visitors...
-class VisitorGroup(VASTObject):
+class VisitorGroup(VASTObject_NameUserGroupUnique):
     composition          = models.IntegerField(default=None, null=True, blank=True)
     event                = models.ForeignKey('Event',        on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
     education            = models.ForeignKey('Education',    on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
@@ -140,7 +152,7 @@ class Visitor(VASTObject):
     group             = models.ForeignKey('VisitorGroup', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
     school            = models.CharField(max_length=255,  default=None, null=True, blank=True)
 
-class ProductType(VASTObject):
+class ProductType(VASTObject_NameUnique):
     pass
 
 class Product(VASTObject):
@@ -153,10 +165,10 @@ class Product(VASTObject):
         self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
         super().save(*args, **kwargs)
 
-class Concept(VASTObject):
+class Concept(VASTObject_NameUnique):
     pass
 
-class Predicate(VASTObject):
+class Predicate(VASTObject_NameUnique):
     pass
 
 class Statement(VASTObject):
