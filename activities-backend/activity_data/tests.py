@@ -68,6 +68,8 @@ class ProductModelTests(TestCase):
             "name": "School",
             "description": "A school",
         })
+        #client.delete("/rest/organisation_types/2/")
+        #client.delete("/rest/organisation_types/1/")
 
     def setUp_organisation_add(self):
         response = self.post("/rest/organisations/", data={

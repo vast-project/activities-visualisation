@@ -24,7 +24,7 @@ import secrets
 # https://django-environ.readthedocs.io/en/latest/#django-environ
 env = environ.Env(
     # set casting, default value
-    DEBUG=(bool, True),
+    DEBUG=(bool, False),
     ALLOWED_HOSTS=(list, ['.vast-project.eu', '127.0.0.1', 'localhost']),
     DEFAULT_FROM_EMAIL=(str, ''),
     DEFAULT_FROM_EMAIL_NO_REPLY=(str, ''),

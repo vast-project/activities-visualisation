@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User, Group
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework.fields import CurrentUserDefault
+from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
 from activity_data.models import *
 
@@ -10,7 +12,7 @@ class UserSerializerURL(serializers.HyperlinkedModelSerializer):
         fields = ['url']
 
 class AutoUserModelSerializer(serializers.Serializer):
-    # created_by = serializers.HiddenField( 
+    # created_by = serializers.HiddenField(
     #     default=serializers.CurrentUserDefault()
     # )
     # created_by = serializers.PrimaryKeyRelatedField(
@@ -21,7 +23,7 @@ class AutoUserModelSerializer(serializers.Serializer):
     # Relationships use HyperlinkedRelatedField, instead of PrimaryKeyRelatedField
     created_by = serializers.HyperlinkedRelatedField(
             view_name="user-detail",
-            read_only=True, 
+            read_only=True,
             default=CurrentUserDefault()
     )
     def save(self, **kwargs):
@@ -116,25 +118,63 @@ class ProductTypeSerializer(serializers.HyperlinkedModelSerializer, AutoUserMode
         fields = '__all__'
 
 class ProductSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
+    def to_internal_value(self, data):
+        data = super().to_internal_value(data)
+        if not 'name' in data or not data['name']:
+            data['name'] = ".".join([data['product_type'].name, str(data['visitor'].id), data['activity_step'].name])
+        return data
+
+    def create(self, validated_data):
+        try:
+            # if there is already an instance in the database with the
+            # given value (e.g. tag='apple'), we simply return this instance
+            return Product.objects.get(name=validated_data['name'])
+        except ObjectDoesNotExist:
+            return super().create(validated_data)
+
     class Meta:
         model = Product
         fields = '__all__'
+        validators = [
+        ]
+        # validators = [
+        #     UniqueTogetherValidator(
+        #         queryset=model.objects.all(),
+        #         fields=['name', 'created_by'],
+        #        # message='Your custom message'
+        #     )
+        # ]
 
 class ConceptSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
     class Meta:
         model = Concept
-        fields = '__all__' 
+        fields = '__all__'
 
 class PredicateSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
     class Meta:
         model = Predicate
-        fields = '__all__' 
-  
+        fields = '__all__'
+
 class StatementSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
+    def to_internal_value(self, data):
+        data = super().to_internal_value(data)
+        if not 'name' in data or not data['name']:
+            data['name'] = ".".join([data['product'].name, data['subject'].name, data['predicate'].name, data['object'].name])
+        return data
+
+    def create(self, validated_data):
+        try:
+            # if there is already an instance in the database with the
+            # given value (e.g. tag='apple'), we simply return this instance
+            return Statement.objects.get(name=validated_data['name'])
+        except ObjectDoesNotExist:
+            return super().create(validated_data)
+
     class Meta:
         model = Statement
-        fields = '__all__' 
-          
+        fields = '__all__'
+        validators = []
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User

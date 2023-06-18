@@ -210,6 +210,54 @@ class RDFStoreVAST:
             self.g.remove(triple)
         self.commit()
 
+    def delete(self, class_name, obj):
+        logger.info(f"RDFStoreVAST(): delete(): class: {class_name}, obj: {obj}")
+        match class_name:
+            case "Language":
+                T = None
+            case "OrganisationType":
+                T = self.vast.vastOrganisationType
+            case "Organisation":
+                T = self.vast.vastOrganisation
+            case "Event":
+                T = self.vast.vastEvent
+            case "Context":
+                T = self.vast.vastContext
+            case "Activity":
+                T = self.vast.vastActivity
+            case "Stimulus":
+                T = self.vast.vastStimulus
+            case "ActivityStep":
+                T = self.vast.vastActivityStep
+            case "Age":
+                T = self.vast.vastAge
+            case "Education":
+                T = self.vast.vastEducation
+            case "Gender":
+                T = self.vast.vastGender
+            case "Nationality":
+                T = self.vast.vastNationality
+            case "VisitorGroup":
+                T = self.vast.vastGroup
+            case "Visitor":
+                T = self.vast.vastNonExpert
+            case "ProductType":
+                T = None
+            case "Product":
+                T = self.vast.vastProduct
+            case "Concept":
+                T = self.vast.vastConcept
+            case "Predicate":
+                T = self.vast.vastPredicate
+            case "Statement":
+                T = self.vast.vastStatement
+            case _:
+                T = None
+        if T:
+            robj = RDFStoreObject(T=T, id=URIRef(f"{T}/{obj.name_md5}"))
+            self.removeObject(robj.id)
+            self.commit()
+
     def save(self, class_name, obj):
         logger.info(f"RDFStoreVAST(): save(): class: {class_name}, obj: {obj}")
         method = getattr(self, class_name, None)

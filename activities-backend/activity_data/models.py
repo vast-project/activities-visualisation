@@ -24,10 +24,18 @@ class AutoUpdateTimeFields(models.Model):
     def save(self, *args, **kwargs):
         ## Save the object in the django database...
         super().save(*args, **kwargs)
-        ## Save the object in RDG Graph...
+        ## Save the object in RDF Graph...
         rdf = RDFStoreVAST()
         rdf.save(type(self).__name__, self)
         del rdf
+
+    def delete(self, *args, **kwargs):
+        ## Delete the object from the RDF Graph...
+        rdf = RDFStoreVAST()
+        rdf.delete(type(self).__name__, self)
+        del rdf
+        super().delete(*args, **kwargs)
+
 
 class VASTObject(AutoUpdateTimeFields):
     uuid              = models.UUIDField(default = uuid.uuid4, editable = False)
@@ -36,7 +44,7 @@ class VASTObject(AutoUpdateTimeFields):
     description       = models.CharField(max_length=255, default=None, null=True, blank=True)
     name_local        = models.CharField(max_length=255, default=None, null=True, blank=True)
     description_local = models.CharField(max_length=255, default=None, null=True, blank=True)
-    language_local    = models.ForeignKey('Language', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    language_local    = models.ForeignKey('Language', on_delete=models.CASCADE, default=None, null=True, blank=True)
     created           = models.DateTimeField(auto_now_add=True, null=True)
     updated           = models.DateTimeField(auto_now=True, null=True)
     created_by        = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=False, on_delete=models.CASCADE)
@@ -75,8 +83,8 @@ class OrganisationType(VASTObject_NameUnique):
     pass
 
 class Organisation(VASTObject_NameUserGroupUnique):
-    type              = models.ForeignKey('OrganisationType', on_delete=models.DO_NOTHING)
-    subtype           = models.ForeignKey('OrganisationType', on_delete=models.DO_NOTHING, related_name='subtype', null=True, blank=True)
+    type              = models.ForeignKey('OrganisationType', on_delete=models.CASCADE)
+    subtype           = models.ForeignKey('OrganisationType', on_delete=models.CASCADE, related_name='subtype', null=True, blank=True)
     location          = models.CharField(max_length=255, default=None)
     is_visitor        = models.CharField(max_length=3, choices=[('Yes','Yes'),('No','No')], default='Yes')
 
@@ -85,7 +93,7 @@ class Class(VASTObject_NameUnique):
 
 ##Activities - Data
 class Event(VASTObject_NameUserGroupUnique):
-    host_organisation = models.ForeignKey('Organisation', on_delete=models.DO_NOTHING, default=None)
+    host_organisation = models.ForeignKey('Organisation', on_delete=models.CASCADE, default=None)
 
 class Context(VASTObject_NameUserGroupUnique):
     pass
@@ -107,14 +115,14 @@ class Nature(VASTObject_NameUnique):
     pass
 
 class Activity(VASTObject_NameUserGroupUnique):
-    event             = models.ForeignKey('Event',        on_delete=models.DO_NOTHING)
+    event             = models.ForeignKey('Event',        on_delete=models.CASCADE)
     date              = models.DateTimeField(default=None, null=True, blank=True)
     date_from         = models.DateTimeField(default=None, null=True, blank=True)
     date_to           = models.DateTimeField(default=None, null=True, blank=True)
-    context           = models.ForeignKey('Context',      on_delete=models.DO_NOTHING)
-    language          = models.ForeignKey('Language',     on_delete=models.DO_NOTHING, related_name='activity_language')
-    nature            = models.ForeignKey('Nature',       on_delete=models.DO_NOTHING)
-    education         = models.ForeignKey('Education',    on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    context           = models.ForeignKey('Context',      on_delete=models.CASCADE)
+    language          = models.ForeignKey('Language',     on_delete=models.CASCADE, related_name='activity_language')
+    nature            = models.ForeignKey('Nature',       on_delete=models.CASCADE)
+    education         = models.ForeignKey('Education',    on_delete=models.CASCADE, default=None, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = 'Activities'
@@ -127,42 +135,43 @@ class Stimulus(VASTObject_NameUserGroupUnique):
         verbose_name_plural = 'Stimuli'
 
 class ActivityStep(VASTObject_NameUserGroupUnique):
-    activity          = models.ForeignKey('Activity',     on_delete=models.DO_NOTHING, default=None)
-    stimulus          = models.ForeignKey('Stimulus',     on_delete=models.DO_NOTHING, default=None)
+    activity          = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None)
+    stimulus          = models.ForeignKey('Stimulus',     on_delete=models.CASCADE, default=None)
 
 # Visitors...
 class VisitorGroup(VASTObject_NameUserGroupUnique):
     composition          = models.IntegerField(default=None, null=True, blank=True)
-    event                = models.ForeignKey('Event',        on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    education            = models.ForeignKey('Education',    on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    nationality          = models.ForeignKey('Nationality',  on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    mother_language      = models.ForeignKey('Language',     on_delete=models.DO_NOTHING, default=None, null=True, blank=True, related_name='visitor_group_language')
-    visitor_organisation = models.ForeignKey('Organisation', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    age                  = models.ForeignKey('Age',          on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    event                = models.ForeignKey('Event',        on_delete=models.CASCADE, default=None, null=True, blank=True)
+    education            = models.ForeignKey('Education',    on_delete=models.CASCADE, default=None, null=True, blank=True)
+    nationality          = models.ForeignKey('Nationality',  on_delete=models.CASCADE, default=None, null=True, blank=True)
+    mother_language      = models.ForeignKey('Language',     on_delete=models.CASCADE, default=None, null=True, blank=True, related_name='visitor_group_language')
+    visitor_organisation = models.ForeignKey('Organisation', on_delete=models.CASCADE, default=None, null=True, blank=True)
+    age                  = models.ForeignKey('Age',          on_delete=models.CASCADE, default=None, null=True, blank=True)
 
 class Visitor(VASTObject):
     userid            = models.CharField(max_length=255,  default=None, null=True, blank=True)
-    age               = models.ForeignKey('Age',          on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    gender            = models.ForeignKey('Gender',       on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    age               = models.ForeignKey('Age',          on_delete=models.CASCADE, default=None, null=True, blank=True)
+    gender            = models.ForeignKey('Gender',       on_delete=models.CASCADE, default=None, null=True, blank=True)
     date_of_visit     = models.DateTimeField(default=None, null=True, blank=True)
-    education         = models.ForeignKey('Education',    on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    nationality       = models.ForeignKey('Nationality',  on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    mother_language   = models.ForeignKey('Language',     on_delete=models.DO_NOTHING, default=None, null=True, blank=True, related_name='mother_language')
-    activity          = models.ForeignKey('Activity',     on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
-    group             = models.ForeignKey('VisitorGroup', on_delete=models.DO_NOTHING, default=None, null=True, blank=True)
+    education         = models.ForeignKey('Education',    on_delete=models.CASCADE, default=None, null=True, blank=True)
+    nationality       = models.ForeignKey('Nationality',  on_delete=models.CASCADE, default=None, null=True, blank=True)
+    mother_language   = models.ForeignKey('Language',     on_delete=models.CASCADE, default=None, null=True, blank=True, related_name='mother_language')
+    activity          = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None, null=True, blank=True)
+    group             = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None, null=True, blank=True)
     school            = models.CharField(max_length=255,  default=None, null=True, blank=True)
 
 class ProductType(VASTObject_NameUnique):
     pass
 
-class Product(VASTObject):
-    product_type      = models.ForeignKey('ProductType',  on_delete=models.DO_NOTHING, default=None)
-    visitor           = models.ForeignKey('Visitor',      on_delete=models.DO_NOTHING, default=None)
-    activity_step     = models.ForeignKey('ActivityStep', on_delete=models.DO_NOTHING, default=None)
+class Product(VASTObject_NameUserGroupUnique):
+    product_type      = models.ForeignKey('ProductType',  on_delete=models.CASCADE, default=None)
+    visitor           = models.ForeignKey('Visitor',      on_delete=models.CASCADE, default=None)
+    activity_step     = models.ForeignKey('ActivityStep', on_delete=models.CASCADE, default=None)
 
     # We must generate a "unique" name
     def save(self, *args, **kwargs):
-        self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
+        if not self.name:
+            self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
         super().save(*args, **kwargs)
 
 class Concept(VASTObject_NameUnique):
@@ -171,22 +180,23 @@ class Concept(VASTObject_NameUnique):
 class Predicate(VASTObject_NameUnique):
     pass
 
-class Statement(VASTObject):
-    product           = models.ForeignKey('Product',   on_delete=models.DO_NOTHING, default=None)
-    subject           = models.ForeignKey('Concept',   on_delete=models.DO_NOTHING, default=None, related_name='subject')
-    predicate         = models.ForeignKey('Predicate', on_delete=models.DO_NOTHING, default=None)
-    object            = models.ForeignKey('Concept',   on_delete=models.DO_NOTHING, default=None, related_name='object')
+class Statement(VASTObject_NameUserGroupUnique):
+    product           = models.ForeignKey('Product',   on_delete=models.CASCADE, default=None)
+    subject           = models.ForeignKey('Concept',   on_delete=models.CASCADE, default=None, related_name='subject')
+    predicate         = models.ForeignKey('Predicate', on_delete=models.CASCADE, default=None)
+    object            = models.ForeignKey('Concept',   on_delete=models.CASCADE, default=None, related_name='object')
      # We must generate a "unique" name
     def save(self, *args, **kwargs):
-        self.name = ".".join([self.product.name, self.subject.name, self.predicate.name, self.object.name])
+        if not self.name:
+            self.name = ".".join([self.product.name, self.subject.name, self.predicate.name, self.object.name])
         super().save(*args, **kwargs)
 
 
 class VisitorGroupQRCode(VASTObject):
-    event             = models.ForeignKey('Event', on_delete=models.DO_NOTHING, default=None)
-    activity          = models.ForeignKey('Activity',     on_delete=models.DO_NOTHING, default=None)
-    activity_step     = models.ForeignKey('ActivityStep', on_delete=models.DO_NOTHING, default=None, null=False, blank=False)
-    visitor_group     = models.ForeignKey('VisitorGroup',     on_delete=models.DO_NOTHING, default=None)
+    event             = models.ForeignKey('Event', on_delete=models.CASCADE, default=None)
+    activity          = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None)
+    activity_step     = models.ForeignKey('ActivityStep', on_delete=models.CASCADE, default=None, null=False, blank=False)
+    visitor_group     = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None)
     url               = models.CharField(max_length=255, default=None)
     qr_code           = models.ImageField(upload_to='qr_codes', default=None, null=True, blank=True)
 
