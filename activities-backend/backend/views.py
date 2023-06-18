@@ -1,8 +1,23 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
+from rest_framework import generics
+#from rest_framework import mixins
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
 from backend.serializers import *
 from activity_data.models import *
+from django_filters.rest_framework import DjangoFilterBackend
+
+class FilteringModelViewSet(viewsets.ModelViewSet):
+    filterset_fields = '__all__'
+    # @action(methods=['GET'], detail=False)
+    # def filter(self, request): 
+    #     queryset = self.get_queryset()
+    #     filtered_queryset = self.filter_queryset(queryset)
+    #     serializer = self.serializer_class(filtered_queryset, context={'request': request}, many=True)
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 class LanguageViewSet(viewsets.ModelViewSet):
     """
@@ -11,6 +26,7 @@ class LanguageViewSet(viewsets.ModelViewSet):
     queryset = Language.objects.all()
     serializer_class = LanguageSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class OrganisationTypeViewSet(viewsets.ModelViewSet):
     """
@@ -19,6 +35,7 @@ class OrganisationTypeViewSet(viewsets.ModelViewSet):
     queryset = OrganisationType.objects.all()
     serializer_class = OrganisationTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class OrganisationViewSet(viewsets.ModelViewSet):
     """
@@ -27,6 +44,7 @@ class OrganisationViewSet(viewsets.ModelViewSet):
     queryset = Organisation.objects.all()
     serializer_class = OrganisationSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class EventViewSet(viewsets.ModelViewSet):
     """
@@ -35,6 +53,7 @@ class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class ContextViewSet(viewsets.ModelViewSet):
     """
@@ -43,6 +62,7 @@ class ContextViewSet(viewsets.ModelViewSet):
     queryset = Context.objects.all()
     serializer_class = ContextSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class NatureViewSet(viewsets.ModelViewSet):
     """
@@ -51,6 +71,7 @@ class NatureViewSet(viewsets.ModelViewSet):
     queryset = Nature.objects.all()
     serializer_class = NatureSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class EducationViewSet(viewsets.ModelViewSet):
     """
@@ -59,6 +80,7 @@ class EducationViewSet(viewsets.ModelViewSet):
     queryset = Education.objects.all()
     serializer_class = EducationSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class ActivityViewSet(viewsets.ModelViewSet):
     """
@@ -67,6 +89,7 @@ class ActivityViewSet(viewsets.ModelViewSet):
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class StimulusViewSet(viewsets.ModelViewSet):
     """
@@ -75,6 +98,7 @@ class StimulusViewSet(viewsets.ModelViewSet):
     queryset = Stimulus.objects.all()
     serializer_class = StimulusSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class ActivityStepViewSet(viewsets.ModelViewSet):
     """
@@ -83,6 +107,7 @@ class ActivityStepViewSet(viewsets.ModelViewSet):
     queryset = ActivityStep.objects.all()
     serializer_class = ActivityStepSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class AgeViewSet(viewsets.ModelViewSet):
     """
@@ -91,6 +116,7 @@ class AgeViewSet(viewsets.ModelViewSet):
     queryset = Age.objects.all()
     serializer_class = AgeSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class GenderViewSet(viewsets.ModelViewSet):
     """
@@ -99,6 +125,7 @@ class GenderViewSet(viewsets.ModelViewSet):
     queryset = Gender.objects.all()
     serializer_class = GenderSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class NationalityViewSet(viewsets.ModelViewSet):
     """
@@ -107,6 +134,7 @@ class NationalityViewSet(viewsets.ModelViewSet):
     queryset = Nationality.objects.all()
     serializer_class = NationalitySerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class ClassViewSet(viewsets.ModelViewSet):
     """
@@ -115,6 +143,7 @@ class ClassViewSet(viewsets.ModelViewSet):
     queryset = Class.objects.all()
     serializer_class = ClassSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class VisitorGroupViewSet(viewsets.ModelViewSet):
     """
@@ -123,6 +152,7 @@ class VisitorGroupViewSet(viewsets.ModelViewSet):
     queryset = VisitorGroup.objects.all()
     serializer_class = VisitorGroupSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class VisitorViewSet(viewsets.ModelViewSet):
     """
@@ -131,6 +161,7 @@ class VisitorViewSet(viewsets.ModelViewSet):
     queryset = Visitor.objects.all()
     serializer_class = VisitorSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class ProductTypeViewSet(viewsets.ModelViewSet):
     """
@@ -139,6 +170,7 @@ class ProductTypeViewSet(viewsets.ModelViewSet):
     queryset = ProductType.objects.all()
     serializer_class = ProductTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class ProductViewSet(viewsets.ModelViewSet):
     """
@@ -147,6 +179,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class ConceptViewSet(viewsets.ModelViewSet):
     """
@@ -155,6 +188,7 @@ class ConceptViewSet(viewsets.ModelViewSet):
     queryset = Concept.objects.all()
     serializer_class = ConceptSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class PredicateViewSet(viewsets.ModelViewSet):
     """
@@ -163,6 +197,7 @@ class PredicateViewSet(viewsets.ModelViewSet):
     queryset = Predicate.objects.all()
     serializer_class = PredicateSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class StatementViewSet(viewsets.ModelViewSet):
     """
@@ -171,6 +206,7 @@ class StatementViewSet(viewsets.ModelViewSet):
     queryset = Statement.objects.all()
     serializer_class = StatementSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
 
 class UserViewSet(viewsets.ModelViewSet):
     """
