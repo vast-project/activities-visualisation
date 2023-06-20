@@ -118,7 +118,7 @@ class Activity(VASTObject_NameUserGroupUnique):
         verbose_name_plural = 'Activities'
 
 class Stimulus(VASTObject_NameUserGroupUnique):
-    uriref            = models.CharField(max_length=512, default=None, null=True, blank=True)
+    uriref            = models.URLField(max_length=512, default=None, null=True, blank=True)
     stimulus_type     = models.CharField(max_length=16, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool')], null=False, blank=False)
 
     class Meta:
@@ -161,7 +161,7 @@ class Visitor(VASTObject):
     nationality          = models.ForeignKey('Nationality',  on_delete=models.CASCADE, default=None, null=True, blank=True)
     mother_language      = models.ForeignKey('Language',     on_delete=models.CASCADE, default=None, null=True, blank=True, related_name='mother_language')
     activity             = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None, null=False, blank=False)
-    group                = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None, null=True, blank=True)
+    visitor_group        = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None, null=True, blank=True)
     school               = models.CharField(max_length=255,  default=None, null=True, blank=True)
 
 ## Products...
@@ -199,7 +199,7 @@ class Statement(VASTObject_NameUserGroupUnique):
 
 ## QR Codes...
 class DigitisationApplication(VASTObject_NameUserGroupUnique):
-    url                  = models.URLField(max_length=255, null=False, blank=False)
+    uriref               = models.URLField(max_length=255, null=False, blank=False)
 
 class VisitorGroupQRCode(VASTObject):
     event                = models.ForeignKey('Event',        on_delete=models.CASCADE, default=None, null=False, blank=False)
@@ -208,10 +208,10 @@ class VisitorGroupQRCode(VASTObject):
     visitor_group        = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None, null=False, blank=False)
     application          = models.ForeignKey('DigitisationApplication', on_delete=models.CASCADE, default=None, null=False, blank=False)
     qr_code              = models.ImageField(upload_to='qr_codes', default=None, null=True, blank=True)
-    url                  = models.URLField(max_length=255, null=True, blank=True, editable=False)
+    uriref               = models.URLField(max_length=255, null=True, blank=True, editable=False)
 
     def save(self, *args, **kwargs):
-        frontend_url = self.application.url # No need for check, this will be checked during application object creation...
+        frontend_url = self.application.uriref # No need for check, this will be checked during application object creation...
         query = {
             'school':         self.visitor_group.visitor_organisation.name if self.visitor_group.visitor_organisation and self.visitor_group.visitor_organisation.name else '',
             'museum':         self.event.host_organisation.name            if self.event.host_organisation and self.event.host_organisation.name else '',
@@ -222,10 +222,10 @@ class VisitorGroupQRCode(VASTObject):
             'activitystepid': str(self.activity_step.id),
             'vgroupid':       str(self.visitor_group.id),
         }
-        self.url = urllib.parse.urljoin(frontend_url, '?' + urllib.parse.urlencode(query))
+        self.uriref = urllib.parse.urljoin(frontend_url, '?' + urllib.parse.urlencode(query))
         if self.name and not self.name_md5:
             self.name_md5 = hashlib.md5(self.name.encode('utf-8')).hexdigest()
-        qrcode_img = qrcode.make(self.url, version=1, box_size=4)
+        qrcode_img = qrcode.make(self.uriref, version=1, box_size=4)
         self.qr_code.name = f'qr_codes/qr_code-{self.name_md5}.png'
         qrcode_img.save(self.qr_code.path)
         super().save(*args, **kwargs)
