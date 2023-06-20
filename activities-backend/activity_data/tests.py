@@ -187,6 +187,7 @@ class ProductModelTests(TestCase):
         response = self.post("/rest/visitor_groups/", data={
             "name": "Group for Activity",
             "composition": 30,
+            "event": "/rest/events/1/",
             "age":  "/rest/ages/1/",
             "education": "/rest/educations/1/",
             "nationality": "/rest/nationalities/2/",

@@ -175,6 +175,16 @@ class StatementSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelS
         fields = '__all__'
         validators = []
 
+class DigitisationApplicationSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
+    class Meta:
+        model = DigitisationApplication
+        fields = '__all__'
+
+class VisitorGroupQRCodeSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
+    class Meta:
+        model = VisitorGroupQRCode
+        fields = '__all__'
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User

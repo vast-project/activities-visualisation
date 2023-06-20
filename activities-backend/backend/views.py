@@ -27,6 +27,7 @@ class LanguageViewSet(viewsets.ModelViewSet):
     serializer_class = LanguageSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name', 'code']
 
 class OrganisationTypeViewSet(viewsets.ModelViewSet):
     """
@@ -36,6 +37,7 @@ class OrganisationTypeViewSet(viewsets.ModelViewSet):
     serializer_class = OrganisationTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class OrganisationViewSet(viewsets.ModelViewSet):
     """
@@ -45,6 +47,7 @@ class OrganisationViewSet(viewsets.ModelViewSet):
     serializer_class = OrganisationSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class EventViewSet(viewsets.ModelViewSet):
     """
@@ -54,6 +57,7 @@ class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class ContextViewSet(viewsets.ModelViewSet):
     """
@@ -63,6 +67,7 @@ class ContextViewSet(viewsets.ModelViewSet):
     serializer_class = ContextSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class NatureViewSet(viewsets.ModelViewSet):
     """
@@ -72,6 +77,7 @@ class NatureViewSet(viewsets.ModelViewSet):
     serializer_class = NatureSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class EducationViewSet(viewsets.ModelViewSet):
     """
@@ -81,6 +87,7 @@ class EducationViewSet(viewsets.ModelViewSet):
     serializer_class = EducationSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class ActivityViewSet(viewsets.ModelViewSet):
     """
@@ -90,6 +97,7 @@ class ActivityViewSet(viewsets.ModelViewSet):
     serializer_class = ActivitySerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class StimulusViewSet(viewsets.ModelViewSet):
     """
@@ -99,6 +107,7 @@ class StimulusViewSet(viewsets.ModelViewSet):
     serializer_class = StimulusSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class ActivityStepViewSet(viewsets.ModelViewSet):
     """
@@ -108,6 +117,7 @@ class ActivityStepViewSet(viewsets.ModelViewSet):
     serializer_class = ActivityStepSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class AgeViewSet(viewsets.ModelViewSet):
     """
@@ -117,6 +127,7 @@ class AgeViewSet(viewsets.ModelViewSet):
     serializer_class = AgeSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class GenderViewSet(viewsets.ModelViewSet):
     """
@@ -126,6 +137,7 @@ class GenderViewSet(viewsets.ModelViewSet):
     serializer_class = GenderSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class NationalityViewSet(viewsets.ModelViewSet):
     """
@@ -135,6 +147,7 @@ class NationalityViewSet(viewsets.ModelViewSet):
     serializer_class = NationalitySerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class ClassViewSet(viewsets.ModelViewSet):
     """
@@ -144,6 +157,7 @@ class ClassViewSet(viewsets.ModelViewSet):
     serializer_class = ClassSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class VisitorGroupViewSet(viewsets.ModelViewSet):
     """
@@ -153,6 +167,7 @@ class VisitorGroupViewSet(viewsets.ModelViewSet):
     serializer_class = VisitorGroupSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class VisitorViewSet(viewsets.ModelViewSet):
     """
@@ -162,6 +177,7 @@ class VisitorViewSet(viewsets.ModelViewSet):
     serializer_class = VisitorSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class ProductTypeViewSet(viewsets.ModelViewSet):
     """
@@ -171,6 +187,7 @@ class ProductTypeViewSet(viewsets.ModelViewSet):
     serializer_class = ProductTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class ProductViewSet(viewsets.ModelViewSet):
     """
@@ -180,6 +197,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class ConceptViewSet(viewsets.ModelViewSet):
     """
@@ -189,6 +207,7 @@ class ConceptViewSet(viewsets.ModelViewSet):
     serializer_class = ConceptSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class PredicateViewSet(viewsets.ModelViewSet):
     """
@@ -198,6 +217,7 @@ class PredicateViewSet(viewsets.ModelViewSet):
     serializer_class = PredicateSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
 
 class StatementViewSet(viewsets.ModelViewSet):
     """
@@ -207,6 +227,29 @@ class StatementViewSet(viewsets.ModelViewSet):
     serializer_class = StatementSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
+    search_fields = ['name']
+
+class DigitisationApplicationViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Context objects to be viewed or edited.
+    """
+    queryset = DigitisationApplication.objects.all()
+    serializer_class = DigitisationApplicationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
+    search_fields = ['name']
+
+class VisitorGroupQRCodeViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Context objects to be viewed or edited.
+    """
+    queryset = VisitorGroupQRCode.objects.all()
+    serializer_class = VisitorGroupQRCodeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    #filterset_fields = '__all__'
+    filterset_fields = ['name', 'description', 'name_local', 'description_local',
+                        'event', 'activity', 'activity_step', 'visitor_group', 'application']
+    search_fields = ['name']
 
 class UserViewSet(viewsets.ModelViewSet):
     """

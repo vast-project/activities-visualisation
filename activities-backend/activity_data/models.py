@@ -8,6 +8,7 @@ from PIL import Image, ImageDraw
 from django.contrib.auth.models import Group
 import uuid
 import hashlib
+import urllib.parse
 
 ## RDF Graph...
 from vast_rdf.vast_repository import RDFStoreVAST
@@ -61,7 +62,7 @@ class VASTObject(AutoUpdateTimeFields):
         super().save(*args, **kwargs)
 
 class VASTObject_NameUnique(VASTObject):
-    name              = models.CharField(max_length=255, default=None, unique=True)
+    name              = models.CharField(max_length=255, default=None, unique=True, null=False, blank=False)
     class Meta:
         abstract = True
 
@@ -72,9 +73,9 @@ class VASTObject_NameUserGroupUnique(VASTObject):
         unique_together = [["name", "created_by"]]
 
 class Language(AutoUpdateTimeFields):
-    code              = models.CharField(max_length=6,   default=None, unique=True)
-    name              = models.CharField(max_length=255, default=None, unique=True)
-    description       = models.CharField(max_length=255, default=None)
+    code              = models.CharField(max_length=6,   default=None, unique=True, null=False, blank=False)
+    name              = models.CharField(max_length=255, default=None, unique=True, null=False, blank=False)
+    description       = models.CharField(max_length=255, default=None, null=True, blank=True)
     def __str__(self):
         return f'{self.name}'
 
@@ -83,45 +84,34 @@ class OrganisationType(VASTObject_NameUnique):
     pass
 
 class Organisation(VASTObject_NameUserGroupUnique):
-    type              = models.ForeignKey('OrganisationType', on_delete=models.CASCADE)
+    type              = models.ForeignKey('OrganisationType', on_delete=models.CASCADE, null=False, blank=False)
     subtype           = models.ForeignKey('OrganisationType', on_delete=models.CASCADE, related_name='subtype', null=True, blank=True)
-    location          = models.CharField(max_length=255, default=None)
-    is_visitor        = models.CharField(max_length=3, choices=[('Yes','Yes'),('No','No')], default='Yes')
+    location          = models.CharField(max_length=255, default=None, null=True, blank=True)
+    is_visitor        = models.CharField(max_length=3, choices=[('Yes','Yes'),('No','No')], default='Yes', null=False, blank=False)
 
 class Class(VASTObject_NameUnique):
     pass
 
-##Activities - Data
+## Events...
 class Event(VASTObject_NameUserGroupUnique):
-    host_organisation = models.ForeignKey('Organisation', on_delete=models.CASCADE, default=None)
+    host_organisation = models.ForeignKey('Organisation', on_delete=models.CASCADE, default=None, null=False, blank=False)
 
+## Contexts...
 class Context(VASTObject_NameUserGroupUnique):
     pass
 
-class Age(VASTObject_NameUnique):
-    pass
-
-class Gender(VASTObject_NameUnique):
-    pass
-         
-class Education(VASTObject_NameUserGroupUnique):
-    pass
-
-class Nationality(VASTObject_NameUnique):
-    class Meta:
-        verbose_name_plural = 'Nationalities'
-
+## Activities...
 class Nature(VASTObject_NameUnique):
     pass
 
 class Activity(VASTObject_NameUserGroupUnique):
-    event             = models.ForeignKey('Event',        on_delete=models.CASCADE)
+    event             = models.ForeignKey('Event',        on_delete=models.CASCADE, null=False, blank=False)
     date              = models.DateTimeField(default=None, null=True, blank=True)
     date_from         = models.DateTimeField(default=None, null=True, blank=True)
     date_to           = models.DateTimeField(default=None, null=True, blank=True)
-    context           = models.ForeignKey('Context',      on_delete=models.CASCADE)
-    language          = models.ForeignKey('Language',     on_delete=models.CASCADE, related_name='activity_language')
-    nature            = models.ForeignKey('Nature',       on_delete=models.CASCADE)
+    context           = models.ForeignKey('Context',      on_delete=models.CASCADE, null=False, blank=False)
+    language          = models.ForeignKey('Language',     on_delete=models.CASCADE, null=True, blank=True, related_name='activity_language')
+    nature            = models.ForeignKey('Nature',       on_delete=models.CASCADE, default=None, null=True, blank=True)
     education         = models.ForeignKey('Education',    on_delete=models.CASCADE, default=None, null=True, blank=True)
 
     class Meta:
@@ -129,44 +119,59 @@ class Activity(VASTObject_NameUserGroupUnique):
 
 class Stimulus(VASTObject_NameUserGroupUnique):
     uriref            = models.CharField(max_length=512, default=None, null=True, blank=True)
-    stimulus_type     = models.CharField(max_length=16, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool')])
+    stimulus_type     = models.CharField(max_length=16, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool')], null=False, blank=False)
 
     class Meta:
         verbose_name_plural = 'Stimuli'
 
 class ActivityStep(VASTObject_NameUserGroupUnique):
-    activity          = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None)
-    stimulus          = models.ForeignKey('Stimulus',     on_delete=models.CASCADE, default=None)
+    activity          = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None, null=False, blank=False)
+    stimulus          = models.ForeignKey('Stimulus',     on_delete=models.CASCADE, default=None, null=False, blank=False)
+
+## Visitor fields...
+class Age(VASTObject_NameUnique):
+    pass
+       
+class Education(VASTObject_NameUserGroupUnique):
+    pass
+
+class Gender(VASTObject_NameUnique):
+    pass
+
+class Nationality(VASTObject_NameUnique):
+    class Meta:
+        verbose_name_plural = 'Nationalities'
 
 # Visitors...
 class VisitorGroup(VASTObject_NameUserGroupUnique):
     composition          = models.IntegerField(default=None, null=True, blank=True)
-    event                = models.ForeignKey('Event',        on_delete=models.CASCADE, default=None, null=True, blank=True)
-    education            = models.ForeignKey('Education',    on_delete=models.CASCADE, default=None, null=True, blank=True)
-    nationality          = models.ForeignKey('Nationality',  on_delete=models.CASCADE, default=None, null=True, blank=True)
-    mother_language      = models.ForeignKey('Language',     on_delete=models.CASCADE, default=None, null=True, blank=True, related_name='visitor_group_language')
-    visitor_organisation = models.ForeignKey('Organisation', on_delete=models.CASCADE, default=None, null=True, blank=True)
-    age                  = models.ForeignKey('Age',          on_delete=models.CASCADE, default=None, null=True, blank=True)
+    event                = models.ForeignKey('Event',        on_delete=models.CASCADE, default=None, null=False, blank=False)
+    education            = models.ForeignKey('Education',    on_delete=models.CASCADE, default=None, null=True,  blank=True)
+    nationality          = models.ForeignKey('Nationality',  on_delete=models.CASCADE, default=None, null=True,  blank=True)
+    mother_language      = models.ForeignKey('Language',     on_delete=models.CASCADE, default=None, null=True,  blank=True, related_name='visitor_group_language')
+    visitor_organisation = models.ForeignKey('Organisation', on_delete=models.CASCADE, default=None, null=True,  blank=True)
+    age                  = models.ForeignKey('Age',          on_delete=models.CASCADE, default=None, null=True,  blank=True)
 
 class Visitor(VASTObject):
-    userid            = models.CharField(max_length=255,  default=None, null=True, blank=True)
-    age               = models.ForeignKey('Age',          on_delete=models.CASCADE, default=None, null=True, blank=True)
-    gender            = models.ForeignKey('Gender',       on_delete=models.CASCADE, default=None, null=True, blank=True)
-    date_of_visit     = models.DateTimeField(default=None, null=True, blank=True)
-    education         = models.ForeignKey('Education',    on_delete=models.CASCADE, default=None, null=True, blank=True)
-    nationality       = models.ForeignKey('Nationality',  on_delete=models.CASCADE, default=None, null=True, blank=True)
-    mother_language   = models.ForeignKey('Language',     on_delete=models.CASCADE, default=None, null=True, blank=True, related_name='mother_language')
-    activity          = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None, null=True, blank=True)
-    group             = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None, null=True, blank=True)
-    school            = models.CharField(max_length=255,  default=None, null=True, blank=True)
+    userid               = models.CharField(max_length=255,  default=None, null=True, blank=True)
+    age                  = models.ForeignKey('Age',          on_delete=models.CASCADE, default=None, null=True, blank=True)
+    gender               = models.ForeignKey('Gender',       on_delete=models.CASCADE, default=None, null=True, blank=True)
+    date_of_visit        = models.DateTimeField(default=None, null=True, blank=True)
+    education            = models.ForeignKey('Education',    on_delete=models.CASCADE, default=None, null=True, blank=True)
+    nationality          = models.ForeignKey('Nationality',  on_delete=models.CASCADE, default=None, null=True, blank=True)
+    mother_language      = models.ForeignKey('Language',     on_delete=models.CASCADE, default=None, null=True, blank=True, related_name='mother_language')
+    activity             = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None, null=False, blank=False)
+    group                = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None, null=True, blank=True)
+    school               = models.CharField(max_length=255,  default=None, null=True, blank=True)
 
+## Products...
 class ProductType(VASTObject_NameUnique):
     pass
 
 class Product(VASTObject_NameUserGroupUnique):
-    product_type      = models.ForeignKey('ProductType',  on_delete=models.CASCADE, default=None)
-    visitor           = models.ForeignKey('Visitor',      on_delete=models.CASCADE, default=None)
-    activity_step     = models.ForeignKey('ActivityStep', on_delete=models.CASCADE, default=None)
+    product_type         = models.ForeignKey('ProductType',  on_delete=models.CASCADE, default=None, null=False, blank=False)
+    visitor              = models.ForeignKey('Visitor',      on_delete=models.CASCADE, default=None, null=False, blank=False)
+    activity_step        = models.ForeignKey('ActivityStep', on_delete=models.CASCADE, default=None, null=False, blank=False)
 
     # We must generate a "unique" name
     def save(self, *args, **kwargs):
@@ -174,6 +179,7 @@ class Product(VASTObject_NameUserGroupUnique):
             self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
         super().save(*args, **kwargs)
 
+## Statements...
 class Concept(VASTObject_NameUnique):
     pass
 
@@ -181,74 +187,45 @@ class Predicate(VASTObject_NameUnique):
     pass
 
 class Statement(VASTObject_NameUserGroupUnique):
-    product           = models.ForeignKey('Product',   on_delete=models.CASCADE, default=None)
-    subject           = models.ForeignKey('Concept',   on_delete=models.CASCADE, default=None, related_name='subject')
-    predicate         = models.ForeignKey('Predicate', on_delete=models.CASCADE, default=None)
-    object            = models.ForeignKey('Concept',   on_delete=models.CASCADE, default=None, related_name='object')
+    product              = models.ForeignKey('Product',   on_delete=models.CASCADE, default=None, null=False, blank=False)
+    subject              = models.ForeignKey('Concept',   on_delete=models.CASCADE, default=None, null=False, blank=False, related_name='subject')
+    predicate            = models.ForeignKey('Predicate', on_delete=models.CASCADE, default=None, null=False, blank=False)
+    object               = models.ForeignKey('Concept',   on_delete=models.CASCADE, default=None, null=False, blank=False, related_name='object')
      # We must generate a "unique" name
     def save(self, *args, **kwargs):
         if not self.name:
             self.name = ".".join([self.product.name, self.subject.name, self.predicate.name, self.object.name])
         super().save(*args, **kwargs)
 
+## QR Codes...
+class DigitisationApplication(VASTObject_NameUserGroupUnique):
+    url                  = models.URLField(max_length=255, null=False, blank=False)
 
 class VisitorGroupQRCode(VASTObject):
-    event             = models.ForeignKey('Event', on_delete=models.CASCADE, default=None)
-    activity          = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None)
-    activity_step     = models.ForeignKey('ActivityStep', on_delete=models.CASCADE, default=None, null=False, blank=False)
-    visitor_group     = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None)
-    url               = models.CharField(max_length=255, default=None)
-    qr_code           = models.ImageField(upload_to='qr_codes', default=None, null=True, blank=True)
+    event                = models.ForeignKey('Event',        on_delete=models.CASCADE, default=None, null=False, blank=False)
+    activity             = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None, null=False, blank=False)
+    activity_step        = models.ForeignKey('ActivityStep', on_delete=models.CASCADE, default=None, null=False, blank=False)
+    visitor_group        = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None, null=False, blank=False)
+    application          = models.ForeignKey('DigitisationApplication', on_delete=models.CASCADE, default=None, null=False, blank=False)
+    qr_code              = models.ImageField(upload_to='qr_codes', default=None, null=True, blank=True)
+    url                  = models.URLField(max_length=255, null=True, blank=True, editable=False)
 
     def save(self, *args, **kwargs):
-        vgroup = self.visitor_group
-        vgroupid = vgroup.id
-        event = self.event
-        school = vgroup.visitor_organisation
-        try:
-            schoolname = school.name
-        except AttributeError:
-            schoolname = "null"
-        event = self.event
-        try:
-            eventid = event.id
-        except AttributeError:
-            eventid = "null"
-        activity = self.activity
-        try:
-            activityid = activity.id
-        except AttributeError:
-            activityid = "null"
-        activitystep = self.activity_step
-        try:
-            activitystepid = activitystep.id
-        except AttributeError:
-            activitystepid = "null"
-        museum = event.host_organisation
-        try:
-            museumname = museum.name
-        except AttributeError:
-            museumname = "null"
-        educlevel = vgroup.education
-        try:
-            educlevelname = educlevel.name
-        except AttributeError:
-            educlevelname = "null"
-        age = vgroup.age
-        try:
-            agename = age.name
-        except AttributeError:
-            agename = "null"
-        frontend_url = self.url
-        url = frontend_url+'/?school='+schoolname+'&museum='+museumname+'&edulevel='+educlevelname+'&age='+agename+'&eventid='+str(eventid)+'&activityid='+str(activityid)+'&activitystepid='+str(activitystepid)+'&vgroupid='+str(vgroupid)+'}'
-        qrcode_img = qrcode.make(url, version=1, box_size=4)
-        canvas = Image.new('RGB',(400, 400), 'white')
-        draw = ImageDraw.Draw(canvas)
-        canvas.paste(qrcode_img)
-        fname = f'qr_code-{self.name}.png'
-        buffer = BytesIO()
-        canvas.save(buffer, 'PNG')
-        self.qr_code.save(fname, File(buffer), save=False)
-        canvas.close()
+        frontend_url = self.application.url # No need for check, this will be checked during application object creation...
+        query = {
+            'school':         self.visitor_group.visitor_organisation.name if self.visitor_group.visitor_organisation and self.visitor_group.visitor_organisation.name else '',
+            'museum':         self.event.host_organisation.name            if self.event.host_organisation and self.event.host_organisation.name else '',
+            'edulevel':       self.visitor_group.education.name            if self.visitor_group.education and self.visitor_group.education.name else '',
+            'age':            self.visitor_group.age.name                  if self.visitor_group.age and self.visitor_group.age.name else '',
+            'eventid':        str(self.event.id),
+            'activityid':     str(self.activity.id),
+            'activitystepid': str(self.activity_step.id),
+            'vgroupid':       str(self.visitor_group.id),
+        }
+        self.url = urllib.parse.urljoin(frontend_url, '?' + urllib.parse.urlencode(query))
+        if self.name and not self.name_md5:
+            self.name_md5 = hashlib.md5(self.name.encode('utf-8')).hexdigest()
+        qrcode_img = qrcode.make(self.url, version=1, box_size=4)
+        self.qr_code.name = f'qr_codes/qr_code-{self.name_md5}.png'
+        qrcode_img.save(self.qr_code.path)
         super().save(*args, **kwargs)
-

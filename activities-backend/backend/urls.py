@@ -18,7 +18,7 @@ from django.urls import include, path, re_path
 from rest_framework import routers
 from backend import views
 from django.conf import settings
-from django.conf.urls.static import static
+#from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 from django.views import static as StaticView
 
@@ -44,6 +44,8 @@ router.register(r'products',             views.ProductViewSet)
 router.register(r'concepts',             views.ConceptViewSet)
 router.register(r'predicates',           views.PredicateViewSet)
 router.register(r'statements',           views.StatementViewSet)
+router.register(r'applications',         views.DigitisationApplicationViewSet)
+router.register(r'qr_codes',             views.VisitorGroupQRCodeViewSet)
 router.register(r'users',                views.UserViewSet)
 router.register(r'groups',               views.GroupViewSet)
 
@@ -54,7 +56,8 @@ urlpatterns = [
     path('api/',      include('activity_data.urls')),
     path('rest/',     include(router.urls), name="rest"),
     re_path('^static/(?P<path>.*)$', StaticView.serve, {'document_root': settings.STATIC_ROOT}),
-    path('', RedirectView.as_view(url='rest/', permanent=False), name='index')
+    re_path(r'^media/(?P<path>.*)$', StaticView.serve, {'document_root': settings.MEDIA_ROOT}), 
+    path('', RedirectView.as_view(url='rest/', permanent=False), name='index'),
 ]
+#urlpatterns += static(settings.MEDIA_URL,  document_root=settings.MEDIA_ROOT)
 
-urlpatterns += static(settings.MEDIA_URL,  document_root=settings.MEDIA_ROOT)

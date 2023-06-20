@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     #'allauth.socialaccount.providers.google', # for Google OAuth 2.0
     'vast_auth2',
     'django_extensions',
+    'django_cleanup.apps.CleanupConfig', # This must be always at the end!
 ]
 
 MIDDLEWARE = [
@@ -167,7 +168,7 @@ CSRF_TRUSTED_ORIGINS = ['https://*.vast-project.eu','https://*.127.0.0.1']
 
 #MEDIA FILES SETTINGS
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "media_roo")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 #CORS ALLOWED ORIGINS
 CORS_ORIGIN_ALLOW_ALL=True
@@ -182,7 +183,9 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.DjangoModelPermissions",
     ],
     'DEFAULT_FILTER_BACKENDS': [
+        'rest_framework.filters.SearchFilter',
         'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.OrderingFilter',
     ],
 }
 
