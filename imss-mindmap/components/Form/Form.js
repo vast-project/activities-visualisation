@@ -12,27 +12,27 @@ import {motion} from 'framer-motion'
 import Mappa from '../Mindmap/Mappa'
 import { BsHourglass } from 'react-icons/bs'
 
-async function savevisitor(data) { 
-    try {
-      const response = await fetch('https://activities-backend.vast-project.eu/rest/visitors/', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
-      });
+//async function savevisitor(data) { 
+//    try {
+//      const response = await fetch('https://activities-backend.vast-project.eu/rest/visitors/', {
+//       method: 'POST',
+//      body: JSON.stringify(data),
+//     headers: { 'Content-Type': 'application/json' }
+//    });
   
-      if (!response.ok) {
-         console.log(response)
-        throw new Error(`Error! status: ${response.status}`);
-      }
-  
-      const result = await response.json();
-      var id = result['id']
-      return id;
-    }
-    catch (err) {
-      console.log(err);
-    }
-  }
+ //     if (!response.ok) {
+//       console.log(response)
+//        throw new Error(`Error! status: ${response.status}`);
+//     }
+//  
+//      const result = await response.json();
+//      var id = result['id']
+//      return id;
+//    }
+//    catch (err) {
+//      console.log(err);
+//    }
+//  }
 
 function Form() {
   const [isValid, setIsValid] = useState(false);
@@ -72,7 +72,7 @@ function Form() {
     event.preventDefault();
 
     // Define the endpoint URL
-    const apiUrl = 'https://activities_backend.vast-project.eu/rest/visitors/';
+    const apiUrl = 'https://activities-backend.vast-project.eu/rest/visitors/';
 
     // Send the POST request
     fetch(apiUrl, {
