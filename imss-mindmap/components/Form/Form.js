@@ -14,7 +14,7 @@ import { BsHourglass } from 'react-icons/bs'
 
 async function savevisitor(data) { 
     try {
-      const response = await fetch('https://activities_backend.vast-project.eu/api/savevisitor', {
+      const response = await fetch('https://activities-backend.vast-project.eu/rest/visitors/', {
         method: 'POST',
         body: JSON.stringify(data),
         headers: { 'Content-Type': 'application/json' }
