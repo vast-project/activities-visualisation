@@ -75,6 +75,19 @@
     border-radius: 3px;
 }
 
+.mindmapInputNewValue{
+    text-align: center;
+    padding: 31px;
+    border: none;
+    font-family: "Curvy Thins";
+    color: #555;
+    letter-spacing: 1px;
+    font-weight: 700;
+    font-size: 20px;
+    margin: 16px;
+    border-radius: 3px;
+}
+
 .mindmapInputOpposite{  
     background: url(../../public/opposito-bubble.png) center/contain no-repeat;
 }
