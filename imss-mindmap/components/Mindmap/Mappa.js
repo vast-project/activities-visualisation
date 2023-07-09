@@ -30,7 +30,7 @@ function Mappa({isItalian, setIsItalian}) {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://activities_backend.vast-project.eu/rest/predicates/', {
+      const response = await fetch('https://activities-backend.vast-project.eu/rest/predicates/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
