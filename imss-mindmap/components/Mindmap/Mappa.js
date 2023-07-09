@@ -7,69 +7,51 @@ import centerBubbleEng from '../../public/center-bubble-eng.svg';
 import logo from '../../public/logo.png'
 import {motion} from 'framer-motion'
 import Congratulations from '../Congratulations/Congratulations'
-
-import italy from '../../public/ita-flag.png'
-import uk from '../../public/uk-flag.png'
-
-async function saveproduct(data) { 
-  try {
-    const response = await fetch('https://activities_backend.vast-project.eu/api/saveproduct', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-    if (!response.ok) {
-       console.log(response)
-      throw new Error(`Error! status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result;
-  }
-  catch (err) {
-    console.log(err);
-  }
-}
+import italy from '../../public/italy-flag.png'
+import uk from '../../public/eng-flag.png'
 
 function Mappa({isItalian, setIsItalian}) {
-    const [submitForm, setSubmitForm] = useState(false);
-    const [formData, setFormData] = useState([]);
+  const [submitForm, setSubmitForm] = useState(false);
+  const [formData, setFormData] = useState({
+    consequence1: '',
+    consequence2: '',
+    consequence3: '',
+    equivalent1: '',
+    equivalent2: '',
+    equivalent3: '',
+    opposite1: '',
+    opposite2: '',
+    opposite3: '',
+  });
     let messageText = isItalian ? 'Si prega di compilare questo campo' : 'Please Fill Out This Field';
-    var router = useRouter();
-    var vstepid = router.query["activitystepid"];
-    var jsondata = {
-      name: null,
-      name_local: null,
-      created_by: 2,
-      description: null,
-      description_local: null,
-      activity_step:vstepid,
-      visitor: null,
-      data: null
-    };
 
-    const handleSubmit = (e) => {
-      jsondata={
-        name: "IMSS Web App Product",
-        name_local: null,
-        created_by: 2,
-        description: null,
-        description_local: null,
-        activity_step:vstepid,
-        visitor: 2,
-        data: JSON.stringify(formData)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('/rest/predicates/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        console.log('Form data submitted successfully');
+
+      } else {
+        console.error('Form data submission failed');
+
       }
-      console.log("JSON DATA")
-      console.log(JSON.stringify(jsondata))
-      saveproduct(jsondata)
-      
-      e.preventDefault();   
-      setSubmitForm(true)
-      console.log(formData);
-      e.target.reset()
+    } catch (error) {
+      console.error('Form data submission failed:', error);
 
+    } finally {
+      setSubmitForm(true);
     }
+  };
 
       // Set Language
   const handleSetItalian = () => {
@@ -94,21 +76,21 @@ function Mappa({isItalian, setIsItalian}) {
         </div>
         <form className={styles.formContainer} onSubmit={handleSubmit}>
           <Image className={styles.centerBubble} src={isItalian ? centerBubbleIta : centerBubbleEng} alt="mindmap" width={350} height={212} />
-          <SectionContainer sectionName={isItalian ? "consequenza" : "consequences"} setFormData={setFormData}>
-            <FieldInput setFormData={setFormData} name="consequence1" styleClass="consequenza" label={isItalian ? "consequenza" : "Consequence"} messageText={messageText} />
-            <FieldInput setFormData={setFormData} name="consequence2" styleClass="consequenza" label={isItalian ? "consequenza" : "Consequence"} messageText={messageText} />
-            <FieldInput setFormData={setFormData} name="consequence3" styleClass="consequenza" label={isItalian ? "consequenza" : "Consequence"} messageText={messageText} />
+          <SectionContainer sectionName={isItalian ? "consequenza" : "consequences"}  setFormData={setFormData}>
+            <FieldInput formData={formData} setFormData={setFormData} name="consequence1" styleClass="consequenza" label={isItalian ? "consequenza" : "Consequence"} messageText={messageText} />
+            <FieldInput formData={formData} setFormData={setFormData} name="consequence2" styleClass="consequenza" label={isItalian ? "consequenza" : "Consequence"} messageText={messageText} />
+            <FieldInput formData={formData} setFormData={setFormData} name="consequence3" styleClass="consequenza" label={isItalian ? "consequenza" : "Consequence"} messageText={messageText} />
         </SectionContainer>
-        <SectionContainer sectionName={isItalian ? "equivalenza" : "equivalents"} setFormData={setFormData}>
-            <FieldInput setFormData={setFormData} name="equivalent1" styleClass="equivalenza" label={isItalian ? "equivalenza" : "equivalent"} messageText={messageText} />
-            <FieldInput setFormData={setFormData} name="equivalent2" styleClass="equivalenza" label={isItalian ? "equivalenza" : "equivalent"} messageText={messageText} />
-            <FieldInput setFormData={setFormData} name="equivalent3" styleClass="equivalenza" label={isItalian ? "equivalenza" : "equivalent"} messageText={messageText} />
+        <SectionContainer  sectionName={isItalian ? "equivalenza" : "equivalents"} setFormData={setFormData}>
+            <FieldInput formData={formData} setFormData={setFormData} name="equivalent1" styleClass="equivalenza" label={isItalian ? "equivalenza" : "equivalent"} messageText={messageText} />
+            <FieldInput formData={formData} setFormData={setFormData} name="equivalent2" styleClass="equivalenza" label={isItalian ? "equivalenza" : "equivalent"} messageText={messageText} />
+            <FieldInput formData={formData} setFormData={setFormData} name="equivalent3" styleClass="equivalenza" label={isItalian ? "equivalenza" : "equivalent"} messageText={messageText} />
         </SectionContainer>
         
         <SectionContainer sectionName={isItalian ? "opposto" : "opposites"} setFormData={setFormData}>
-            <FieldInput setFormData={setFormData} name="opposite1" styleClass="opposto" label={isItalian ? "opposto" : "opposite"} messageText={messageText} />
-            <FieldInput setFormData={setFormData} name="opposite2" styleClass="opposto" label={isItalian ? "opposto" : "opposite"} messageText={messageText} />
-            <FieldInput setFormData={setFormData} name="opposite3" styleClass="opposto" label={isItalian ? "opposto" : "opposite"} messageText={messageText} />
+            <FieldInput formData={formData} setFormData={setFormData} name="opposite1" styleClass="opposto" label={isItalian ? "opposto" : "opposite"} messageText={messageText} />
+            <FieldInput formData={formData} setFormData={setFormData} name="opposite2" styleClass="opposto" label={isItalian ? "opposto" : "opposite"} messageText={messageText} />
+            <FieldInput formData={formData} setFormData={setFormData} name="opposite3" styleClass="opposto" label={isItalian ? "opposto" : "opposite"} messageText={messageText} />
         </SectionContainer>
         
         <button className={styles.btnSubmit} type="submit">{isItalian ? "creare una mappa mentale" : "create mindmap"}</button>
@@ -141,7 +123,7 @@ const SectionContainer = ({ sectionName, children, setFormData }) => {
     );
   };
   
-  const FieldInput = ({ name, label, styleClass, type = "text", setFormData, messageText, ...rest }) => {
+  const FieldInput = ({ name, label, styleClass, type = "text",formData, setFormData, messageText, ...rest }) => {
     const [value, setValue] = useState("");
   
     const handleChange = (e) => {
@@ -150,6 +132,7 @@ const SectionContainer = ({ sectionName, children, setFormData }) => {
         ...prevFormData,
         [name]: e.target.value,
       }));
+      console.log(formData);
     };
   
     return (
