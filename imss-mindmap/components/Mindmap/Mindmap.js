@@ -84,6 +84,9 @@ function Mindmap({isItalian,setIsItalian}) {
   };
 
   const handleSubmit = (e) =>{
+
+    e.preventDefault();
+    //------------------------
     jsondata={
       name: "IMSS Web App Product",
       name_local: null,
@@ -97,9 +100,9 @@ function Mindmap({isItalian,setIsItalian}) {
     console.log("JSON DATA")
     console.log(JSON.stringify(jsondata))
     saveproduct(jsondata)
+    //---------------------------------
     
-    e.preventDefault();
-    setSubmitForm(true);
+    // setSubmitForm(true);
     console.log(nodes);
     e.target.reset()
 
@@ -200,7 +203,7 @@ function Mindmap({isItalian,setIsItalian}) {
           </div> */}
         </div>
 
-        <button className={styles.btnSubmit} type="submit">
+        <button className={styles.btnSubmit} onClick={() => setSubmitForm(true)}>
             {isItalian ? "creare una mappa mentale" : "create mindmap"}
           </button>
 
