@@ -11,8 +11,8 @@ import {v4} from 'uuid';
 import {FaTrash} from 'react-icons/fa';
 import {BsPlus} from 'react-icons/bs';
 
-import italy from '../../public/ita-flag.png'
-import uk from '../../public/uk-flag.png'
+import italy from '../../public/italy-flag.png'
+import uk from '../../public/eng-flag.png'
 
 async function saveproduct(data) { 
   try {

@@ -3,8 +3,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import styles from './layout.module.css'
 import Image from 'next/image'
 import logo from '../../public/logo.png'
-import italy from '../../public/ita-flag.png'
-import uk from '../../public/uk-flag.png'
+import italy from '../../public/italy-flag.png'
+import uk from '../../public/eng-flag.png'
 import { createContext } from 'react'
 
 export const LanguageContext = createContext();
