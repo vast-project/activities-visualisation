@@ -39,7 +39,7 @@ function Mindmap({isItalian,setIsItalian}) {
   const [submitForm, setSubmitForm] = useState(false);
   const [textInputValue, setTextInputValue] = useState("");
   const [createdButtons, setCreatedButtons] = useState([]);
-  let messageText = isItalian ? 'Si prega di compilare questo campo' : 'Please Fill Out This Field';
+  let messageText = isItalian ? 'Si prega di compilare questo campo' : 'Please fill out this field';
   var router = useRouter();
   var vstepid = router.query["activitystepid"];
     var jsondata = {
@@ -56,7 +56,7 @@ function Mindmap({isItalian,setIsItalian}) {
   const inputData = [
     { id: 1, category:"opposto", text: "Opposites", input: isItalian ? "OPPOSTO" : "OPPOSITE"},
     { id: 2, category:"conseguenza", text: "sequences", input: isItalian ? "CONSEGUENZA" : "CONSEQUENCE"},
-    { id: 3, category:"equivalenza", text: "equivalents", input: isItalian ? "EQUIVALENZA" : "equivalent"},
+    { id: 3, category:"equivalenza", text: "equivalents", input: isItalian ? "EQUIVALENZA" : "EQUIVALENT"},
   ];
   const [nodes, setNodes] = useState(inputData);
 
