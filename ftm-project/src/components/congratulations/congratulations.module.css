@@ -1,0 +1,12 @@
+.secondaryHeadline{
+    color: #555;
+    font-size: 32px;
+    letter-spacing: 0.03em;
+}
+
+.primaryHeadline{
+    color: rgb(105, 160, 130);
+    font-size: 52px;
+    letter-spacing: 0.05em;
+    /* margin-top: 40px; */
+}
