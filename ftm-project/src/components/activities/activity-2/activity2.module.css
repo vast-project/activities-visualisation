@@ -1,0 +1,27 @@
+.miniTitle{
+    color: #444;
+    font-weight: 300;
+    margin: 0;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.btnContainer{
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    gap: .5rem;
+}
+.btnBack{
+    padding: .75rem 3rem;
+    min-width: 200px;
+    background: #b4c5a5;
+    outline: none;
+    border: none;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 2rem 0;
+    cursor: pointer;
+}
