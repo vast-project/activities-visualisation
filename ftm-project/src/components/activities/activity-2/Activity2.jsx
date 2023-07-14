@@ -17,7 +17,15 @@ const Activity2 = () => {
 
   return (
     <div>
-        Activity
+        <Title title="Morphology of Fairy Tale" />
+
+        <Paragraph text={text} />
+
+
+        <div className={styles.btnContainer}>
+            <button className={styles.btnBack} onClick={() => setPrev(true)}>ΠΙΣΩ</button>
+            <Button onClick={() => setNext(true)} text="ΕΠΟΜΕΝΟ" color="rgb(105, 160, 130)" />
+        </div>
     </div>
   )
 }
