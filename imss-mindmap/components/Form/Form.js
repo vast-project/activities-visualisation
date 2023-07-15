@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {useRouter} from 'next/router'
 import styles from './form.module.css'
 import Image from 'next/image'
@@ -9,28 +9,6 @@ import Mindmap from '../Mindmap/Mindmap'
 import Loading from '../Loading/Loading'
 import {motion} from 'framer-motion'
 import Mappa from '../Mindmap/Mappa'
-
-//async function savevisitor(data) { 
-//    try {
-//      const response = await fetch('https://activities-backend.vast-project.eu/rest/visitors/', {
-//       method: 'POST',
-//      body: JSON.stringify(data),
-//     headers: { 'Content-Type': 'application/json' }
-//    });
-
-//     if (!response.ok) {
-//       console.log(response)
-//        throw new Error(`Error! status: ${response.status}`);
-//     }
-//  
-//      const result = await response.json();
-//      var id = result['id']
-//      return id;
-//    }
-//    catch (err) {
-//      console.log(err);
-//    }
-//  }
 
 /**
  * Get current date and time in ISO format
@@ -57,7 +35,7 @@ function getCurrentIsoDate() {
 function Form() {
     const [isValid, setIsValid] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [isItalian, setIsItalian] = useState(true);
+    const [isItalian, setIsItalian] = useState(false);
 
     const [visitorData, setVisitorData] = useState({
         name: '',
@@ -71,22 +49,28 @@ function Form() {
         school: '',
     });
 
-    // const handleSubmit = (event) => {
-    //   event.preventDefault();
+    // Create router to get query parameters
+    const router = useRouter();
+    // console.log(router.query);
 
-    //   const apiUrl = 'https://activities-backend.vast-project.eu/rest/visitors/';
-
-    //   const requestData = {
-    //     name: visitorData.name,
-    //     age: visitorData.age,
-    //     gender: visitorData.gender,
-    //     date_of_visit: visitorData.date_of_visit,
-    //     nationality: visitorData.nationality,
-    //     mother_language: visitorData.mother_language,
-    //     activity: visitorData.activity,
-    //     visitor_group: visitorData.visitor_group,
-    //     school: visitorData.school
-    //   };
+    // Get query parameters and create refs (?)
+    let schoolFromQuery = router.query["school"];
+    if (schoolFromQuery !== undefined) {
+        console.log("Setting school value from query parameter");
+        visitorData.school = schoolFromQuery;
+    }
+    let museumFromQuery = router.query["museum"];
+    // todo: Should we have museum in the form?
+    let ageFromQuery = router.query["age"];
+    if (ageFromQuery !== undefined) {
+        console.log("Setting age value from query parameter");
+        visitorData.age = ageFromQuery;
+    }
+    let eduLevelFromQuery = router.query["edulevel"];
+    let veventid = router.query["eventid"];
+    let vstepid = router.query["activitystepid"];
+    let vactivityid = router.query["activityid"];
+    let vgroupid = router.query["vgroupid"];
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -127,26 +111,6 @@ function Form() {
         console.log('Updated visitor data:', visitorData);
     };
 
-    //const [jsondata,setJsonData] = useState({
-
-    // Temporarily commented
-    // -----------------
-    // var jsondata = {
-    //   name: "Maria Papa",
-    //   userid: null,
-    //   created_by: 2,
-    //   date_of_visit: null,
-    //   age: null,
-    //   gender: null,
-    //   education: null,
-    //   nationality: null,
-    //   motherLanguage: null,
-    //   activity: null,
-    //   group: null,
-    //   school: null
-    // };
-    // -----------------------
-
     // Dynamic Media Query for screen width
     const [width, setWidth] = useState(0);
     const breakpoint = 700;
@@ -163,64 +127,12 @@ function Form() {
         setIsItalian(false);
     }
 
-    // ---------------------------------
-    var router = useRouter();
-    var vschool = router.query["school"];
-    var vmuseum = router.query["museum"];
-    var vage = router.query["age"];
-    var veduclevel = router.query["edulevel"];
-    var veventid = router.query["eventid"];
-    var vstepid = router.query["activitystepid"];
-    var vactivityid = router.query["activityid"];
-    var vgroupid = router.query["vgroupid"];
-    const nameRef = useRef(null);
-    const dateRef = useRef(null);
-    const schoolRef = useRef(vschool);
-    const museumRef = useRef(vmuseum);
-    const educlevelRef = useRef(veduclevel);
-    const ageRef = useRef(vage);
-    const genderRef = useRef(null);
-    // --------------------------------------------
-
     useEffect(() => {
         handleWindowResize();
         window.addEventListener("resize", () => setWidth(window.innerWidth));
 
         return window.removeEventListener("resize", () => setWidth(window.innerWidth))
     }, [width]);
-
-
-    // ----------------------------------------
-    // const handleSubmit = event => {
-    //   if (vgroupid==undefined || vgroupid==null)
-    //     {vgroupid=0;}
-    //   else
-    //     {vgroupid = Number(vgroupid.substring(0,vgroupid.length-1));}
-    //   if (vactivityid==undefined || vactivityid==null)
-    //     {vactivityid=0;}
-    //   else
-    //     {vactivityid = Number(vactivityid);}
-    //   jsondata={
-    //     name: nameRef.current.value,
-    //     created_by: 2,
-    //     age: ageRef.current.value,
-    //     date_of_visit: dateRef.current.value,
-    //     gender: genderRef.current.value,
-    //     education: educlevelRef.current.value,
-    //     motherLanguage: 2,
-    //     activity: vactivityid,
-    //     group: vgroupid,
-    //     school: schoolRef.current.value,
-    //     nationality: 2
-    //   }
-    //   console.log("JSON DATA")
-    //   console.log(JSON.stringify(jsondata))
-    //   var res = savevisitor(jsondata)
-    //   console.log(res)
-    //   setIsValid(true)
-    //   event.target.reset()
-    // }
-    // ------------------------------------------
 
     useEffect(() => {
         setTimeout(() => {
@@ -250,7 +162,7 @@ function Form() {
                     {/* Name */}
                     <div className={styles.inputContainer}>
                         <label>{isItalian ? "Il nome del visitatore" : "Visitor's Name"}</label>
-                        <input ref={nameRef} required id="inputname" type="text"
+                        <input  required id="inputname" type="text"
                                label={isItalian ? "Il nome del visitatore" : "Visitor's Name"} name="name"
                                value={visitorData.name} onChange={handleChange}/>
                     </div>
@@ -258,7 +170,7 @@ function Form() {
                     {/* Age */}
                     <div className={styles.ageContainer}>
                         <label>{isItalian ? "Età" : "Age"}</label>
-                        <select name="age" ref={ageRef} value={visitorData.age}
+                        <select name="age"  value={visitorData.age}
                                 onChange={handleChange} required>
                             <option>{isItalian ? "Selezionare  Età..." : "Select Age..."} </option>
                             <option value="14-15">14-15</option>
@@ -282,7 +194,7 @@ function Form() {
                     {/* Date */}
                     <div className={styles.inputContainer}>
                         <label>{isItalian ? "Data/Tempo del visitatore" : "Date/Time of Visit"}</label>
-                        <input ref={dateRef} required id="inputtime" type="datetime-local"
+                        <input required id="inputtime" type="datetime-local"
                                label={isItalian ? "Data/Tempo del visitatore" : "Date/Time of Visit"}
                                name="date_of_visit" value={visitorData.date_of_visit} onChange={handleChange}/>
                     </div>
