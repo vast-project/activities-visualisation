@@ -236,7 +236,6 @@ function Form() {
 
     if (!isValid) {
         return (
-
             <motion.div transition={{duration: 1}} initial={{opacity: 0}} animate={{opacity: 1}}
                         className={styles.container}>
 
@@ -259,7 +258,7 @@ function Form() {
                     {/* Age */}
                     <div className={styles.ageContainer}>
                         <label>{isItalian ? "Età" : "Age"}</label>
-                        <select name="age" ref={ageRef} defaultValue={vage} value={visitorData.age}
+                        <select name="age" ref={ageRef} value={visitorData.age}
                                 onChange={handleChange} required>
                             <option>{isItalian ? "Selezionare  Età..." : "Select Age..."} </option>
                             <option value="14-15">14-15</option>
