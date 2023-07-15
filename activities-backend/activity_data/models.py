@@ -221,6 +221,7 @@ class VisitorGroupQRCode(VASTObject):
             'activityid':     str(self.activity.id),
             'activitystepid': str(self.activity_step.id),
             'vgroupid':       str(self.visitor_group.id),
+            'username':       str(self.created_by.username),
         }
         self.uriref = urllib.parse.urljoin(frontend_url, '?' + urllib.parse.urlencode(query))
         if self.name and not self.name_md5:
