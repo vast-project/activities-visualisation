@@ -1,17 +1,15 @@
-from django.db import models
-from datetime import datetime
-from django.conf import settings
-import qrcode
-from io import BytesIO
-from django.core.files import File
-from PIL import Image, ImageDraw
-from django.contrib.auth.models import Group
-import uuid
 import hashlib
 import urllib.parse
+import uuid
+
+import qrcode
+from django.conf import settings
+from django.contrib.auth.models import Group
+from django.db import models
 
 ## RDF Graph...
 from vast_rdf.vast_repository import RDFStoreVAST
+
 
 class AutoUpdateTimeFields(models.Model):
     uuid              = models.UUIDField(default = uuid.uuid4, editable = False)
@@ -213,16 +211,21 @@ class VisitorGroupQRCode(VASTObject):
     def save(self, *args, **kwargs):
         frontend_url = self.application.uriref # No need for check, this will be checked during application object creation...
         query = {
-            'school':         self.visitor_group.visitor_organisation.name if self.visitor_group.visitor_organisation and self.visitor_group.visitor_organisation.name else '',
-            'museum':         self.event.host_organisation.name            if self.event.host_organisation and self.event.host_organisation.name else '',
-            'edulevel':       self.visitor_group.education.name            if self.visitor_group.education and self.visitor_group.education.name else '',
-            'age':            self.visitor_group.age.name                  if self.visitor_group.age and self.visitor_group.age.name else '',
+            'school':         self.visitor_group.visitor_organisation.name if self.visitor_group.visitor_organisation and self.visitor_group.visitor_organisation.name else None,
+            'edulevel':       self.visitor_group.education.name            if self.visitor_group.education and self.visitor_group.education.name else None,
+            'age':            self.visitor_group.age.name                  if self.visitor_group.age and self.visitor_group.age.name else None,
+            'nationality':    self.visitor_group.nationality.name          if self.visitor_group.nationality and self.visitor_group.nationality.name else None,
+            'language':       self.visitor_group.mother_language.name      if self.visitor_group.mother_language and self.visitor_group.mother_language.name else None,
             'eventid':        str(self.event.id),
             'activityid':     str(self.activity.id),
             'activitystepid': str(self.activity_step.id),
             'vgroupid':       str(self.visitor_group.id),
             'username':       str(self.created_by.username),
         }
+
+        # Remove "None" values from query
+        query = {k: v for k, v in query.items() if v is not None}
+
         self.uriref = urllib.parse.urljoin(frontend_url, '?' + urllib.parse.urlencode(query))
         if self.name and not self.name_md5:
             self.name_md5 = hashlib.md5(self.name.encode('utf-8')).hexdigest()
