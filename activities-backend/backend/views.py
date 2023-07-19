@@ -1,14 +1,8 @@
-from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
 from rest_framework import permissions
-from rest_framework import generics
-#from rest_framework import mixins
-from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import viewsets
+
 from backend.serializers import *
-from activity_data.models import *
-from django_filters.rest_framework import DjangoFilterBackend
+
 
 class FilteringModelViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
@@ -18,6 +12,7 @@ class FilteringModelViewSet(viewsets.ModelViewSet):
     #     filtered_queryset = self.filter_queryset(queryset)
     #     serializer = self.serializer_class(filtered_queryset, context={'request': request}, many=True)
     #     return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class LanguageViewSet(viewsets.ModelViewSet):
     """
@@ -29,6 +24,7 @@ class LanguageViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name', 'code']
 
+
 class OrganisationTypeViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows OrganisationTypes to be viewed or edited.
@@ -38,6 +34,7 @@ class OrganisationTypeViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
     search_fields = ['name']
+
 
 class OrganisationViewSet(viewsets.ModelViewSet):
     """
@@ -49,6 +46,7 @@ class OrganisationViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+
 class EventViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Event objects to be viewed or edited.
@@ -58,6 +56,7 @@ class EventViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
     search_fields = ['name']
+
 
 class ContextViewSet(viewsets.ModelViewSet):
     """
@@ -69,6 +68,7 @@ class ContextViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+
 class NatureViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Nature objects to be viewed or edited.
@@ -78,6 +78,7 @@ class NatureViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
     search_fields = ['name']
+
 
 class EducationViewSet(viewsets.ModelViewSet):
     """
@@ -89,6 +90,7 @@ class EducationViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+
 class ActivityViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Activity objects to be viewed or edited.
@@ -98,6 +100,7 @@ class ActivityViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
     search_fields = ['name']
+
 
 class StimulusViewSet(viewsets.ModelViewSet):
     """
@@ -109,6 +112,7 @@ class StimulusViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+
 class ActivityStepViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows ActivityStep objects to be viewed or edited.
@@ -118,6 +122,7 @@ class ActivityStepViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
     search_fields = ['name']
+
 
 class AgeViewSet(viewsets.ModelViewSet):
     """
@@ -129,6 +134,7 @@ class AgeViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+
 class GenderViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Gender objects to be viewed or edited.
@@ -138,6 +144,7 @@ class GenderViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
     search_fields = ['name']
+
 
 class NationalityViewSet(viewsets.ModelViewSet):
     """
@@ -149,6 +156,7 @@ class NationalityViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+
 class ClassViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Class objects to be viewed or edited.
@@ -158,6 +166,7 @@ class ClassViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
     search_fields = ['name']
+
 
 class VisitorGroupViewSet(viewsets.ModelViewSet):
     """
@@ -169,15 +178,26 @@ class VisitorGroupViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+
 class VisitorViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Visitor objects to be viewed or edited.
     """
+
+    def get_permissions(self):
+        """Returns the permission based on the type of action"""
+
+        if self.action == "create":
+            # allow anyone to create a visitor, so that visitors won't have to
+            # authenticate to the API to use the app.
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
     queryset = Visitor.objects.all()
     serializer_class = VisitorSerializer
-    permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
     search_fields = ['name']
+
 
 class ProductTypeViewSet(viewsets.ModelViewSet):
     """
@@ -189,6 +209,7 @@ class ProductTypeViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+
 class ProductViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Product objects to be viewed or edited.
@@ -198,6 +219,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
     search_fields = ['name']
+
 
 class ConceptViewSet(viewsets.ModelViewSet):
     """
@@ -209,6 +231,7 @@ class ConceptViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+
 class PredicateViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Predicate objects to be viewed or edited.
@@ -218,6 +241,7 @@ class PredicateViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
     search_fields = ['name']
+
 
 class StatementViewSet(viewsets.ModelViewSet):
     """
@@ -229,6 +253,7 @@ class StatementViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+
 class DigitisationApplicationViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Context objects to be viewed or edited.
@@ -239,6 +264,7 @@ class DigitisationApplicationViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+
 class VisitorGroupQRCodeViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Context objects to be viewed or edited.
@@ -246,10 +272,11 @@ class VisitorGroupQRCodeViewSet(viewsets.ModelViewSet):
     queryset = VisitorGroupQRCode.objects.all()
     serializer_class = VisitorGroupQRCodeSerializer
     permission_classes = [permissions.IsAuthenticated]
-    #filterset_fields = '__all__'
+    # filterset_fields = '__all__'
     filterset_fields = ['name', 'description', 'name_local', 'description_local',
                         'event', 'activity', 'activity_step', 'visitor_group', 'application']
     search_fields = ['name']
+
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -258,6 +285,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+
 
 class GroupViewSet(viewsets.ModelViewSet):
     """
