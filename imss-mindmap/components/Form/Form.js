@@ -59,7 +59,6 @@ function setVisitorDataFromQueryParams(visitorData, router) {
     params.forEach(param => {
         let value = query[param.queryName];
         if (value !== undefined && visitorData[param.dataName] === '') {
-            console.log("Setting " + param.dataName + " value from query parameter " + param.queryName);
             visitorData[param.dataName] = value;
         }
     });
