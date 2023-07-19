@@ -32,6 +32,39 @@ function getCurrentIsoDate() {
     return currentDate.getFullYear() + '-' + currMonth + '-' + currDay + 'T' + currentDate.getHours() + ':' + currentDate.getMinutes();
 }
 
+/**
+ * Given the visitorData object and the router object, set the visitorData object values from the query parameters.
+ * @param visitorData The visitorData object
+ * @param router The router object
+ */
+function setVisitorDataFromQueryParams(visitorData, router) {
+    // Get query parameters
+    let query = router.query;
+
+    // Set the mapping between the visitorData object and the query parameter names
+    let params = [
+        {dataName: 'school', queryName: 'school'},
+        {dataName: 'education_level', queryName: 'edulevel'},
+        {dataName: 'age', queryName: 'age'},
+        {dataName: 'nationality', queryName: 'nationality'},
+        {dataName: 'mother_language', queryName: 'language'},
+        {dataName: 'event_id', queryName: 'eventid'},
+        {dataName: 'activity', queryName: 'activityid'},
+        {dataName: 'activity_step', queryName: 'activitystepid'},
+        {dataName: 'visitor_group', queryName: 'vgroupid'},
+        {dataName: 'creator_username', queryName: 'username'},
+    ]
+
+    // Set the visitorData object values from the query parameters
+    params.forEach(param => {
+        let value = query[param.queryName];
+        if (value !== undefined && visitorData[param.dataName] === '') {
+            console.log("Setting " + param.dataName + " value from query parameter " + param.queryName);
+            visitorData[param.dataName] = value;
+        }
+    });
+}
+
 function Form() {
     const [isValid, setIsValid] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -45,32 +78,17 @@ function Form() {
         nationality: '',
         mother_language: '',
         activity: '',
+        activity_step: '',
+        education_level: '',
+        event_id: '',
         visitor_group: '',
         school: '',
+        creator_username: '',
     });
 
-    // Create router to get query parameters
+    // Set visitorData from query parameters
     const router = useRouter();
-    // console.log(router.query);
-
-    // Get query parameters and create refs (?)
-    let schoolFromQuery = router.query["school"];
-    if (schoolFromQuery !== undefined) {
-        console.log("Setting school value from query parameter");
-        visitorData.school = schoolFromQuery;
-    }
-    let museumFromQuery = router.query["museum"];
-    // todo: Should we have museum in the form?
-    let ageFromQuery = router.query["age"];
-    if (ageFromQuery !== undefined) {
-        console.log("Setting age value from query parameter");
-        visitorData.age = ageFromQuery;
-    }
-    let eduLevelFromQuery = router.query["edulevel"];
-    let veventid = router.query["eventid"];
-    let vstepid = router.query["activitystepid"];
-    let vactivityid = router.query["activityid"];
-    let vgroupid = router.query["vgroupid"];
+    setVisitorDataFromQueryParams(visitorData, router);
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -162,7 +180,7 @@ function Form() {
                     {/* Name */}
                     <div className={styles.inputContainer}>
                         <label>{isItalian ? "Il nome del visitatore" : "Visitor's Name"}</label>
-                        <input  required id="inputname" type="text"
+                        <input required id="inputname" type="text"
                                label={isItalian ? "Il nome del visitatore" : "Visitor's Name"} name="name"
                                value={visitorData.name} onChange={handleChange}/>
                     </div>
@@ -170,7 +188,7 @@ function Form() {
                     {/* Age */}
                     <div className={styles.ageContainer}>
                         <label>{isItalian ? "Età" : "Age"}</label>
-                        <select name="age"  value={visitorData.age}
+                        <select name="age" value={visitorData.age}
                                 onChange={handleChange} required>
                             <option>{isItalian ? "Selezionare  Età..." : "Select Age..."} </option>
                             <option value="14-15">14-15</option>
