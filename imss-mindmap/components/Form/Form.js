@@ -67,7 +67,7 @@ function setVisitorDataFromQueryParams(visitorData, router) {
 function Form() {
     const [isValid, setIsValid] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [isItalian, setIsItalian] = useState(false);
+    const [isItalian, setIsItalian] = useState(true);
 
     const [visitorData, setVisitorData] = useState({
         name: '',
