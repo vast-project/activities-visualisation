@@ -223,7 +223,7 @@ class VisitorViewSet(viewsets.ModelViewSet):
             new_visitor.mother_language = Language.objects.filter(name=request.data['mother_language']).first()
 
             new_visitor.save()
-            return Response(VisitorSerializer(new_visitor).data, status=status.HTTP_201_CREATED)
+            return Response(VisitorSerializer(new_visitor, context={"request": request}).data, status=status.HTTP_201_CREATED)
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
