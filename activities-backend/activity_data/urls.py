@@ -7,5 +7,5 @@ urlpatterns = [
     path('imss_mindmap', views.StoreActivityData.as_view(), name="mindmap"),
     path('saveproduct', views.saveproduct, name='saveproduct'),
     path('savevisitor', views.savevisitor, name='savevisitor'),
-    path('save-statements', views.save_statements, name='save-product'),
+    path('save-statements', views.save_statements, name='save-statements'),
 ]
