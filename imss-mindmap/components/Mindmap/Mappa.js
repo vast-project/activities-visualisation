@@ -1,13 +1,13 @@
-import React, {useState} from 'react'
-import styles from './mappa.module.css'
-import Image from 'next/image';
-import centerBubbleIta from '../../public/center-bubble-ita.svg';
-import centerBubbleEng from '../../public/center-bubble-eng.svg';
-import logo from '../../public/logo.png'
-import {motion} from 'framer-motion'
-import Congratulations from '../Congratulations/Congratulations'
-import italy from '../../public/italy-flag.png'
-import uk from '../../public/eng-flag.png'
+import React, {useState} from "react"
+import styles from "./mappa.module.css"
+import Image from "next/image";
+import centerBubbleIta from "../../public/center-bubble-ita.svg";
+import centerBubbleEng from "../../public/center-bubble-eng.svg";
+import logo from "../../public/logo.png"
+import {motion} from "framer-motion"
+import Congratulations from "../Congratulations/Congratulations"
+import italy from "../../public/italy-flag.png"
+import uk from "../../public/eng-flag.png"
 
 /**
  * The Mindmap component, showing a subject in the center and three predicates that describe it with 3 objects each.
@@ -15,42 +15,54 @@ import uk from '../../public/eng-flag.png'
 function Mappa({isItalian, setIsItalian}) {
     const [submitForm, setSubmitForm] = useState(false);
     const [formData, setFormData] = useState({
-        consequence1: '',
-        consequence2: '',
-        consequence3: '',
-        equivalent1: '',
-        equivalent2: '',
-        equivalent3: '',
-        opposite1: '',
-        opposite2: '',
-        opposite3: '',
+        consequence1: "",
+        consequence2: "",
+        consequence3: "",
+        equivalent1: "",
+        equivalent2: "",
+        equivalent3: "",
+        opposite1: "",
+        opposite2: "",
+        opposite3: "",
     });
-    let messageText = isItalian ? 'Si prega di compilare questo campo' : 'Please Fill Out This Field';
 
-    const centerSubject = isItalian ? "Soggetto" : "Subject";
-
+    let messageText = isItalian ? "Si prega di compilare questo campo" : "Please fill out this field";
+    let centerSubject = isItalian ? "Uguaglianza tra i popoli" : "Equality among people";
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Create data object with the subject, and the objects for each predicate
+        const data = {
+            product: "Mindmap",
+            subject: centerSubject,
+            consequence: [formData.consequence1, formData.consequence2, formData.consequence3],
+            equivalent: [formData.equivalent1, formData.equivalent2, formData.equivalent3],
+            opposite: [formData.opposite1, formData.opposite2, formData.opposite3],
+            language: isItalian ? "it" : "en"
+        };
+
+        const url = "https://activities-backend.vast-project.eu/api/save-statements";
+        // const url = "http://localhost:8000/api/save-statements";
+
         try {
-            const response = await fetch('https://activities-backend.vast-project.eu/rest/predicates/', {
-                method: 'POST',
+            const response = await fetch(url, {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(data),
             });
 
             if (response.ok) {
-                console.log('Form data submitted successfully');
+                console.log("Form data submitted successfully");
 
             } else {
-                console.error('Form data submission failed');
+                console.error("Form data submission failed");
 
             }
         } catch (error) {
-            console.error('Form data submission failed:', error);
+            console.error("Form data submission failed:", error);
 
         } finally {
             setSubmitForm(true);
@@ -157,7 +169,7 @@ const FieldInput = ({name, label, styleClass, type = "text", formData, setFormDa
 
     return (
         <div className={styles.inputContainer}>
-            <input className={styles[styleClass]} autoComplete='off' id={name} placeholder={label} name={name}
+            <input className={styles[styleClass]} autoComplete="off" id={name} placeholder={label} name={name}
                    type={type} value={value} onChange={handleChange}  {...rest}
                    onInvalid={e => e.target.setCustomValidity(messageText)}
                    onInput={e => e.target.setCustomValidity('')} required/>
