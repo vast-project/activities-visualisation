@@ -92,31 +92,8 @@ function Form() {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        // Define the endpoint URL
-        const apiUrl = 'https://activities-backend.vast-project.eu/rest/visitors/';
-
-        // Send the POST request
-        fetch(apiUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(visitorData),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Error! Status: ${response.status}`);
-                }
-                router.query["visitor"] = visitorData.name;
-                return response.json();
-            })
-            .then(data => {
-                console.log("Visitor created:", data);
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            })
-            .finally(() => setIsValid(true));
+        // Set valid in order to show the Mappa/Mindmap component
+        setIsValid(true);
     };
 
     // Handle Change Function for every input
@@ -267,8 +244,9 @@ function Form() {
     }
 
     return (
-        width > breakpoint ? <Mappa isItalian={isItalian} setIsItalian={setIsItalian} routerQuery={router.query}/> :
-            <Mindmap isItalian={isItalian} setIsItalian={setIsItalian}/>
+        (width > breakpoint) ?
+            <Mappa isItalian={isItalian} setIsItalian={setIsItalian} routerQuery={router.query}
+                   visitorData={visitorData}/> : <Mindmap isItalian={isItalian} setIsItalian={setIsItalian}/>
     )
 }
 
