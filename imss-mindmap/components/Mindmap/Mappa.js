@@ -12,7 +12,7 @@ import uk from "../../public/eng-flag.png"
 /**
  * The Mindmap component, showing a subject in the center and three predicates that describe it with 3 objects each.
  */
-function Mappa({isItalian, setIsItalian}) {
+function Mappa({isItalian, setIsItalian, routerQuery}) {
     const [submitForm, setSubmitForm] = useState(false);
     const [formData, setFormData] = useState({
         consequence1: "",
@@ -39,7 +39,10 @@ function Mappa({isItalian, setIsItalian}) {
             consequence: [formData.consequence1, formData.consequence2, formData.consequence3],
             equivalent: [formData.equivalent1, formData.equivalent2, formData.equivalent3],
             opposite: [formData.opposite1, formData.opposite2, formData.opposite3],
-            language: isItalian ? "it" : "en"
+            language: isItalian ? "it" : "en",
+            activity_step: routerQuery["activitystepid"],
+            creator_username: routerQuery["username"],
+            visitor_name: routerQuery["visitor"]
         };
 
         const url = "https://activities-backend.vast-project.eu/api/save-statements";
