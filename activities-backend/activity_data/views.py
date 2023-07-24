@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.utils import IntegrityError
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
@@ -7,7 +8,7 @@ from rest_framework.views import APIView
 
 from activity_data.serialize import Productserialize
 from activity_data.serialize import Visitorserialize
-from .models import Age, ProductType, Visitor, ActivityStep, Product
+from .models import Age, ProductType, Visitor, ActivityStep, Product, Concept, Statement, Predicate
 from .models import Education
 from .models import Gender
 from .models import Language
@@ -45,6 +46,7 @@ def saveproduct(request):
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 def save_statements(request):
+    saved_statements: int = 0
     data = request.data
 
     # Find user to use as created_by (based on the given username)
@@ -65,17 +67,35 @@ def save_statements(request):
 
     # Get or create the product in the DB
     product_name = "-".join([visitor_name, product_type_name, activity_step.name])
-    product, _ = Product.objects.get_or_create(name=product_name, created_by=creator_user, product_type_id=product_type.id,
-                                            activity_step_id=activity_step.id, visitor_id=visitor.id)
+    product, _ = Product.objects.get_or_create(name=product_name, created_by=creator_user,
+                                               product_type_id=product_type.id,
+                                               activity_step_id=activity_step.id, visitor_id=visitor.id)
 
-    # todo: Get or create a subject in the DB (based on the given one, and its language)
+    # Get or create a subject in the DB
+    subject_name = data["subject"]
+    subject, _ = Concept.objects.get_or_create(name=subject_name, created_by=creator_user)
 
-    # todo: For each predicate:
-    #           - Check if it exists in the DB, if not, create it
-    #           - Create the statements, by creating new objects for each array element, connecting them with the
-    #               subject via the predicate
+    # Get predicates
+    predicates: dict = data["predicates"]
+    for predicate, objects in predicates.items():
+        # Get or create predicate in the DB
+        predicate, _ = Predicate.objects.get_or_create(name=predicate, created_by=creator_user)
 
-    return Response({"hello": True}, status=status.HTTP_201_CREATED)
+        # Create statements
+        for obj in objects:
+            # Get or create object in the DB
+            obj, _ = Concept.objects.get_or_create(name=obj, created_by=creator_user)
+
+            # Create statement with subject, predicate and object
+            try:
+                Statement.objects.create(subject=subject, predicate=predicate, object=obj, product=product,
+                                         created_by=creator_user)
+                saved_statements += 1
+            except IntegrityError:
+                # Ignore IntegrityError (statement already exists)
+                pass
+
+    return Response({"saved_statements": saved_statements}, status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
