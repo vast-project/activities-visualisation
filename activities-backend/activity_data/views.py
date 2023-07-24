@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from activity_data.serialize import Productserialize
 from activity_data.serialize import Visitorserialize
-from .models import Age
+from .models import Age, ProductType
 from .models import Education
 from .models import Gender
 from .models import Language
@@ -45,7 +45,24 @@ def saveproduct(request):
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 def save_statements(request):
-    # todo: create product and save statements
+    data = request.data
+
+    # Find user (based on the given username)
+    user = User.objects.get(username=data["creator_username"])
+    if not user:
+        return Response({"error": "Error saving statement"}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Find product type, or create it
+    product_type = ProductType.objects.get_or_create(name=data["product"], created_by=user)
+    # todo: Get or create the product in the DB (based on its name)
+
+    # todo: Get or create a subject in the DB (based on the given one, and its language)
+
+    # todo: For each predicate:
+    #           - Check if it exists in the DB, if not, create it
+    #           - Create the statements, by creating new objects for each array element, connecting them with the
+    #               subject via the predicate
+
     return Response({"hello": True}, status=status.HTTP_201_CREATED)
 
 
