@@ -97,9 +97,9 @@ function Form() {
 
         // Send the POST request
         fetch(apiUrl, {
-            method: 'POST',
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             body: JSON.stringify(visitorData),
         })
@@ -107,13 +107,14 @@ function Form() {
                 if (!response.ok) {
                     throw new Error(`Error! Status: ${response.status}`);
                 }
+                router.query["visitor"] = visitorData.name;
                 return response.json();
             })
             .then(data => {
-                console.log('Visitor created:', data);
+                console.log("Visitor created:", data);
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error("Error:", error);
             })
             .finally(() => setIsValid(true));
     };
@@ -266,7 +267,7 @@ function Form() {
     }
 
     return (
-        width > breakpoint ? <Mappa isItalian={isItalian} setIsItalian={setIsItalian}/> :
+        width > breakpoint ? <Mappa isItalian={isItalian} setIsItalian={setIsItalian} routerQuery={router.query}/> :
             <Mindmap isItalian={isItalian} setIsItalian={setIsItalian}/>
     )
 }
