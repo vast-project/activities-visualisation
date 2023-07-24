@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from activity_data.serialize import Productserialize
 from activity_data.serialize import Visitorserialize
-from .models import Age, ProductType
+from .models import Age, ProductType, Visitor, ActivityStep, Product
 from .models import Education
 from .models import Gender
 from .models import Language
@@ -47,14 +47,26 @@ def saveproduct(request):
 def save_statements(request):
     data = request.data
 
-    # Find user (based on the given username)
-    user = User.objects.get(username=data["creator_username"])
-    if not user:
+    # Find user to use as created_by (based on the given username)
+    creator_user = User.objects.get(username=data["creator_username"])
+    if not creator_user:
         return Response({"error": "Error saving statement"}, status=status.HTTP_400_BAD_REQUEST)
 
+    # Find visitor
+    visitor_name = data["visitor_name"]
+    visitor = Visitor.objects.get(name=visitor_name, created_by=creator_user)
+
     # Find product type, or create it
-    product_type = ProductType.objects.get_or_create(name=data["product"], created_by=user)
-    # todo: Get or create the product in the DB (based on its name)
+    product_type_name = data["product"]
+    product_type, _ = ProductType.objects.get_or_create(name=product_type_name, created_by=creator_user)
+
+    # Find activity step
+    activity_step = ActivityStep.objects.get(id=data["activity_step"])
+
+    # Get or create the product in the DB
+    product_name = "-".join([visitor_name, product_type_name, activity_step.name])
+    product, _ = Product.objects.get_or_create(name=product_name, created_by=creator_user, product_type_id=product_type.id,
+                                            activity_step_id=activity_step.id, visitor_id=visitor.id)
 
     # todo: Get or create a subject in the DB (based on the given one, and its language)
 
