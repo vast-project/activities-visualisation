@@ -60,9 +60,11 @@ function Mappa({isItalian, setIsItalian, routerQuery, visitorData}) {
         const data = {
             product: "Mindmap",
             subject: centerSubject,
-            consequence: [formData.consequence1, formData.consequence2, formData.consequence3],
-            equivalent: [formData.equivalent1, formData.equivalent2, formData.equivalent3],
-            opposite: [formData.opposite1, formData.opposite2, formData.opposite3],
+            predicates: {
+                consequence: [formData.consequence1, formData.consequence2, formData.consequence3],
+                equivalent: [formData.equivalent1, formData.equivalent2, formData.equivalent3],
+                opposite: [formData.opposite1, formData.opposite2, formData.opposite3],
+            },
             language: isItalian ? "it" : "en",
             activity_step: routerQuery["activitystepid"],
             creator_username: routerQuery["username"],
