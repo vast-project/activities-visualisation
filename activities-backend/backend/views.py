@@ -214,7 +214,7 @@ class VisitorViewSet(viewsets.ModelViewSet):
 
             new_visitor.activity_id = int(request.data['activity'])
             new_visitor.activity_step_id = int(request.data['activity_step'])
-            new_visitor.visitor_group_id = int(request.data['visitor_group'])
+            new_visitor.visitor_group = VisitorGroup.objects.filter(id=int(request.data['visitor_group'])).first()
 
             new_visitor.age = Age.objects.filter(name=request.data['age']).first()
             new_visitor.gender = Gender.objects.filter(name=request.data['gender']).first()
