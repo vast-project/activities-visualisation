@@ -48,7 +48,6 @@ function Mappa({isItalian, setIsItalian, routerQuery, visitorData}) {
             if (!response.ok) {
                 throw new Error(`Error! Status: ${response.status}`);
             }
-        }).then(data => {
             console.log("Visitor created successfully");
         }).catch(error => {
             console.error("Error:", error);
