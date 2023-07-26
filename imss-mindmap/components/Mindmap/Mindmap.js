@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useState} from 'react'
 import {useRouter} from 'next/router'
 import logo from '../../public/logo.png'
 import Image from 'next/image'
@@ -40,6 +40,7 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
         {id: 3, category: "equivalenza", text: "equivalents", input: isItalian ? "EQUIVALENZA" : "EQUIVALENT"},
     ];
     const [nodes, setNodes] = useState(inputData);
+    const newValue = isItalian ? "Nuovo Valore" : "New Value";
 
     // Set Language
     const handleSetItalian = () => {
@@ -49,9 +50,30 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
         setIsItalian(false);
     }
 
-    const newValue = isItalian ? "Nuovo Valore" : "New Value";
+    /**
+     * Save the visitor data to the backend.
+     */
+    async function saveVisitor() {
+        // Define the endpoint URL
+        const apiUrl = 'https://activities-backend.vast-project.eu/rest/visitors/';
+        // const apiUrl = 'http://localhost:8000/rest/visitors/';
 
-    // Functions
+        // Send the POST request
+        return fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(visitorData),
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error(`Error! Status: ${response.status}`);
+            }
+            console.log("Visitor created successfully");
+        }).catch(error => {
+            console.error("Error:", error);
+        });
+    }
 
     const addNode = (value) => {
         const newId = v4();
@@ -66,25 +88,16 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        //------------------------
-        jsondata = {
-            name: "IMSS Web App Product",
-            name_local: null,
-            created_by: 2,
-            description: null,
-            description_local: null,
-            activity_step: vstepid,
-            visitor: 2,
-            data: JSON.stringify({})
-        }
-        console.log("JSON DATA")
-        console.log(JSON.stringify(jsondata))
-        //---------------------------------
-
-        // setSubmitForm(true);
-        console.log(nodes);
-        e.target.reset()
-        setSubmitForm(true);
+        // Save visitor data
+        console.log("Saving visitor");
+        saveVisitor().then(() => {
+            // Save mindmap
+            console.log("Now we would save the mindmap");
+            // saveMindmap();
+        }).finally(() => {
+            // Show congrats
+            setSubmitForm(true);
+        });
     }
 
     const handleDeleteNode = (nodeId) => {
