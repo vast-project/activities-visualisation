@@ -16,27 +16,7 @@ import uk from '../../public/eng-flag.png'
  * Mobile version of the Mindmap component. Supports adding more than 3 concepts per predicate, as well as adding new
  * predicates.
  */
-async function saveproduct(data) {
-    try {
-        const response = await fetch('https://activities_backend.vast-project.eu/api/saveproduct', {
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {'Content-Type': 'application/json'}
-        });
-
-        if (!response.ok) {
-            console.log(response)
-            throw new Error(`Error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        return result;
-    } catch (err) {
-        console.log(err);
-    }
-}
-
-function Mindmap({isItalian, setIsItalian}) {
+function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
     const [submitForm, setSubmitForm] = useState(false);
     const [textInputValue, setTextInputValue] = useState("");
     const [createdButtons, setCreatedButtons] = useState([]);
@@ -99,7 +79,6 @@ function Mindmap({isItalian, setIsItalian}) {
         }
         console.log("JSON DATA")
         console.log(JSON.stringify(jsondata))
-        saveproduct(jsondata)
         //---------------------------------
 
         // setSubmitForm(true);
@@ -151,7 +130,6 @@ function Mindmap({isItalian, setIsItalian}) {
             <p className={styles.curvyTextSmall}>ALBERT EINSTEIN</p>
 
             <form className={styles.formContainer} onSubmit={handleSubmit}>
-
                 {nodes.map((node) => (
                     <div className={styles.mindmapInput} key={node.id}>
                         <input

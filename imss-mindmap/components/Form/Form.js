@@ -246,7 +246,8 @@ function Form() {
     return (
         (width > breakpoint) ?
             <Mappa isItalian={isItalian} setIsItalian={setIsItalian} routerQuery={router.query}
-                   visitorData={visitorData}/> : <Mindmap isItalian={isItalian} setIsItalian={setIsItalian}/>
+                   visitorData={visitorData}/> : <Mindmap isItalian={isItalian} setIsItalian={setIsItalian}
+                                                          routerQuery={router.query} visitorData={visitorData}/>
     )
 }
 
