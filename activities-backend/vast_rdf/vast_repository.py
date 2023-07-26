@@ -403,7 +403,7 @@ class RDFStoreVAST:
         robj.nationality        = self.getURIRef(self.vast.vastNationality, obj.nationality)
         robj.mother_language    = Literal(obj.mother_language, lang="en")
         robj.visitor_activity   = self.getURIRef(self.vast.vastActivity, obj.activity)
-        robj.group              = self.getURIRef(self.vast.vastGroup, obj.group)
+        robj.group              = self.getURIRef(self.vast.vastGroup, obj.visitor_group)
         robj.school             = Literal(obj.school, lang="en")
         robj.add(self.g)
 
