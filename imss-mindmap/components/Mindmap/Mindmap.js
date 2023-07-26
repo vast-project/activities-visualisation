@@ -85,7 +85,6 @@ function Mindmap({isItalian, setIsItalian}) {
     };
 
     const handleSubmit = (e) => {
-
         e.preventDefault();
         //------------------------
         jsondata = {
@@ -96,7 +95,7 @@ function Mindmap({isItalian, setIsItalian}) {
             description_local: null,
             activity_step: vstepid,
             visitor: 2,
-            data: JSON.stringify(formData)
+            data: JSON.stringify({})
         }
         console.log("JSON DATA")
         console.log(JSON.stringify(jsondata))
@@ -106,7 +105,7 @@ function Mindmap({isItalian, setIsItalian}) {
         // setSubmitForm(true);
         console.log(nodes);
         e.target.reset()
-
+        setSubmitForm(true);
     }
 
     const handleDeleteNode = (nodeId) => {
@@ -208,7 +207,7 @@ function Mindmap({isItalian, setIsItalian}) {
           </div> */}
             </div>
 
-            <button className={styles.btnSubmit} onClick={() => setSubmitForm(true)}>
+            <button className={styles.btnSubmit} onClick={handleSubmit}>
                 {isItalian ? "creare una mappa mentale" : "create mindmap"}
             </button>
 
