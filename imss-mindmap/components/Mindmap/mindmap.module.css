@@ -160,9 +160,10 @@
 .addBtnOpposite,
 .addBtnSequence,
 .addBtnEquivalent,
+.addBtnCustom,
 .addBtn,
 .createBtn{
-    font-family: "Curvy Thins";
+    font-family: "Curvy Thins", serif;
     color: #fff;
     letter-spacing: 0.03em;
     display: flex;
@@ -177,26 +178,9 @@
     cursor: pointer;
 }
 
-.btnCustom{
-    font-family: "Curvy Thins";
-    color: #fff;
-    /* background:#000; */
-    letter-spacing: 0.03em;
-    display: flex;
-    width: 80%;
-    align-items: center;
-    justify-content: center;
-    border-radius: 5px;
-    gap: 8px;
-    font-size: 24px;
-    border: none;
-    cursor: pointer;
-}
-
-.addBtn{
+.addBtnCustom{
     border: 2px solid #333;
     color:#333;
-    width: 100%;
 }
 
 .createdBtnsContainer{
@@ -314,7 +298,7 @@
     .addBtnOpposite,
     .addBtnSequence,
     .addBtnEquivalent,
-    .btnCustom{
+    .addBtnCustom{
         width: 100%;
     }
 }

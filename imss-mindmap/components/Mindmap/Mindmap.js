@@ -19,8 +19,8 @@ import {getCenterSubject} from "./Subject";
  */
 function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
     const [submitForm, setSubmitForm] = useState(false);
-    const [textInputValue, setTextInputValue] = useState("");
-    const [createdButtons, setCreatedButtons] = useState([]);
+    const [newRelationInputValue, setNewRelationInputValue] = useState("");
+    const [createdRelations, setCreatedRelations] = useState([]);
     let messageText = isItalian ? "Si prega di compilare questo campo" : "Please fill out this field";
 
     const initialData = [
@@ -40,11 +40,6 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
     }
 
     const addNode = (value) => {
-        const newNode = {id: v4(), category: value, input: newValue};
-        setNodes([...nodes, newNode]);
-    };
-
-    const addNewNode = (value) => {
         const newNode = {id: v4(), category: value, input: newValue};
         setNodes([...nodes, newNode]);
     };
@@ -105,14 +100,14 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
     }
 
     // Functions for Creating new Relations
-    const handleTextInputChange = (event) => {
-        setTextInputValue(event.target.value);
+    const handleNewRelationInputChange = (event) => {
+        setNewRelationInputValue(event.target.value);
     };
 
-    const handleButtonClick = () => {
-        const button = <button className={styles.addBtn}>{textInputValue}<BsPlus className={styles.plusIcon}/></button>;
-        setCreatedButtons([...createdButtons, button]);
-        setTextInputValue("");
+    const handleNewRelationBtnClick = () => {
+        // Add the current newRelationInputValue to the list of created relation types
+        setCreatedRelations([...createdRelations, newRelationInputValue]);
+        setNewRelationInputValue("");
     };
 
     return (
@@ -139,7 +134,7 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
                             placeholder={newValue}
                             onChange={(e) => handleInputChange(e, node.id)}
                             onInvalid={e => e.target.setCustomValidity(messageText)}
-                            onInput={e => e.target.setCustomValidity('')}
+                            onInput={e => e.target.setCustomValidity("")}
                             required
                         />
                         <button className={styles.removeBtn} onClick={() => handleDeleteNode(node.id)}>
@@ -162,24 +157,21 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
                     {isItalian ? "EQUIVALENZA" : "EQUIVALENT"}
                     <BsPlus className={styles.plusIcon}/>
                 </button>
-                {createdButtons.map((btn, index) => {
-                    return <button className={styles.btnCustom} onClick={() => addNewNode("")}
-                                   key={index}>{btn}</button>
+                {createdRelations.map((relation, index) => {
+                    return <button className={styles.addBtnCustom} onClick={() => addNode(relation)}
+                                   key={index}>{relation}<BsPlus className={styles.plusIcon}/></button>
                 })}
 
             </div>
 
+            {/* New Relation text input & button */}
             <div className={styles.textAndBtnContainer}>
-                <p className={styles.textInsertedValues}>{isItalian ? 'Inserisci le tue Relazioni' : 'Insert your own relations'}</p>
-                <input className={styles.textInput} type="text" value={textInputValue}
-                       onChange={handleTextInputChange}/>
-                <button className={styles.createBtn}
-                        onClick={handleButtonClick}>{isItalian ? 'Crea un pulsante' : 'Create Button'}</button>
-                {/* <div className={styles.createdBtnsContainer}>
-            {createdButtons.map((btn,index) => {
-              return <div onClick={() => addNewNode("")} key={index}>{btn}</div>
-            })}
-          </div> */}
+                <p className={styles.textInsertedValues}>{isItalian ? "Inserisci le tue Relazioni" : "Insert your own relations"}</p>
+                <input className={styles.textInput} type="text" value={newRelationInputValue}
+                       onChange={handleNewRelationInputChange}/>
+                <button className={styles.createBtn} onClick={handleNewRelationBtnClick}>
+                    {isItalian ? "Crea un pulsante" : "Create Button"}
+                </button>
             </div>
 
             <button className={styles.btnSubmit} onClick={handleSubmit}>
