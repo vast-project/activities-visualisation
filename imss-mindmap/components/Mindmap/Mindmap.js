@@ -11,6 +11,7 @@ import {BsPlus} from 'react-icons/bs';
 
 import italy from '../../public/italy-flag.png'
 import uk from '../../public/eng-flag.png'
+import {saveVisitor} from "./BackendCommunication";
 
 /**
  * Mobile version of the Mindmap component. Supports adding more than 3 concepts per predicate, as well as adding new
@@ -50,31 +51,6 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
         setIsItalian(false);
     }
 
-    /**
-     * Save the visitor data to the backend.
-     */
-    async function saveVisitor() {
-        // Define the endpoint URL
-        const apiUrl = 'https://activities-backend.vast-project.eu/rest/visitors/';
-        // const apiUrl = 'http://localhost:8000/rest/visitors/';
-
-        // Send the POST request
-        return fetch(apiUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(visitorData),
-        }).then(response => {
-            if (!response.ok) {
-                throw new Error(`Error! Status: ${response.status}`);
-            }
-            console.log("Visitor created successfully");
-        }).catch(error => {
-            console.error("Error:", error);
-        });
-    }
-
     const addNode = (value) => {
         const newId = v4();
         const newNode = {id: newId, category: value, text: "New Value", input: newValue};
@@ -90,7 +66,7 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
         e.preventDefault();
         // Save visitor data
         console.log("Saving visitor");
-        saveVisitor().then(() => {
+        saveVisitor(visitorData).then(() => {
             // Save mindmap
             console.log("Now we would save the mindmap");
             // saveMindmap();
