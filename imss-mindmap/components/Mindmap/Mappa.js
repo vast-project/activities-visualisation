@@ -9,6 +9,7 @@ import Congratulations from "../Congratulations/Congratulations"
 import italy from "../../public/italy-flag.png"
 import uk from "../../public/eng-flag.png"
 import {saveVisitor, saveMindmap} from "./BackendCommunication"
+import {getCenterSubject} from "./Subject";
 
 /**
  * The Mindmap component, showing a subject in the center and three predicates that describe it with 3 objects each.
@@ -28,7 +29,6 @@ function Mappa({isItalian, setIsItalian, routerQuery, visitorData}) {
     });
 
     let messageText = isItalian ? "Si prega di compilare questo campo" : "Please fill out this field";
-    let centerSubject = isItalian ? "Uguaglianza tra i popoli" : "Equality among people";
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -38,7 +38,7 @@ function Mappa({isItalian, setIsItalian, routerQuery, visitorData}) {
             // Create mindmap data: an object with the subject, and the objects for each predicate
             const data = {
                 product: "Mindmap",
-                subject: centerSubject,
+                subject: getCenterSubject(isItalian),
                 predicates: {
                     consequence: [formData.consequence1, formData.consequence2, formData.consequence3],
                     equivalent: [formData.equivalent1, formData.equivalent2, formData.equivalent3],
