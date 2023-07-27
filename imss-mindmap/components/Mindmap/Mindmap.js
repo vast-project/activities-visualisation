@@ -10,7 +10,7 @@ import {BsPlus} from "react-icons/bs";
 
 import italy from "../../public/italy-flag.png"
 import uk from "../../public/eng-flag.png"
-import {saveVisitor} from "./BackendCommunication";
+import {saveMindmap, saveVisitor} from "./BackendCommunication";
 import {getCenterSubject} from "./Subject";
 
 /**
@@ -54,12 +54,33 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
         // Save visitor data
         console.log("Saving visitor");
         saveVisitor(visitorData).then(() => {
+            console.log("Visitor saved, saving mindmap");
+
+            // Gather predicates from the nodes
+            let predicates = {};
+            nodes.forEach((node) => {
+                if (predicates[node.category] === undefined) {
+                    predicates[node.category] = [];
+                }
+                predicates[node.category].push(node.input);
+            });
+
+            // Create mindmap data: an object with the subject, and the objects for each predicate
+            const data = {
+                product: "Mindmap",
+                subject: getCenterSubject(isItalian),
+                predicates: predicates,
+                language: isItalian ? "it" : "en",
+                activity_step: routerQuery["activitystepid"],
+                creator_username: routerQuery["username"],
+                visitor_name: visitorData.name,
+            };
+
             // Save mindmap
-            console.log("Now we would save the mindmap");
-            // saveMindmap();
-        }).finally(() => {
-            // Show congrats
-            setSubmitForm(true);
+            saveMindmap(data).then(() => {
+                // Show congratulations
+                setSubmitForm(true);
+            });
         });
     }
 
