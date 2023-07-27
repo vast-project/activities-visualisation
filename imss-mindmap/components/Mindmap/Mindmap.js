@@ -1,17 +1,17 @@
-import React, {useState} from 'react'
-import {useRouter} from 'next/router'
-import logo from '../../public/logo.png'
-import Image from 'next/image'
-import styles from './mindmap.module.css'
-import {motion} from 'framer-motion'
-import Congratulations from '../Congratulations/Congratulations'
-import {v4} from 'uuid';
-import {FaTrash} from 'react-icons/fa';
-import {BsPlus} from 'react-icons/bs';
+import React, {useState} from "react"
+import logo from "../../public/logo.png"
+import Image from "next/image"
+import styles from "./mindmap.module.css"
+import {motion} from "framer-motion"
+import Congratulations from "../Congratulations/Congratulations"
+import {v4} from "uuid";
+import {FaTrash} from "react-icons/fa";
+import {BsPlus} from "react-icons/bs";
 
-import italy from '../../public/italy-flag.png'
-import uk from '../../public/eng-flag.png'
+import italy from "../../public/italy-flag.png"
+import uk from "../../public/eng-flag.png"
 import {saveVisitor} from "./BackendCommunication";
+import {getCenterSubject} from "./Subject";
 
 /**
  * Mobile version of the Mindmap component. Supports adding more than 3 concepts per predicate, as well as adding new
@@ -21,26 +21,14 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
     const [submitForm, setSubmitForm] = useState(false);
     const [textInputValue, setTextInputValue] = useState("");
     const [createdButtons, setCreatedButtons] = useState([]);
-    let messageText = isItalian ? 'Si prega di compilare questo campo' : 'Please fill out this field';
-    var router = useRouter();
-    var vstepid = router.query["activitystepid"];
-    var jsondata = {
-        name: null,
-        name_local: null,
-        created_by: 2,
-        description: null,
-        description_local: null,
-        activity_step: vstepid,
-        visitor: null,
-        data: null
-    };
+    let messageText = isItalian ? "Si prega di compilare questo campo" : "Please fill out this field";
 
-    const inputData = [
-        {id: 1, category: "opposto", text: "Opposites", input: isItalian ? "OPPOSTO" : "OPPOSITE"},
-        {id: 2, category: "conseguenza", text: "sequences", input: isItalian ? "CONSEGUENZA" : "CONSEQUENCE"},
-        {id: 3, category: "equivalenza", text: "equivalents", input: isItalian ? "EQUIVALENZA" : "EQUIVALENT"},
+    const initialData = [
+        {id: v4(), category: "opposite", input: ""},
+        {id: v4(), category: "consequence", input: ""},
+        {id: v4(), category: "equivalent", input: ""},
     ];
-    const [nodes, setNodes] = useState(inputData);
+    const [nodes, setNodes] = useState(initialData);
     const newValue = isItalian ? "Nuovo Valore" : "New Value";
 
     // Set Language
@@ -52,13 +40,12 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
     }
 
     const addNode = (value) => {
-        const newId = v4();
-        const newNode = {id: newId, category: value, text: "New Value", input: newValue};
+        const newNode = {id: v4(), category: value, input: newValue};
         setNodes([...nodes, newNode]);
     };
+
     const addNewNode = (value) => {
-        const newId = v4();
-        const newNode = {id: newId, category: value, text: "New Value", input: newValue};
+        const newNode = {id: v4(), category: value, input: newValue};
         setNodes([...nodes, newNode]);
     };
 
@@ -83,7 +70,7 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
     const handleInputChange = (e, nodeId) => {
         const newNodes = nodes.map((node) => {
             if (node.id === nodeId) {
-                return {...node, input: e.target.value};
+                node.input = e.target.value;
             }
             return node;
         });
@@ -123,9 +110,9 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
                     <div className={styles.mindmapInput} key={node.id}>
                         <input
                             className={
-                                node.category === "opposto" ? styles.mindmapInputOpposite
-                                    : node.category === "conseguenza" ? styles.mindmapInputSequence
-                                        : node.category === "equivalenza" ? styles.mindmapInputEquivalent
+                                node.category === "opposite" ? styles.mindmapInputOpposite
+                                    : node.category === "consequence" ? styles.mindmapInputSequence
+                                        : node.category === "equivalent" ? styles.mindmapInputEquivalent
                                             : styles.mindmapInputNewValue}
                             type="text"
                             placeholder={newValue}
@@ -142,15 +129,15 @@ function Mindmap({isItalian, setIsItalian, routerQuery, visitorData}) {
             </form>
 
             <div className={styles.btnContainer}>
-                <button className={styles.addBtnOpposite} onClick={() => addNode("opposto")}>
+                <button className={styles.addBtnOpposite} onClick={() => addNode("opposite")}>
                     {isItalian ? "OPPOSTO" : "OPPOSITE"}
                     <BsPlus className={styles.plusIcon}/>
                 </button>
-                <button className={styles.addBtnSequence} onClick={() => addNode("conseguenza")}>
+                <button className={styles.addBtnSequence} onClick={() => addNode("consequence")}>
                     {isItalian ? "CONSEGUENZA" : "CONSEQUENCE"}
                     <BsPlus className={styles.plusIcon}/>
                 </button>
-                <button className={styles.addBtnEquivalent} onClick={() => addNode("equivalenza")}>
+                <button className={styles.addBtnEquivalent} onClick={() => addNode("equivalent")}>
                     {isItalian ? "EQUIVALENZA" : "EQUIVALENT"}
                     <BsPlus className={styles.plusIcon}/>
                 </button>
