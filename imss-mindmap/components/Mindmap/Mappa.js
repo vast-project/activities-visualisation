@@ -8,6 +8,7 @@ import {motion} from "framer-motion"
 import Congratulations from "../Congratulations/Congratulations"
 import italy from "../../public/italy-flag.png"
 import uk from "../../public/eng-flag.png"
+import {saveVisitor, saveMindmap} from "./BackendCommunication"
 
 /**
  * The Mindmap component, showing a subject in the center and three predicates that describe it with 3 objects each.
@@ -29,79 +30,30 @@ function Mappa({isItalian, setIsItalian, routerQuery, visitorData}) {
     let messageText = isItalian ? "Si prega di compilare questo campo" : "Please fill out this field";
     let centerSubject = isItalian ? "Uguaglianza tra i popoli" : "Equality among people";
 
-    /**
-     * Save the visitor data to the backend.
-     */
-    async function saveVisitor() {
-        // Define the endpoint URL
-        const apiUrl = 'https://activities-backend.vast-project.eu/rest/visitors/';
-        // const apiUrl = 'http://localhost:8000/rest/visitors/';
-
-        // Send the POST request
-        return fetch(apiUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(visitorData),
-        }).then(response => {
-            if (!response.ok) {
-                throw new Error(`Error! Status: ${response.status}`);
-            }
-            console.log("Visitor created successfully");
-        }).catch(error => {
-            console.error("Error:", error);
-        });
-    }
-
-    async function saveMindmap() {
-        // Create data object with the subject, and the objects for each predicate
-        const data = {
-            product: "Mindmap",
-            subject: centerSubject,
-            predicates: {
-                consequence: [formData.consequence1, formData.consequence2, formData.consequence3],
-                equivalent: [formData.equivalent1, formData.equivalent2, formData.equivalent3],
-                opposite: [formData.opposite1, formData.opposite2, formData.opposite3],
-            },
-            language: isItalian ? "it" : "en",
-            activity_step: routerQuery["activitystepid"],
-            creator_username: routerQuery["username"],
-            visitor_name: visitorData.name,
-        };
-
-        const url = "https://activities-backend.vast-project.eu/api/save-statements";
-        // const url = "http://localhost:8000/api/save-statements";
-
-        try {
-            console.log("Saving mindmap", JSON.stringify(data));
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (response.ok) {
-                console.log("Form data submitted successfully");
-            } else {
-                console.error("Form data submission failed");
-            }
-        } catch (error) {
-            console.error("Form data submission failed:", error);
-        } finally {
-            setSubmitForm(true);
-        }
-    }
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Save visitor data
-        saveVisitor().then(() => {
+        saveVisitor(visitorData).then(() => {
+            // Create mindmap data: an object with the subject, and the objects for each predicate
+            const data = {
+                product: "Mindmap",
+                subject: centerSubject,
+                predicates: {
+                    consequence: [formData.consequence1, formData.consequence2, formData.consequence3],
+                    equivalent: [formData.equivalent1, formData.equivalent2, formData.equivalent3],
+                    opposite: [formData.opposite1, formData.opposite2, formData.opposite3],
+                },
+                language: isItalian ? "it" : "en",
+                activity_step: routerQuery["activitystepid"],
+                creator_username: routerQuery["username"],
+                visitor_name: visitorData.name,
+            };
+
             // Save mindmap
-            saveMindmap();
+            saveMindmap(data).then(() => {
+                setSubmitForm(true);
+            });
         });
     };
 
