@@ -1,6 +1,8 @@
 import requests
 import urllib.parse
 import argparse
+import os
+import sys
 
 # Initialize parser
 parser = argparse.ArgumentParser()
@@ -11,14 +13,17 @@ parser.set_defaults(local=False)
  
 # Read arguments from command line
 args = parser.parse_args()
-print(args)
+# print(args)
 
 if args.local:
     API          = "http://127.0.0.1:8000"
-    PASSWORD     = "99_JgxL,7FRq$%9"
+    PASSWORD     = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
 else:
     API          = "https://activities-backend.vast-project.eu"
-    PASSWORD     = "99_JgxL,7FRq$%9"
+    PASSWORD     = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
+
+if not PASSWORD:
+    sys.exit("environmental variable DJANGO_SUPERUSER_PASSWORD undefined")
 
 class Client:
     API          = API
