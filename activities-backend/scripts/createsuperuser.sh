@@ -23,4 +23,20 @@ usr.set_password('${DJANGO_SUPERUSER_PASSWORD}')
 usr.save()
 EOF
 fi
+
+## Add VAST AUTH 2.0 site...
+if [ -z ${VASTAUTH_SECRET+x} ]; then
+  echo "VASTAUTH_SECRET is unset";
+else
+  echo "VASTAUTH_SECRET is set, registering site...";
+  python manage.py shell << EOF
+from allauth.socialaccount.models import *
+from django.contrib.sites.models import *
+sites = Site.objects.all()
+obj = SocialApp.objects.create(provider='vastauth2', name='VAST Authentication', client_id='${VASTAUTH_CLIENTID}', secret='${VASTAUTH_SECRET}')
+obj.save()
+obj.sites.set(sites)
+EOF
+fi
+
 exit 0

@@ -171,3 +171,14 @@ response = client.post("/rest/genders/", data={
 response = client.post("/rest/genders/", data={
     "name": "Female",
 })
+
+## Declare some groups...
+response = client.post("/rest/groups/", data={
+    "name": "Aylon Lyceum",
+})
+response = client.post("/rest/groups/", data={
+    "name": "Fairy Tales Museum",
+})
+response = client.post("/rest/groups/", data={
+    "name": " Museo Galileo - Istituto e Museo di Storia della Scienza",
+})

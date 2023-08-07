@@ -1,0 +1,86 @@
+{% extends 'layouts/base-fullscreen.html' %}
+{% load i18n static admin_soft account socialaccount %}
+
+{% block content-before %}
+  {% include 'includes/navigation-fullscreen.html' %}
+{% endblock content-before %}
+
+{% block content-after %}
+  {% include 'includes/footer-fullscreen.html' %}
+{% endblock content-after %}
+
+{% block content %}
+{% endblock content %}
+
+{% block extrascript %}
+    <script type="application/javascript">
+        {% if form.username.errors %}
+            notification.danger("{{ form.username.errors }}", 'top', 'right');
+        {% endif %}
+        {% if form.password.errors %}
+            notification.danger("{{ form.password.errors }}", 'top', 'right');
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            var msg = "You are authenticated as {{ username }}, but are not authorized to " +
+                "access this page.Would you like to login to a different account ?"
+            notification.warning(msg, 'top', 'right');
+        {% endif %}
+
+        {% if form.errors and not form.non_field_errors %}
+            {% if form.errors.items|length == 1 %}
+                notification.warning("{% trans "Please correct the error below." %}", 'top', 'right');
+            {% else %}
+                notification.warning("{% trans "Please correct the errors below." %}", 'top', 'right');
+            {% endif %}
+        {% endif %}
+
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                notification.warning("{{ error|clean_text }}", 'top', 'right');
+            {% endfor %}
+        {% endif %}
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+/* Style for the "Or" section */
+.or-section {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.or-line {
+  position: relative;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.or-line:before,
+.or-line:after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background-color: #ccc;
+}
+
+.or-line:before {
+  left: 0;
+}
+
+.or-line:after {
+  right: 0;
+}
+
+.or-text {
+  display: inline-block;
+  padding: 0 10px;
+  /*background-color: #ffffff;*/
+  /*font-size: 14px;*/
+  color: #999;
+}
+</style>
+{% endblock stylesheets %}

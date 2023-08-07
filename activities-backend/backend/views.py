@@ -3,6 +3,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from backend.serializers import *
+from allauth.socialaccount.models import *
 
 
 class FilteringModelViewSet(viewsets.ModelViewSet):
@@ -314,6 +315,8 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
+    search_fields = ['username','email']
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -323,3 +326,5 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
+    search_fields = ['name']

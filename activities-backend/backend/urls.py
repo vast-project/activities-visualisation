@@ -48,6 +48,8 @@ router.register(r'applications',         views.DigitisationApplicationViewSet)
 router.register(r'qr_codes',             views.VisitorGroupQRCodeViewSet)
 router.register(r'users',                views.UserViewSet)
 router.register(r'groups',               views.GroupViewSet)
+#router.register(r'social_apps',          views.SocialAppViewSet)
+
 
 urlpatterns = [
     path('admin/',    admin.site.urls),

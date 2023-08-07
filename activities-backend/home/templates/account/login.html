@@ -1,9 +1,10 @@
-{% extends 'layouts/base-fullscreen.html' %}
-{% load i18n static admin_soft %}
+{% extends "account/base.html" %}
+{% load i18n static admin_soft account socialaccount %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block content %}
-
-  {% include 'includes/navigation-fullscreen.html' %}
+  {% get_providers as socialaccount_providers %}
 
   <main class="main-content  mt-0">
     <section>
@@ -14,15 +15,38 @@
               <div class="card card-plain mt-8">
                 <div class="card-header pb-0 text-left bg-transparent">
                   <h3 class="font-weight-bolder text-info text-gradient">
-                    Sign IN  
+                    {% trans "Sign IN" %}
                   </h3>
+		  {% if socialaccount_providers %}
+                  <p class="mb-0">{% blocktrans with site.name as site_name %}Please sign in with one
+                    of your existing third party accounts:{% endblocktrans %}</p>
+
+                  <div class="socialaccount_ballot">
+                  
+                    <ul class="socialaccount_providers">
+                      {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+                    </ul>
+                  
+                    <div class="or-section">
+                      <div class="or-line">
+                        <span class="or-text">{% trans 'or' %}</span>
+                      </div>
+                    </div>
+
+                  </div>
+                  
+                  {% include "socialaccount/snippets/login_extra.html" %}
+                  
+                  {% endif %}
+
                   <p class="mb-0">
                     {% if msg %}
                       <span class="text-danger">{{ msg | safe }}</span>
                     {% else %}
-                      Add your credentials
+		    If you have <a href="{{ signup_url }}" class="text-primary">registered</a>, please add your credentials:
                     {% endif %}                      
                   </p>
+
                 </div>
                 <div class="card-body">
                   <form role="form" method="post" action="#">
@@ -64,8 +88,6 @@
       </div>
     </section>
   </main>
-
-  {% include 'includes/footer-fullscreen.html' %}
 
 {% endblock content %}
 
