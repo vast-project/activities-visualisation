@@ -36,18 +36,8 @@ class RDFStoreObject:
     location:              Literal = None
     is_visitor:            Literal = None
 
-    # Event
-    host_organisation:     URIRef  = None
-
     # Activity
     event:                 URIRef  = None
-    date:                  Literal = None
-    date_from:             Literal = None
-    date_to:               Literal = None
-    context:               URIRef  = None
-    language:              URIRef  = None
-    nature:                Literal = None
-    education:             Literal = None
     
     # Strimulus
     uriref:                URIRef  = None
@@ -57,10 +47,21 @@ class RDFStoreObject:
     activity:              URIRef  = None
     stimulus:              URIRef  = None
 
+    # Event
+    event_activity:        URIRef  = None
+    host_organisation:     URIRef  = None
+    date:                  Literal = None
+    date_from:             Literal = None
+    date_to:               Literal = None
+    context:               URIRef  = None
+    language:              URIRef  = None
+    nature:                Literal = None
+    education:             Literal = None
+
     # VisitorGroup
     composition:           Literal = None
     nationality:           URIRef  = None
-    #education -> also on activity
+    #education -> also on Event
     mother_language:       URIRef  = None
     visitor_organisation:  URIRef  = None
     age:                   Literal = None
@@ -108,17 +109,8 @@ class RDFStoreObject:
         if (self.location):             graph.add((self.id, NAMESPACE_VAST.vastLocation, self.location))
         if (self.is_visitor):           graph.add((self.id, NAMESPACE_VAST.vastIsVisitor, self.is_visitor))
 
-        # Event
-        if (self.host_organisation):    graph.add((self.id, NAMESPACE_VAST.vastHostOrganisation, self.host_organisation))
         # Activity
         if (self.event):                graph.add((self.id, NAMESPACE_VAST.vastAssociatedEvent, self.event))
-        if (self.date):                 graph.add((self.id, NAMESPACE_VAST.vastDate, self.date))
-        if (self.date_from):            graph.add((self.id, NAMESPACE_VAST.vastDateFrom, self.date_from))
-        if (self.date_to):              graph.add((self.id, NAMESPACE_VAST.vastDateTo, self.date_to))
-        if (self.context):              graph.add((self.id, NAMESPACE_VAST.vastInContext, self.context))
-        if (self.language):             graph.add((self.id, NAMESPACE_VAST.vastTongue, self.language))
-        if (self.nature):               graph.add((self.id, NAMESPACE_VAST.vastNature, self.nature))
-        if (self.education):            graph.add((self.id, NAMESPACE_VAST.vastEducation, self.education))
 
         # stimulus
         if (self.stimulus_type):        graph.add((self.id, RDF.type, self.stimulus_type))
@@ -127,6 +119,19 @@ class RDFStoreObject:
         # ActivityStep
         if (self.activity):             graph.add((self.activity, NAMESPACE_VAST.vastStep, self.id))
         if (self.stimulus):             graph.add((self.id, NAMESPACE_VAST.vastStimulus, self.stimulus))
+
+        # Event
+        if (self.event_activity):
+                                        graph.add((self.id, NAMESPACE_VAST.vastAssociatedActivity, self.event_activity))
+                                        graph.add((self.event_activity, NAMESPACE_VAST.vastAssociatedEvent, self.id))
+        if (self.host_organisation):    graph.add((self.id, NAMESPACE_VAST.vastHostOrganisation, self.host_organisation))
+        if (self.date):                 graph.add((self.id, NAMESPACE_VAST.vastDate, self.date))
+        if (self.date_from):            graph.add((self.id, NAMESPACE_VAST.vastDateFrom, self.date_from))
+        if (self.date_to):              graph.add((self.id, NAMESPACE_VAST.vastDateTo, self.date_to))
+        if (self.context):              graph.add((self.id, NAMESPACE_VAST.vastInContext, self.context))
+        if (self.language):             graph.add((self.id, NAMESPACE_VAST.vastTongue, self.language))
+        if (self.nature):               graph.add((self.id, NAMESPACE_VAST.vastNature, self.nature))
+        if (self.education):            graph.add((self.id, NAMESPACE_VAST.vastEducation, self.education))
 
         # VisitorGroup
         if (self.composition):          pass
@@ -325,11 +330,6 @@ class RDFStoreVAST:
         robj.is_visitor = Literal(obj.is_visitor, lang="en")
         robj.add(self.g)
 
-    def Event(self, obj): # RDF Checked
-        robj = self.createVASTObject(obj, self.vast.vastEvent)
-        robj.host_organisation = self.getURIRef(self.vast.vastOrganisation, obj.host_organisation)
-        robj.add(self.g)
-
     def Context(self, obj): # RDF Checked
         robj = self.createVASTObject(obj, self.vast.vastContext)
 
@@ -339,15 +339,6 @@ class RDFStoreVAST:
 
     def Activity(self, obj):
         robj = self.createVASTObject(obj, self.vast.vastActivity)
-        robj.event       = self.getURIRef(self.vast.vastEvent, obj.event)
-        robj.date        = self.serialiseDateTime(obj.date)
-        robj.date_from   = self.serialiseDateTime(obj.date_from)
-        robj.date_to     = self.serialiseDateTime(obj.date_to)
-        robj.context     = self.getURIRef(self.vast.vastContext, obj.context)
-        robj.language    = Literal(obj.language, lang="en")
-        robj.nature      = self.getLiteral(obj.nature)
-        robj.education   = self.getLiteral(obj.education)
-        robj.add(self.g)
 
     def Stimulus(self, obj): # RDF Checked
         robj = self.createVASTObject(obj, self.vast.vastStimulus)
@@ -362,7 +353,8 @@ class RDFStoreVAST:
                 robj.stimulus_type = URIRef(NAMESPACE_VAST.vastVideo)
             case "Tool":
                 robj.stimulus_type = URIRef(NAMESPACE_VAST.vastTool)
-        robj.uriref        = URIRef(obj.uriref)
+        if obj.uriref:
+            robj.uriref = URIRef(obj.uriref)
         robj.add(self.g)
 
     def ActivityStep(self, obj): # RDF Checked
@@ -376,6 +368,19 @@ class RDFStoreVAST:
 
     def Education(self, obj): # RDF Checked
         robj = self.createVASTObject(obj, self.vast.vastEducation)
+
+    def Event(self, obj): # RDF Checked
+        robj = self.createVASTObject(obj, self.vast.vastEvent)
+        robj.host_organisation = self.getURIRef(self.vast.vastOrganisation, obj.host_organisation)
+        robj.event_activity    = self.getURIRef(self.vast.vastActivity, obj.activity)
+        robj.date              = self.serialiseDateTime(obj.date)
+        robj.date_from         = self.serialiseDateTime(obj.date_from)
+        robj.date_to           = self.serialiseDateTime(obj.date_to)
+        robj.context           = self.getURIRef(self.vast.vastContext, obj.context)
+        robj.language          = Literal(obj.language, lang="en")
+        robj.nature            = self.getLiteral(obj.nature)
+        robj.education         = self.getLiteral(obj.education)
+        robj.add(self.g)
 
     def Gender(self, obj): # RDF Checked
         robj = self.createVASTObject(obj, self.vast.vastGender)

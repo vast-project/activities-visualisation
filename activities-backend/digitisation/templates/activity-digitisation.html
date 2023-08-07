@@ -1,0 +1,31 @@
+{% extends 'layouts/base.html' %}
+{% load i18n static crispy_forms_tags %}
+
+{% block head %}
+{{ wizard.form.media }}
+{% endblock %}
+
+{% block title %}Activity Digitisation Wizard{% endblock %}
+
+{% block content %}
+<p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+<form action="" method="post">
+{% csrf_token %}
+<table>
+{{ wizard.management_form }}
+{% if wizard.form.forms %}
+    {{ wizard.form.management_form }}
+    {% for form in wizard.form.forms %}
+        {{ form.as_table }}
+    {% endfor %}
+{% else %}
+    {{ wizard.form }}
+{% endif %}
+</table>
+{% if wizard.steps.prev %}
+<button name="wizard_goto_step" type="submit" class="btn btn-primary" value="{{ wizard.steps.first }}" formnovalidate>{% translate "First Step" %}</button>
+<button name="wizard_goto_step" type="submit" class="btn btn-primary" value="{{ wizard.steps.prev }}" formnovalidate>{% translate "Prev Step" %}</button>
+{% endif %}
+<input type="submit" class="default btn btn-success" value="{% translate "Save" %}" name="_save"/>
+</form>
+{% endblock content %}

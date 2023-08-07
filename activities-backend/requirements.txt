@@ -7,8 +7,14 @@ django-environ
 django-filter
 django-cors-headers
 django-cleanup
+django-formtools
+django-crispy-forms
+crispy-bootstrap5
+whitenoise
+django-admin-soft-dashboard
 pillow
 qrcode
 rdflib
 python-dotenv
 requests
+markdown

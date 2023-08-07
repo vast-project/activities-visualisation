@@ -51,7 +51,7 @@ class VASTObject(AutoUpdateTimeFields):
     def __str__(self):
         return f'{self.name}'
 
-    class Meta:
+    class Meta(AutoUpdateTimeFields.Meta):
         abstract = True
 
     def save(self, *args, **kwargs):
@@ -61,11 +61,11 @@ class VASTObject(AutoUpdateTimeFields):
 
 class VASTObject_NameUnique(VASTObject):
     name              = models.CharField(max_length=255, default=None, unique=True, null=False, blank=False)
-    class Meta:
+    class Meta(VASTObject.Meta):
         abstract = True
 
 class VASTObject_NameUserGroupUnique(VASTObject):
-    class Meta:
+    class Meta(VASTObject.Meta):
         abstract = True
         # Enforce a policy for the name to be unique (for each user)
         unique_together = [["name", "created_by"]]
@@ -90,10 +90,6 @@ class Organisation(VASTObject_NameUserGroupUnique):
 class Class(VASTObject_NameUnique):
     pass
 
-## Events...
-class Event(VASTObject_NameUserGroupUnique):
-    host_organisation = models.ForeignKey('Organisation', on_delete=models.CASCADE, default=None, null=False, blank=False)
-
 ## Contexts...
 class Context(VASTObject_NameUserGroupUnique):
     pass
@@ -103,28 +99,31 @@ class Nature(VASTObject_NameUnique):
     pass
 
 class Activity(VASTObject_NameUserGroupUnique):
-    event             = models.ForeignKey('Event',        on_delete=models.CASCADE, null=False, blank=False)
-    date              = models.DateTimeField(default=None, null=True, blank=True)
-    date_from         = models.DateTimeField(default=None, null=True, blank=True)
-    date_to           = models.DateTimeField(default=None, null=True, blank=True)
-    context           = models.ForeignKey('Context',      on_delete=models.CASCADE, null=False, blank=False)
-    language          = models.ForeignKey('Language',     on_delete=models.CASCADE, null=True, blank=True, related_name='activity_language')
-    nature            = models.ForeignKey('Nature',       on_delete=models.CASCADE, default=None, null=True, blank=True)
-    education         = models.ForeignKey('Education',    on_delete=models.CASCADE, default=None, null=True, blank=True)
-
-    class Meta:
+    class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Activities'
 
 class Stimulus(VASTObject_NameUserGroupUnique):
     uriref            = models.URLField(max_length=512, default=None, null=True, blank=True)
     stimulus_type     = models.CharField(max_length=16, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool')], null=False, blank=False)
 
-    class Meta:
+    class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Stimuli'
 
 class ActivityStep(VASTObject_NameUserGroupUnique):
     activity          = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None, null=False, blank=False)
     stimulus          = models.ForeignKey('Stimulus',     on_delete=models.CASCADE, default=None, null=False, blank=False)
+
+## Events...
+class Event(VASTObject_NameUserGroupUnique):
+    activity          = models.ForeignKey('Activity',     on_delete=models.CASCADE, null=False, blank=False)
+    date              = models.DateTimeField(default=None, null=True, blank=True)
+    date_from         = models.DateTimeField(default=None, null=True, blank=True)
+    date_to           = models.DateTimeField(default=None, null=True, blank=True)
+    context           = models.ForeignKey('Context',      on_delete=models.CASCADE, null=False, blank=False)
+    host_organisation = models.ForeignKey('Organisation', on_delete=models.CASCADE, default=None, null=False, blank=False)
+    language          = models.ForeignKey('Language',     on_delete=models.CASCADE, null=True, blank=True, related_name='event_language')
+    nature            = models.ForeignKey('Nature',       on_delete=models.CASCADE, default=None, null=True, blank=True)
+    education         = models.ForeignKey('Education',    on_delete=models.CASCADE, default=None, null=True, blank=True)
 
 ## Visitor fields...
 class Age(VASTObject_NameUnique):
@@ -137,7 +136,7 @@ class Gender(VASTObject_NameUnique):
     pass
 
 class Nationality(VASTObject_NameUnique):
-    class Meta:
+    class Meta(VASTObject_NameUnique.Meta):
         verbose_name_plural = 'Nationalities'
 
 # Visitors...

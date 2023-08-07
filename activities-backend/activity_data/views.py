@@ -16,7 +16,6 @@ from .models import Nationality
 from .models import VisitorGroup
 from .utils import VASTRepositoryAPIView
 
-
 class ProductView(VASTRepositoryAPIView):
     # Create a new instance. (POST)
     def create(self, request):

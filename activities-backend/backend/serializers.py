@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
+from rest_framework.request import Request
 from rest_framework.fields import CurrentUserDefault
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
@@ -30,6 +31,15 @@ class AutoUserModelSerializer(serializers.Serializer):
         if self.instance is None:
             """Include default for read_only `created_by` field"""
             kwargs["created_by"] = self.fields["created_by"].get_default()
+            
+        request = self.context.get("request")
+        if request.user.is_authenticated:
+            kwargs["created_by"] = request.user
+        elif  request.user.is_anonymous: # AnonymousUser code
+            kwargs["created_by"] = None
+            # Get created_by value from the POST request
+            created_by_id = request.data.get('created_by', User.objects.get(username='default_user').id)
+            kwargs["created_by"] = User.objects.get(id=created_by_id)
         return super().save(**kwargs)
 
 class LanguageSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):

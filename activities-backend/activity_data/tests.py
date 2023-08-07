@@ -90,14 +90,29 @@ class ProductModelTests(TestCase):
             "is_visitor": "Yes"
         })
 
-    def setUp_event_add(self):
-        response = self.post("/rest/events/", data={
-            "name": "Museo Galileo Event",
-            "description": "An event by Museo Galileo",
-            "name_local": "Museo Galileo Event",
-            "description_local": "An event by Museo Galileo in Italian",
-            "language_local": "/rest/languages/3/",          # Italian
-            "host_organisation": "/rest/organisations/1/",   # Museo Galileo
+    def setUp_activity_add(self):
+        response = self.post("/rest/activities/", data={
+            "name": "Museo Galileo Default Activity",
+            "description": "A default activity in Museo Galileo",
+            "name_local": "Museo Galileo Default Activity",
+            "description_local": "A default activity in Museo Galileo in Italian",
+            "language_local": "/rest/languages/3/", # Italian
+        })
+
+    def setUp_stimulus_add(self):
+        response = self.post("/rest/stimuli/", data={
+            "name": "Video",
+            "description": "A performance in Museo Galileo",
+            "uriref": "https://www.youtube.com/channel/UC2oyweCFfvyP66hmsaU1aUA",
+            "stimulus_type": "Video"
+        })
+
+    def setUp_activity_step_add(self):
+        response = self.post("/rest/activity_steps/", data={
+            "name": "Default Activity Step",
+            "description": "The only activity step in activity",
+            "activity": "/rest/activities/1/",
+            "stimulus": "/rest/stimuli/1/"
         })
 
     def setUp_context_add(self):
@@ -127,36 +142,21 @@ class ProductModelTests(TestCase):
             "language_local": "/rest/languages/3/" # Italian
         })
 
-    def setUp_activity_add(self):
-        response = self.post("/rest/activities/", data={
-            "name": "Museo Galileo Default Activity",
-            "description": "A default activity in Museo Galileo",
-            "name_local": "Museo Galileo Default Activity",
-            "description_local": "A default activity in Museo Galileo in Italian",
-            "language_local": "/rest/languages/3/", # Italian
-            "event": "/rest/events/1/",             # Museo Galileo Event
+    def setUp_event_add(self):
+        response = self.post("/rest/events/", data={
+            "name": "Museo Galileo Event",
+            "description": "An event by Museo Galileo",
+            "name_local": "Museo Galileo Event",
+            "description_local": "An event by Museo Galileo in Italian",
+            "language_local": "/rest/languages/3/",          # Italian
+            "host_organisation": "/rest/organisations/1/",   # Museo Galileo
+            "activity": "/rest/activities/1/",               # Museo Galileo Default Activity
             "context": "/rest/contexts/1/",         # Museo Galileo VAST Participation
             "language": "/rest/languages/3/",       # Italian
             "nature": "/rest/natures/2/",           # On-site
             "education": "/rest/educations/1/",     # Secondary School
             "date_from": "2020-12-01T00:00:00",
             "date_to":   "2024-02-24T23:59:59"
-        })
-
-    def setUp_stimulus_add(self):
-        response = self.post("/rest/stimuli/", data={
-            "name": "Video",
-            "description": "A performance in Museo Galileo",
-            "uriref": "https://www.youtube.com/channel/UC2oyweCFfvyP66hmsaU1aUA",
-            "stimulus_type": "Video"
-        })
-
-    def setUp_activity_step_add(self):
-        response = self.post("/rest/activity_steps/", data={
-            "name": "Default Activity Step",
-            "description": "The only activity step in activity",
-            "activity": "/rest/activities/1/",
-            "stimulus": "/rest/stimuli/1/"
         })
 
     def setUp_age_add(self):
@@ -252,13 +252,13 @@ class ProductModelTests(TestCase):
         self.setUp_language_add()
         self.setUp_organisation_type_add()
         self.setUp_organisation_add()
-        self.setUp_event_add()
-        self.setUp_context_add()
-        self.setUp_nature_add()
-        self.setUp_education_add()
         self.setUp_activity_add()
         self.setUp_stimulus_add()
         self.setUp_activity_step_add()
+        self.setUp_context_add()
+        self.setUp_nature_add()
+        self.setUp_education_add()
+        self.setUp_event_add()
         self.setUp_age_add()
         self.setUp_gender_add()
         self.setUp_nationality_add()

@@ -1,0 +1,84 @@
+{% load static crispy_forms_tags %}
+
+<div id="formset-holder-{{ formset.prefix }}" class="formset-holder-{{ formset.prefix }} {{ formset_id }}">
+<div class="buttonHolder clearfix">
+  <button id="button-id-add-{{ formset_id }}" class="float-end btn add-form add-form-{{ formset_id }}"><svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#008040}</style><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM200 344V280H136c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V168c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H248v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"/></svg></button>
+</div>
+{% if formset.form %}
+  {% if formset.helper %}
+    {% crispy formset.form formset.helper %}
+  {% else %}
+    {% crispy formset.form %}
+  {% endif %}
+{% else %}
+  {{ formset.management_form|crispy }}
+  {% for form in formset.forms %}
+    {% for hidden in form.hidden_fields %}
+      {{ hidden|as_crispy_field }}
+    {% endfor %}
+    {% crispy form %}
+  {% endfor %}
+{% endif %}
+</div>
+<br>
+
+<script type="text/javascript">
+window.django.jQuery(document).ready(function($) {
+    function removeRowButton_{{ formset_id }}_{{ formset.prefix }}() {
+        return '<td class="form-remove"><button id="button-id-remove-{{ formset_id }}" class="btn remove-form remove-form-{{ formset_id }}"><svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><style>svg{fill:#ff0080}</style><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm88 200H296c13.3 0 24 10.7 24 24s-10.7 24-24 24H152c-13.3 0-24-10.7-24-24s10.7-24 24-24z"/></svg></button></td>'
+    };
+
+    function addForm_{{ formset_id }}_{{ formset.prefix }}(newFormIdx) {
+        var newForm = $('.{{ formset_id }} .empty-form').html().replace(/__prefix__/g, newFormIdx);
+	$('.{{ formset_id }} tr:last').after('<tr class="form-row-added form-row-added-{{ formset.prefix }}">'+newForm+removeRowButton_{{ formset_id }}_{{ formset.prefix }}()+'</tr>');
+    };
+
+    /*
+    function updateInitialFormCount_{{ formset_id }}_{{ formset.prefix }}() {
+      var totalForms = parseInt($('#id_{{ formset.prefix }}-TOTAL_FORMS').val());
+      $('#id_{{ formset.prefix }}-MIN_NUM_FORMS').val(totalForms);
+    };
+    */
+
+    function addMissingRows_{{ formset_id }}_{{ formset.prefix }}() {
+      var formCount = parseInt($('#id_{{ formset.prefix }}-TOTAL_FORMS').val());
+      var rowCount  = $('.{{ formset_id }} tr').length - 2; // Minus head & empty rows
+      // If formCount > 1, django returned more than one rows. Add the delete buttons...
+      if (formCount > 1) {
+        var extra_rows = $('.{{ formset_id }} tr').slice(3); // 0-indexed, skip header & empty rows
+	for (let i = 0; i < extra_rows.length; i++) {
+          $(extra_rows[i]).find('td:last').after(removeRowButton_{{ formset_id }}_{{ formset.prefix }}());
+        };
+      }
+      var diff = formCount - rowCount;
+      if (diff > 0) {
+        console.info("Number of forms:", formCount, "Number of rows:", rowCount);
+	for (var newFormIdx = rowCount; newFormIdx < formCount; newFormIdx++) {
+	  addForm_{{ formset_id }}_{{ formset.prefix }}(newFormIdx);
+	}
+      }
+      // updateInitialFormCount_{{ formset_id }}_{{ formset.prefix }}();
+    };
+
+    $('.{{ formset_id }} .add-form').click(function(e) {
+        e.preventDefault();
+        var formCount = parseInt($('#id_{{ formset.prefix }}-TOTAL_FORMS').val());
+	addForm_{{ formset_id }}_{{ formset.prefix }}(formCount);
+        $('#id_{{ formset.prefix }}-TOTAL_FORMS').val(formCount + 1);
+	// updateInitialFormCount_{{ formset_id }}_{{ formset.prefix }}()
+	console.error(formCount, '->', $('#id_{{ formset.prefix }}-TOTAL_FORMS').val(), $('#id_{{ formset.prefix }}-TOTAL_FORMS'));
+    });
+
+    $(document).on('click', '.remove-form', function(e) {
+        $(this).closest('.form-row-added').remove();
+        var formCount = parseInt($('#id_{{ formset.prefix }}-TOTAL_FORMS').val());
+	if (formCount > 2) {
+          $('#id_{{ formset.prefix }}-TOTAL_FORMS').val(formCount - 1);
+	}
+        //e.preventDefault();
+    });
+
+    addMissingRows_{{ formset_id }}_{{ formset.prefix }}();
+
+});
+</script>

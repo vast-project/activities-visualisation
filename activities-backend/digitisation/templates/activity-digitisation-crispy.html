@@ -1,0 +1,49 @@
+{% extends 'layouts/base.html' %}
+{% load i18n admin_urls static admin_modify crispy_forms_tags %}
+
+{% block head %}
+<!--{{ wizard.form.media }}-->
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+    {{ wizard.form.media }}
+    <script type="text/javascript" src="{% static 'js/htmx.min.js' %}"></script>
+{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <!--<link rel="stylesheet" type="text/css" href="{% static "css/forms.css" %}">-->
+{% endblock %}
+
+{% block title %}Activity Digitisation Wizard{% endblock %}
+
+{% block content %}
+<!--
+<p>Crispy!</p>
+<p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
+-->
+<form action="" method="post" class="form-horizontal">
+{% csrf_token %}
+{{ wizard.management_form }}
+{% if wizard.form.forms %}
+    {{ wizard.form.management_form }}
+    {% for form in wizard.form.forms %}
+	{% crispy form %}
+    {% endfor %}
+{% else %}
+    {% crispy wizard.form %}
+{% endif %}
+{% if wizard.steps.prev %}
+<button name="wizard_goto_step" type="submit" class="btn btn-primary" value="{{ wizard.steps.first }}" formnovalidate>{% translate "First Step" %}</button>
+<button name="wizard_goto_step" type="submit" class="btn btn-primary" value="{{ wizard.steps.prev }}" formnovalidate>{% translate "Prev Step" %}</button>
+{% endif %}
+<input type="submit" class="default btn btn-success" value="{% translate "Next" %}" name="_next"/>
+</form>
+<script>
+    document.body.addEventListener('htmx:configRequest', (event) => {
+    event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+    })
+</script>
+{% endblock content %}

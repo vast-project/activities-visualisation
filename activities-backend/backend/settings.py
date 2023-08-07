@@ -55,6 +55,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Application definition
 
 INSTALLED_APPS = [
+    'admin_soft.apps.AdminSoftDashboardConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -65,7 +66,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters', # Filtering for django rest
     'activity_data',
+    'digitisation',
+    'home',
     'corsheaders',
+    'formtools',
+    'crispy_forms',
+    'crispy_bootstrap5',
 
     # django-allauth
     'django.contrib.sites',
@@ -78,23 +84,29 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig', # This must be always at the end!
 ]
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
 
+HOME_TEMPLATES = os.path.join(BASE_DIR, 'home', 'templates')
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [HOME_TEMPLATES, os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -171,7 +183,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 #CORS ALLOWED ORIGINS
+CORS_ORIGIN_ALLOW = True
 CORS_ORIGIN_ALLOW_ALL=True
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",
+]
+CORS_ALLOW_ALL_ORIGINS=True
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
