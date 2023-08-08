@@ -14,6 +14,19 @@ class ReadonlyFieldsAdmin(admin.ModelAdmin):
                 fields.append("uriref")
         return fields
 
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        
+        # Rearrange the fields to have 'name' as the first field
+        for section_name, section_options in fieldsets:
+            if 'name' in section_options['fields']:
+                section_options['fields'] = ('name',) + tuple(
+                    field for field in section_options['fields'] if field != 'name'
+                )
+                break
+        
+        return fieldsets
+
 class FilterUserObjectsAdmin(ReadonlyFieldsAdmin):
     # Preselect the current user...
     def get_changeform_initial_data(self, request):

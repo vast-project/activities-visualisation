@@ -49,6 +49,21 @@ qrcode_wizard=ActivityDigitisationWizardView.as_view(
 )
 
 ##
+## Visitor Wizard
+##
+visitor_wizard = ActivityDigitisationWizardView.as_view(
+    form_list = (
+        ('ask_visitor', SelectVisitorForm),
+        ('add_visitor', VisitorForm),
+    ),
+    condition_dict = {
+        'add_visitor':  lambda wizard: SelectVisitorForm.addNew(wizard, 'ask_visitor'),
+    },
+    extra_context = { 'segment': 'visitor-wizard' },
+    url_name='visitor-wizard-step', done_step_name='finished'
+)
+
+##
 ## URLs
 ##
 urlpatterns = [
@@ -58,4 +73,6 @@ urlpatterns = [
     path('wizard/event-visitorgroup', event_visitorgroup_wizard, name='event-visitorgroup-wizard'),
     re_path(r'^wizard/visitorgroupqrcode/(?P<step>.+)/$', qrcode_wizard, name='visitorgroupqrcode-wizard-step'),
     path('wizard/visitorgroupqrcode', qrcode_wizard, name='visitorgroupqrcode-wizard'),
+    re_path(r'^wizard/visitor/(?P<step>.+)/$', visitor_wizard, name='visitor-wizard-step'),
+    path('wizard/visitor', visitor_wizard, name='visitor-wizard'),
 ]

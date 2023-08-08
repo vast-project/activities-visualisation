@@ -138,12 +138,14 @@ class VASTForm(ModelForm, CrispyForm):
     class Meta:
         exclude = ('uuid', 'created', 'updated', 'name_md5', '_id', 'id', 'qr_code', 'uriref')
         widgets = {
-            "date":       AdminSplitDateTime(),
-            "date_from":  AdminSplitDateTime(),
-            "date_to":    AdminSplitDateTime(),
-            "created_by": forms.HiddenInput(),
+            "date":          AdminSplitDateTime(),
+            "date_from":     AdminSplitDateTime(),
+            "date_to":       AdminSplitDateTime(),
+            "date_of_visit": AdminSplitDateTime(),
+            "created_by":    forms.HiddenInput(),
         }
         formfield_callback = formfield_for_dbfield
+        field_order = ('name',)
 
     class Media:
         js = [
@@ -305,6 +307,10 @@ class VisitorGroupQRCodeForm(VASTForm):
     class Meta(VASTForm.Meta):
         model = VisitorGroupQRCode
 
+class VisitorForm(VASTForm):
+    class Meta(VASTForm.Meta):
+        model = Visitor
+
 ##
 ## Wizard forms
 ##
@@ -423,3 +429,19 @@ In this step, please decide if you are going to re-use an existing {self.verbose
 
     def headerTableMarkdown(self):
         return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Visitor Groups QR Codes', 'visitorgroupqrcode')}**)"
+
+
+class SelectVisitorForm(SelectModelForm):
+    class Meta:
+        model = Visitor
+
+    def headerMarkdown(self):
+        return f"""
+# {self.verbose_name} Model ({{{{ wizard.steps.step1 }}}}/{{{{ wizard.steps.count }}}})
+The **{self.verbose_name}** represents a visitor that has participated in an activity event, and has produced a set of products (one or more products for each activity step).
+
+In this step, please decide if you are going to re-use an existing {self.verbose_name}, or create a new {self.verbose_name}.
+"""
+
+    def headerTableMarkdown(self):
+        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Visitors', self.modelName)}**)"

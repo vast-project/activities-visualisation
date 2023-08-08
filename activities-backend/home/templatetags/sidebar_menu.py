@@ -10,5 +10,6 @@ def sidebar_menu():
         {'title': 'Add Activity', 'url': 'activity-wizard'},
         {'title': 'Add Event',    'url': 'event-visitorgroup-wizard'},
         {'title': 'Add QR Code',  'url': 'visitorgroupqrcode-wizard'},
+        {'title': 'Add Visitor',  'url': 'visitor-wizard'},
     )
     return {'sidebar_menu_items': menu_items}

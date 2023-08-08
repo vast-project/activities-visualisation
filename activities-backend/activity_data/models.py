@@ -158,8 +158,7 @@ class Visitor(VASTObject):
     nationality          = models.ForeignKey('Nationality',  on_delete=models.CASCADE, default=None, null=True, blank=True)
     mother_language      = models.ForeignKey('Language',     on_delete=models.CASCADE, default=None, null=True, blank=True, related_name='mother_language')
     activity             = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None, null=False, blank=False)
-    visitor_group        = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None, null=True, blank=True)
-    school               = models.CharField(max_length=255,  default=None, null=True, blank=True)
+    visitor_group        = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None, null=False, blank=False)
 
 ## Products...
 class ProductType(VASTObject_NameUnique):
