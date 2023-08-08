@@ -195,11 +195,11 @@ response = client.post("/rest/applications/", data={
 })
 
 ## Declare some sidebar menu items...
-response = client.post("/rest/sidebar_menu_items/", data={
-    "title": "Add Event",
-    "url":   "activity-event-visitorgroup-wizard"
-})
-response = client.post("/rest/sidebar_menu_items/", data={
-    "title": "Add QR Code",
-    "url":   "visitorgroupqrcode-wizard"
-})
+# response = client.post("/rest/sidebar_menu_items/", data={
+#     "title": "Add Event",
+#     "url":   "activity-event-visitorgroup-wizard"
+# })
+# response = client.post("/rest/sidebar_menu_items/", data={
+#     "title": "Add QR Code",
+#     "url":   "visitorgroupqrcode-wizard"
+# })

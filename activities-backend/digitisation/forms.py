@@ -256,10 +256,17 @@ class ActivityForm(VASTForm):
 
     def save(self, commit=True):
         #print("save:", commit)
-        instance = super().save(commit)
-        instances = self.activity_steps.save(commit)
-        #print("Activity:", instance)
-        #print("Steps:", instances)
+        if commit:
+            instance = super().save(commit)
+            instances = self.activity_steps.save(False)
+            for obj in instances:
+                obj.activity = instance
+                obj.save(commit)
+        else:
+            instance = super().save(commit)
+            instances = self.activity_steps.save(commit)
+            #print("Activity:", instance)
+            #print("Steps:", instances)
         return instance, ( ('activity',), instances)
 
     def save_m2m():
@@ -313,7 +320,7 @@ class SelectModelForm(CrispyForm):
         required=True,
         label="Please select an option:"
     )
-    
+
     @property
     def verbose_name(self):
         return getattr(self._meta.model, 'verbose_name', str(self._meta.model.__name__))
@@ -321,7 +328,7 @@ class SelectModelForm(CrispyForm):
     @property
     def verbose_name_plural(self):
         return getattr(self._meta.model, 'verbose_name_plural', str(self._meta.model.__name__))
-    
+
     def __init__(self, *args, **kwargs):
         self._meta = self.Meta()
         super().__init__(*args, **kwargs)
