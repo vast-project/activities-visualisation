@@ -5,10 +5,14 @@ from .models import *
 
 class ReadonlyFieldsAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
+        fields = ()
         if obj:
-            return ["created_by", "qr_code", "uriref"]
-        else:
-            return []
+            fields = ["created_by"]
+            if getattr(obj, "qr_code", False):
+                fields.append("qr_code")
+            if getattr(obj, "uriref", False):
+                fields.append("uriref")
+        return fields
 
 class FilterUserObjectsAdmin(ReadonlyFieldsAdmin):
     # Preselect the current user...
