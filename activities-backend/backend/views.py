@@ -328,3 +328,13 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
     search_fields = ['name']
+
+class SidebarMenuItemViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = SidebarMenuItem.objects.all()
+    serializer_class = SidebarMenuItemSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
+    search_fields = ['title']

@@ -6,6 +6,7 @@ from rest_framework.fields import CurrentUserDefault
 from rest_framework.validators import UniqueTogetherValidator, UniqueValidator
 
 from activity_data.models import *
+from home.models import *
 from allauth.socialaccount.models import *
 
 class UserSerializerURL(serializers.HyperlinkedModelSerializer):
@@ -209,4 +210,9 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class SocialAppSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = SocialApp
+        fields = '__all__'
+
+class SidebarMenuItemSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = SidebarMenuItem
         fields = '__all__'
