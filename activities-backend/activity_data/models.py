@@ -205,7 +205,7 @@ class VisitorGroupQRCode(VASTObject):
     visitor_group        = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None, null=False, blank=False)
     application          = models.ForeignKey('DigitisationApplication', on_delete=models.CASCADE, default=None, null=False, blank=False)
     qr_code              = models.ImageField(upload_to='qr_codes', default=None, null=True, blank=True)
-    uriref               = models.URLField(max_length=255, null=True, blank=True, editable=False)
+    uriref               = models.URLField(max_length=255, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         frontend_url = self.application.uriref # No need for check, this will be checked during application object creation...

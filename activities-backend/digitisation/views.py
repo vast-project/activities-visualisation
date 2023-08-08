@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
+from django.template.response import TemplateResponse
 
 ##
 ## Form Wizards
@@ -13,8 +14,10 @@ from activity_data.admin import *
 from activity_data.models import *
 
 class ActivityDigitisationWizardView(LoginRequiredMixin, NamedUrlSessionWizardView):
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'qr_codes'))
     template_name = "activity-digitisation-crispy.html"
     #template_name = "activity-digitisation.html"
+    wizard_done_template = "pages/wizard-done.html"
 
     instances = {
         #'activity': Activity.objects.all().first(),
@@ -80,25 +83,42 @@ class ActivityDigitisationWizardView(LoginRequiredMixin, NamedUrlSessionWizardVi
             instances = form.save(commit=False)
             user = self.get_current_user()
             if isinstance(instances, tuple):
-                # If result is a tuple, it is a model instance, that has a list of formsets.
+                # If result is a tuple, it is a model instance,
+                # that has a list of formsets.
                 instance = instances[0]
             else:
                 instance = instances
+            # Save the main instance...
             instance.created_by = user
-            # instance.save()
-            # form.save_m2m()
-            match self.steps.current:
-                case 'add_activity':
-                    self.instances['activity'] = instance
+            instance.save()
+            # Iterate over formsets, and save all instances...
+            if isinstance(instances, tuple):
+                for formset in instances[1:]:
+                    # The first tuple is the set of properties...
+                    attrs = formset[0]
+                    for inst in formset[1]:
+                        inst.created_by = user
+                        for attr in attrs:
+                            setattr(inst, attr, instance)
+                            inst.save()
+            form.save_m2m()
+            # match self.steps.current:
+            #     case 'add_activity':
+            #         self.instances['activity'] = instance
         # data = super().process_step(form)
         return super().process_step(form)
 
     def done(self, form_list, form_dict, **kwargs):
-        print("Form dict:", form_dict)
+        #print("Form dict:", form_dict)
         for form_name in form_dict:
             print("Form:", form_name, form_dict[form_name].cleaned_data, form_dict[form_name].data)
-        data = {}
-        for form in form_list:
-            data.update(form.cleaned_data)
-        print("Form data:", data)
-        return HttpResponseRedirect('/')
+        # data = {}
+        # for form in form_list:
+        #     data.update(form.cleaned_data)
+        # print("Form data:", data)
+        return TemplateResponse(self.request, self.wizard_done_template, {
+            'form_list': form_list,
+            'form_dict': form_dict,
+        })
+        return self.render_done(form_list, **kwargs)
+        #return HttpResponseRedirect('/')

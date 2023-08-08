@@ -1,3 +1,4 @@
+from django.core.files.storage import FileSystemStorage
 from django.forms import Form, ModelForm, DateTimeInput, SplitDateTimeWidget
 from django.forms.models import inlineformset_factory, modelformset_factory
 from django import forms
@@ -14,8 +15,14 @@ from activity_data.admin import *
 from markdown import markdown
 import re
 import copy
+import os
 
 def formfield_for_dbfield(db_field, **kwargs):
+    match db_field.name:
+        case "date" | "date_from" | "date_to":
+            # Change the form field for dates to a SplitDateTimeField
+            return forms.SplitDateTimeField(**kwargs)
+
     formfield = db_field.formfield(**kwargs)
     # ForeignKey or ManyToManyFields
     if isinstance(db_field, (models.ForeignKey, models.ManyToManyField)):
@@ -67,7 +74,7 @@ class CrispyForm(Form):
     def headerTableMarkdown(self):
         return ""
 
-    def headerTable(self, objects=None):
+    def headerTable(self, objects=None, model='activity'):
         if not objects:
             return None
         html = self.headerTableMarkdown()
@@ -80,8 +87,8 @@ class CrispyForm(Form):
  <tbody>\n'''
         for obj in objects:
             html += f"  <tr><td>{obj.name}</td><td>{obj.created_by.username} (id={obj.created_by.pk})</td>"
-            html += f"<td>{self.getAdminURL('edit', 'activity', 'change', [obj.pk])}, "
-            html += f"{self.getAdminURL('delete', 'activity', 'delete', [obj.pk])}</td>"
+            html += f"<td>{self.getAdminURL('edit', model, 'change', [obj.pk])}, "
+            html += f"{self.getAdminURL('delete', model, 'delete', [obj.pk])}</td>"
             html += "</tr>\n"
         html += "</tbody></table>"
         return html
@@ -89,10 +96,13 @@ class CrispyForm(Form):
     def headerTableObjects(self):
         return None
 
+    def modelName(self):
+        return None
+
     def header(self):
         result = None
         m = self.headerMarkdown()
-        t = self.headerTable(self.headerTableObjects())
+        t = self.headerTable(self.headerTableObjects(), self.modelName())
         if m:
             result = m
         if t:
@@ -126,7 +136,7 @@ class VASTForm(ModelForm, CrispyForm):
         return "# Create a new %s ({{ wizard.steps.step1 }}/{{ wizard.steps.count }})" % getattr(self._meta.model, 'verbose_name', str(self._meta.model.__name__))
 
     class Meta:
-        exclude = ('uuid', 'created', 'updated', 'name_md5', '_id', 'id')
+        exclude = ('uuid', 'created', 'updated', 'name_md5', '_id', 'id', 'qr_code', 'uriref')
         widgets = {
             "date":       AdminSplitDateTime(),
             "date_from":  AdminSplitDateTime(),
@@ -228,12 +238,12 @@ class ActivityForm(VASTForm):
         super().full_clean()
         self.activity_steps.full_clean()
 
-    def clean(self):
-        data = super().clean()
-        print("CLEAN:", data, flush=True)
-        self.activity_steps.full_clean()
-        print("CLEAN2:", self.activity_steps.clean())
-        return data
+    # def clean(self):
+    #     data = super().clean()
+    #     print("CLEAN:", data, flush=True)
+    #     self.activity_steps.full_clean()
+    #     print("CLEAN2:", self.activity_steps.clean())
+    #     return data
 
     def is_valid(self):
         is_valid = super().is_valid()
@@ -245,12 +255,12 @@ class ActivityForm(VASTForm):
         return is_valid
 
     def save(self, commit=True):
-        print("save:", commit)
+        #print("save:", commit)
         instance = super().save(commit)
         instances = self.activity_steps.save(commit)
-        print("Activity:", instance)
-        print("Steps:", instances)
-        return instance, instances
+        #print("Activity:", instance)
+        #print("Steps:", instances)
+        return instance, ( ('activity',), instances)
 
     def save_m2m():
         super().save_m2m()
@@ -283,6 +293,10 @@ class EventForm(VASTForm):
 class VisitorGroupForm(VASTForm):
     class Meta(VASTForm.Meta):
         model = VisitorGroup
+
+class VisitorGroupQRCodeForm(VASTForm):
+    class Meta(VASTForm.Meta):
+        model = VisitorGroupQRCode
 
 ##
 ## Wizard forms
@@ -332,6 +346,12 @@ class SelectModelForm(CrispyForm):
     def headerTableObjects(self):
         return self._meta.model.objects.all()
 
+    def modelAppName(self):
+        return self._meta.model._meta.app_label
+
+    def modelName(self):
+        return self._meta.model._meta.model_name
+
     class Meta:
         abstract = True
 
@@ -351,9 +371,6 @@ In this step, please decide if you are going to re-use an existing {self.verbose
 
     def headerTableMarkdown(self):
         return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Activities', 'activity')}**)"
-
-    # def headerTableObjects(self):
-    #     return Activity.objects.all()
 
 class SelectEventForm(SelectModelForm):
     class Meta:
@@ -383,6 +400,19 @@ In this step, please decide if you are going to re-use an existing {self.verbose
 """
 
     def headerTableMarkdown(self):
-        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin VisitorGroups', 'visitor_group')}**)"
+        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Visitor Groups', 'visitorgroup')}**)"
 
+class SelectVisitorGroupQRCodeForm(SelectModelForm):
+    class Meta:
+        model = VisitorGroupQRCode
 
+    def headerMarkdown(self):
+        return f"""
+# {self.verbose_name} Model ({{{{ wizard.steps.step1 }}}}/{{{{ wizard.steps.count }}}})
+The **{self.verbose_name}** generates a QR code that can be used to instantiate a VAST Tool for a specific visitor group, in an activity's event.
+
+In this step, please decide if you are going to re-use an existing {self.verbose_name}, or create a new {self.verbose_name}.
+"""
+
+    def headerTableMarkdown(self):
+        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Visitor Groups QR Codes', 'visitorgroupqrcode')}**)"

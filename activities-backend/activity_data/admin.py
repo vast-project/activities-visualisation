@@ -3,19 +3,20 @@ from django.contrib.auth.models import User
 from django.db import models
 from .models import *
 
-class FilterUserObjectsAdmin(admin.ModelAdmin):
+class ReadonlyFieldsAdmin(admin.ModelAdmin):
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return ["created_by", "qr_code", "uriref"]
+        else:
+            return []
+
+class FilterUserObjectsAdmin(ReadonlyFieldsAdmin):
     # Preselect the current user...
     def get_changeform_initial_data(self, request):
         # get_data = super(OrganisationTypeAdmin, self).get_changeform_initial_data(request)
         get_data = super().get_changeform_initial_data(request)
         get_data['created_by'] = request.user.pk
         return get_data
-
-    def get_readonly_fields(self, request, obj=None):
-        if obj:
-            return ["created_by"]
-        else:
-            return []
 
     def get_queryset(self, request): 
         if request.user.is_superuser:
@@ -35,6 +36,7 @@ class FilterUserObjectsAdmin(admin.ModelAdmin):
         qslist = list(dict.fromkeys(qslist))
         return alldata.filter(pk__in=qslist)
 
+
 for model in (Organisation, Class, Age, 
               Activity, Stimulus, ActivityStep, Event, VisitorGroup, VisitorGroupQRCode,
               Visitor, Product, Statement,):
@@ -43,4 +45,4 @@ for model in (Organisation, Class, Age,
 for model in (Language, Gender, Nature, Education, Nationality,
               OrganisationType, Context, 
               ProductType, Concept, DigitisationApplication,):
-    admin.site.register(model)
+    admin.site.register(model, ReadonlyFieldsAdmin)

@@ -1,0 +1,13 @@
+<ul class="flex-column nav">
+  {% for item in sidebar_menu_items %}
+    {% if item.url %}
+    <li class="nav-item{% if 'bootstrap-tables' in segment or item.url in request.path|urlencode %} active {% endif %} list-unstyled">
+      <a class="nav-link" href="{% url item.url %}">
+        <span class="nav-link-text ms-1">{{ item.title }}</span>
+      </a>
+    </li>
+    {% else %}
+      <li class="nav-item list-unstyled">{{ item.title }}</li>
+    {% endif %}
+  {% endfor %}
+</ul>

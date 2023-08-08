@@ -187,3 +187,10 @@ response = client.post("/rest/groups/", data={
 response = client.post("/rest/groups/", data={
     "name": " Museo Galileo - Istituto e Museo di Storia della Scienza",
 })
+
+## Declare some applications...
+response = client.post("/rest/applications/", data={
+    "name": "IMSS MindMap",
+    "uriref": "https://imss-activity.vast-project.eu/"
+})
+
