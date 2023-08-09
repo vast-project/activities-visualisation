@@ -237,3 +237,18 @@ response = client.post("/rest/applications/", data={
 #     "title": "Add QR Code",
 #     "url":   "visitorgroupqrcode-wizard"
 # })
+
+## Declare some Product Types...
+for value in (
+    'MindMap',
+    'Annotation',
+    'Questionnaire',
+    'Interview',
+    'Image',
+    'Audio',
+    'Video'
+    ):
+    response = client.post("/rest/product_types/", data={
+        "name": value,
+        "description": f"Product Type: {value}"
+    })

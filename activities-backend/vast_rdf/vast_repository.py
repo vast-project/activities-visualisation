@@ -425,10 +425,10 @@ class RDFStoreVAST:
                 robj.product_type = URIRef(NAMESPACE_VAST.vastAnnotation)
             case "Questionnaire":
                 robj.product_type = URIRef(NAMESPACE_VAST.vastQuestionnaire)
-            case "Intervie":
-                robj.product_type = URIRef(NAMESPACE_VAST.vastIntervie)
+            case "Interview":
+                robj.product_type = URIRef(NAMESPACE_VAST.vastInterview)
             case _:
-                robj.product_type = URIRef(getattr(NAMESPACE_VAST, "vast" + obj.product_type.name))
+                robj.product_type = URIRef(getattr(NAMESPACE_VAST, "vast" + obj.product_type.name.title().replace(" ", "")))
 
         robj.visitor       = self.getURIRef(self.vast.vastVisitor, obj.visitor)
         robj.activity_step = self.getURIRef(self.vast.vastActivityStep, obj.activity_step)

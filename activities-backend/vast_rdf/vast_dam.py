@@ -42,6 +42,7 @@ class DAMStoreVAST:
                 case 'date': json['12']=v
                 case 'description': json['8']=v
         json = requests.utils.quote(str(json))
+        logger.info(f"DAMStoreVAST: metadata: {json}")
         image_absolute_url = self.config.config['DAM_DJANGO_MEDIA_URL_PREFIX']+image_url
         parameters = {
             'param1': '1',
