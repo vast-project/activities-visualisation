@@ -1,7 +1,11 @@
 ## For saving images in DAM...
 import requests
+import hashlib
 from dotenv import dotenv_values
 import os
+
+import logging
+logger = logging.getLogger('DAMStoreVAST')
 
 class DAMStoreConfig:
 
@@ -21,18 +25,43 @@ class DAMStoreVAST:
             config = DAMStoreConfig()
         self.config = config
 
-    # POST request to the API
-    def post(self, params):
-        response = requests.post(self.config.config["DAM_HOST"], files=params)
-        response.raise_for_status()
+    def query(self, function, parameters={}):
+        query_string = f"user={self.config.config['DAM_USERNAME']}&function={function}&" + '&'.join(f'{k}={v}' for k, v in parameters.items())
+        sign = hashlib.sha256((self.config.config["DAM_SECRET_KEY"] + query_string).encode('utf-8')).hexdigest()
+        query_url = f"{self.config.config['DAM_HOST']}/?{query_string}&sign={sign}"
+        logger.info(f"DAMStoreVAST: query: {query_url}")
 
-    def create_resource(self, image_path, metadata={}):
-        params = metadata
-        params.update({
-            'userfile': open(image_path, 'rb'),
-            'function': 'create_resource',
-            'user': self.config.config["DAM_USERNAME"],
-            'sign': self.config.config["DAM_SECRET_KEY"],
-        })
-        print("PARAMS:", params)
-        self.post(params)
+        response = requests.get(query_url)
+        response.raise_for_status()
+        return response
+
+    def create_resource(self, image_url, metadata={}):
+        json = {}
+        for k,v in metadata.items():
+            match k:
+                case 'date': json['12']=v
+                case 'description': json['8']=v
+        json = requests.utils.quote(str(json))
+        image_absolute_url = self.config.config['DAM_DJANGO_MEDIA_URL_PREFIX']+image_url
+        parameters = {
+            'param1': '1',
+            'param2': '0',
+            'param3': image_absolute_url,
+            'param4': '',
+            'param5': '',
+            'param6': '',
+            'param7': json,
+        }
+        logger.info(f"DAMStoreVAST: Saving Image: {image_absolute_url}")
+        response = self.query('create_resource', parameters)
+        if response.text.lower() == "false":
+            raise Exception(f"Image cannot be saved in DAM: {image_absolute_url}")
+        if response.text.startswith('"'):
+            raise Exception(f"Image cannot be saved in DAM: {image_absolute_url}: {response.text}")
+        logger.info(f"DAMStoreVAST: DAM response: {response.text}")
+        return response
+
+# if __name__ == "__main__":
+#     dam = DAMStoreVAST()
+#     resource = dam.create_resource('https://www.vast-project.eu/wp-content/uploads/2021/01/VAST_LOGO.jpg')
+#     print(resource.text)

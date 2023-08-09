@@ -177,13 +177,10 @@ class Product(VASTObject_NameUserGroupUnique):
         if not self.name:
             self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
         ## Try to save image in DAM...
-        print("IMAGE:", self.image)
         if self.image:
-            print("SAVING IMAGE:", self.image.path)
             dam = DAMStoreVAST()
-            dam.create_resource(self.image.path, {
-                'associated_class': type(self).__name__,
-                'associated_name':  self.name
+            dam.create_resource(self.image.url, {
+                'description': f'{type(self).__name__}: {self.name}',
             })
             del dam
         super().save(*args, **kwargs)
