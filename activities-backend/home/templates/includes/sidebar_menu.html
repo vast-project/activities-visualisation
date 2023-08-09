@@ -1,8 +1,9 @@
-<ul class="flex-column nav">
+{% load i18n static admin_soft %}
+<ol type="1" class="flex-column nav" style="list-style: decimal !important;">
   {% for item in sidebar_menu_items %}
     {% if item.url %}
-    <li class="nav-item{% if 'bootstrap-tables' in segment or item.url in request.path|urlencode %} active {% endif %} list-unstyled">
-      <a class="nav-link" href="{% url item.url %}">
+    <li class="nav-item {% if item.url == segment %} active {% endif %}" style="::before {content:none} !important" >
+      <a class="nav-link" style="padding-left: 0px;" href="{% url item.url %}">
         <span class="nav-link-text ms-1">{{ item.title }}</span>
       </a>
     </li>
@@ -10,4 +11,4 @@
       <li class="nav-item list-unstyled">{{ item.title }}</li>
     {% endif %}
   {% endfor %}
-</ul>
+</ol>

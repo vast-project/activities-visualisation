@@ -216,3 +216,8 @@ class SidebarMenuItemSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = SidebarMenuItem
         fields = '__all__'
+
+class ProductStatementSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProductStatement
+        fields = '__all__'

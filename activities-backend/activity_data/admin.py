@@ -56,7 +56,7 @@ class FilterUserObjectsAdmin(ReadonlyFieldsAdmin):
 
 for model in (Organisation, Class, Age, 
               Activity, Stimulus, ActivityStep, Event, VisitorGroup, VisitorGroupQRCode,
-              Visitor, Product, Concept, Statement,):
+              Visitor, Product, Concept, Statement, ProductStatement,):
     admin.site.register(model, FilterUserObjectsAdmin)
 
 for model in (Language, Gender, Nature, Education, Nationality,

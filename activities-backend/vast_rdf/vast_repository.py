@@ -83,7 +83,7 @@ class RDFStoreObject:
     visitor:               URIRef  = None
     activity_step:         URIRef  = None
 
-    # Statement
+    # Statement/ProductStatement
     subject:               URIRef  = None
     object:                URIRef  = None
     predicate:             URIRef  = None
@@ -153,7 +153,7 @@ class RDFStoreObject:
         if (self.visitor):              graph.add((self.id, NAMESPACE_VAST.vastMadeBy, self.visitor))
         if (self.activity_step):        graph.add((self.activity_step, NAMESPACE_VAST.vastProduces, self.id))
 
-        # Statement
+        # Statement/ProductStatement
         if (self.subject):              graph.add((self.id, RDF.subject, self.subject))
         if (self.object):               graph.add((self.id, RDF.object, self.object))
         if (self.predicate):            graph.add((self.id, RDF.predicate, self.predicate))
@@ -254,7 +254,7 @@ class RDFStoreVAST:
                 T = self.vast.vastConcept
             case "Predicate":
                 T = self.vast.vastPredicate
-            case "Statement":
+            case "Statement" | "ProductStatement":
                 T = self.vast.vastStatement
             case _:
                 T = None
@@ -444,6 +444,13 @@ class RDFStoreVAST:
         robj = self.createVASTObject(obj, self.vast.vastStatement)
         robj.product    = self.getURIRef(self.vast.vastProduct,   obj.product)
         robj.subject    = self.getURIRef(self.vast.vastConcept,   obj.subject)
+        robj.predicate  = self.getURIRef(self.vast.vastPredicate, obj.predicate)
+        robj.object     = self.getURIRef(self.vast.vastConcept,   obj.object)
+        robj.add(self.g)
+
+    def ProductStatement(self, obj): # RDF Checked
+        robj = self.createVASTObject(obj, self.vast.vastStatement)
+        robj.subject    = self.getURIRef(self.vast.vastProduct,   obj.subject)
         robj.predicate  = self.getURIRef(self.vast.vastPredicate, obj.predicate)
         robj.object     = self.getURIRef(self.vast.vastConcept,   obj.object)
         robj.add(self.g)

@@ -245,6 +245,15 @@ class StatementViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+class ProductStatementViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Context objects to be viewed or edited.
+    """
+    queryset = ProductStatement.objects.all()
+    serializer_class = ProductStatementSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
+    search_fields = ['name']
 
 class DigitisationApplicationViewSet(viewsets.ModelViewSet):
     """

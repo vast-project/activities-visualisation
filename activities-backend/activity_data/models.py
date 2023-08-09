@@ -193,6 +193,16 @@ class Statement(VASTObject_NameUserGroupUnique):
             self.name = ".".join([self.product.name, self.subject.name, self.predicate.name, self.object.name])
         super().save(*args, **kwargs)
 
+class ProductStatement(VASTObject_NameUserGroupUnique):
+    subject              = models.ForeignKey('Product',   on_delete=models.CASCADE, default=None, null=False, blank=False, related_name='ps_subject')
+    predicate            = models.ForeignKey('Predicate', on_delete=models.CASCADE, default=None, null=False, blank=False, related_name='ps_predicate')
+    object               = models.ForeignKey('Concept',   on_delete=models.CASCADE, default=None, null=False, blank=False, related_name='ps_object')
+     # We must generate a "unique" name
+    def save(self, *args, **kwargs):
+        if not self.name:
+            self.name = ".".join([self.subject.name, self.subject.name, self.predicate.name, self.object.name])
+        super().save(*args, **kwargs)
+
 ## QR Codes...
 class DigitisationApplication(VASTObject_NameUserGroupUnique):
     uriref               = models.URLField(max_length=255, null=False, blank=False)

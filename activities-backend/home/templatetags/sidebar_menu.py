@@ -4,14 +4,20 @@ from home.models import SidebarMenuItem
 register = template.Library()
 
 @register.inclusion_tag('includes/sidebar_menu.html')
-def sidebar_menu():
+def sidebar_menu(*args, **kwargs):
     #menu_items = SidebarMenuItem.objects.all()
     menu_items = (
-        {'title': '1. Add Activity',    'url': 'activity-wizard'},
-        {'title': '2. Add Event',       'url': 'event-visitorgroup-wizard'},
-        {'title': '3. Add QR Code',     'url': 'visitorgroupqrcode-wizard'},
-        {'title': '4. Add Visitor',     'url': 'visitor-wizard'},
-        {'title': '5. Add Product',     'url': 'product-wizard'},
-        {'title': '6. Add Statements',  'url': 'statement-wizard'},
+        {'title': 'Add Activity',           'url': 'activity-wizard'},
+        {'title': 'Add Event',              'url': 'event-visitorgroup-wizard'},
+        {'title': 'Add QR Code',            'url': 'visitorgroupqrcode-wizard'},
+        {'title': 'Add Visitor',            'url': 'visitor-wizard'},
+        {'title': 'Add Product',            'url': 'product-wizard'},
+        {'title': 'Add Statements',         'url': 'statement-wizard'},
+        {'title': 'Add Product Statements', 'url': 'productstatement-wizard'},
     )
-    return {'sidebar_menu_items': menu_items}
+    context = {'sidebar_menu_items': menu_items}
+    for arg in args:
+        context.update(arg)
+
+    context.update(kwargs)
+    return context

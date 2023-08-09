@@ -92,7 +92,7 @@
 	  </span>
           <div class="multi-level ms-5 collapse {% if 'wizard' in segment or 'digitisation' in request.path|urlencode %} show {% endif %}" role="list" id="submenu-digitisation"
 	          aria-expanded="{% if 'wizard' in segment or 'digitisation' in request.path|urlencode %}true{% else %}false{% endif %}">
-            {% sidebar_menu %}
+            {% sidebar_menu segment=segment %}
           </div>
         </li>
         <!--
