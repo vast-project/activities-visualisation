@@ -9,7 +9,8 @@ from django.db import models
 
 ## RDF Graph...
 from vast_rdf.vast_repository import RDFStoreVAST
-
+## For saving images in DAM...
+from vast_rdf.vast_dam import DAMStoreVAST
 
 class AutoUpdateTimeFields(models.Model):
     uuid              = models.UUIDField(default = uuid.uuid4, editable = False)
@@ -175,6 +176,14 @@ class Product(VASTObject_NameUserGroupUnique):
     def save(self, *args, **kwargs):
         if not self.name:
             self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
+        ## Try to save image in DAM...
+        if self.image:
+            dam = DAMStoreVAST()
+            dam.create_resource(self.image.url, {
+                'associated_class': type(self).__name__,
+                'associated_name':  self.name
+            })
+            del dam
         super().save(*args, **kwargs)
 
 ## Statements...

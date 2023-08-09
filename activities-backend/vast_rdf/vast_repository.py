@@ -76,7 +76,7 @@ class RDFStoreObject:
     #mother_language -> also on visitor group
     visitor_activity:      URIRef  = None
     group:                 URIRef  = None
-    school:                Literal = None
+    #school:                Literal = None
 
     # Product
     product_type:          URIRef  = None
@@ -146,7 +146,7 @@ class RDFStoreObject:
         if (self.date_of_visit):        graph.add((self.id, NAMESPACE_VAST.vastVisitDate, self.date_of_visit))
         if (self.visitor_activity):     graph.add((self.id, NAMESPACE_VAST.vastParticipatesIn, self.visitor_activity))
         if (self.group):                graph.add((self.id, NAMESPACE_VAST.vastMemberOf, self.group))
-        if (self.school):               graph.add((self.id, NAMESPACE_VAST.vastShool, self.school))
+        #if (self.school):               graph.add((self.id, NAMESPACE_VAST.vastShool, self.school))
 
         # Product
         if (self.product_type):         graph.add((self.id, RDF.type, self.product_type))
@@ -409,7 +409,7 @@ class RDFStoreVAST:
         robj.mother_language    = Literal(obj.mother_language, lang="en")
         robj.visitor_activity   = self.getURIRef(self.vast.vastActivity, obj.activity)
         robj.group              = self.getURIRef(self.vast.vastGroup, obj.visitor_group)
-        robj.school             = Literal(obj.school, lang="en")
+        #robj.school             = Literal(obj.school, lang="en")
         robj.add(self.g)
 
     # Product types are converted to class references in Product

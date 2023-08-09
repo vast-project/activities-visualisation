@@ -66,6 +66,7 @@ class CrispyForm(Form):
         self.helper.field_class       = ''
 
     def getAdminURL(self, text, model, action='changelist', args=[]):
+        print("=>", text, model, action)
         return f'<a href="{{% url \'admin:activity_data_{model}_{action}\' {" ".join([str(x) for x in args])} %}}" target="_blank">{text}</a>'
 
     def headerMarkdown(self):
@@ -324,6 +325,8 @@ class VisitorForm(VASTForm):
 class ProductForm(VASTForm):
     class Meta(VASTForm.Meta):
         model = Product
+        exclude = ('uuid', 'created', 'updated', 'name_md5', '_id', 'id', 'qr_code', 'uriref',
+                   'name', 'description', 'name_local', 'description_local', 'language_local', 'image_uriref', )
 
 ##
 ## Product Statements form: A form for adding statements into an existing product.
@@ -402,7 +405,7 @@ class ProductStatementsForm(CrispyForm):
             instance = super().save(commit)
             instances = self.statements.save(False)
             for obj in instances:
-                obj.activity = instance
+                obj.product = instance
                 obj.save(commit)
         else:
             instance = super().save(commit)
@@ -444,7 +447,6 @@ ProductStatementFormSet = inlineformset_factory(
     ProductStatement,
     fields=('predicate', 'object'),
     form=ProductStatementForm,
-    #formset=ProductStatementForm,
     exclude=('id',),
     extra=0,            # number of extra empty forms to display
     min_num=1,          # number of minimum filled forms
@@ -502,7 +504,7 @@ class ProductProductStatementsForm(CrispyForm):
             instance = super().save(commit)
             instances = self.statements.save(False)
             for obj in instances:
-                obj.activity = instance
+                obj.subject = instance
                 obj.save(commit)
         else:
             instance = super().save(commit)
@@ -602,7 +604,7 @@ In this step, please decide if you are going to re-use an existing {self.verbose
 """
 
     def headerTableMarkdown(self):
-        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Activities', 'activity')}**)"
+        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Activities', self.modelName())}**)"
 
 class SelectEventForm(SelectModelForm):
     class Meta:
@@ -617,7 +619,7 @@ In this step, please decide if you are going to re-use an existing {self.verbose
 """
 
     def headerTableMarkdown(self):
-        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Events', 'event')}**)"
+        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Events', self.modelName())}**)"
 
 class SelectVisitorGroupForm(SelectModelForm):
     class Meta:
@@ -632,7 +634,7 @@ In this step, please decide if you are going to re-use an existing {self.verbose
 """
 
     def headerTableMarkdown(self):
-        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Visitor Groups', 'visitorgroup')}**)"
+        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Visitor Groups', self.modelName())}**)"
 
 class SelectVisitorGroupQRCodeForm(SelectModelForm):
     class Meta:
@@ -647,7 +649,7 @@ In this step, please decide if you are going to re-use an existing {self.verbose
 """
 
     def headerTableMarkdown(self):
-        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Visitor Groups QR Codes', 'visitorgroupqrcode')}**)"
+        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Visitor Groups QR Codes', self.modelName())}**)"
 
 
 class SelectVisitorForm(SelectModelForm):
@@ -663,7 +665,7 @@ In this step, please decide if you are going to re-use an existing {self.verbose
 """
 
     def headerTableMarkdown(self):
-        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Visitors', self.modelName)}**)"
+        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Visitors', self.modelName())}**)"
 
 class SelectProductForm(SelectModelForm):
     class Meta:
@@ -678,7 +680,7 @@ In this step, please decide if you are going to re-use an existing {self.verbose
 """
 
     def headerTableMarkdown(self):
-        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Products', self.modelName)}**)"
+        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Products', self.modelName())}**)"
 
 class SelectStatementForm(SelectModelForm):
     class Meta:
@@ -693,4 +695,4 @@ In this step, please decide if you are going to re-use an existing {self.verbose
 """
 
     def headerTableMarkdown(self):
-        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Statements', self.modelName)}**)"
+        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Statements', self.modelName())}**)"
