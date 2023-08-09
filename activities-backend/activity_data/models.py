@@ -168,6 +168,8 @@ class Product(VASTObject_NameUserGroupUnique):
     product_type         = models.ForeignKey('ProductType',  on_delete=models.CASCADE, default=None, null=False, blank=False)
     visitor              = models.ForeignKey('Visitor',      on_delete=models.CASCADE, default=None, null=False, blank=False)
     activity_step        = models.ForeignKey('ActivityStep', on_delete=models.CASCADE, default=None, null=False, blank=False)
+    image                = models.ImageField(upload_to='product_images', default=None, null=True, blank=True)
+    image_uriref         = models.URLField(max_length=512, null=True, blank=True)
 
     # We must generate a "unique" name
     def save(self, *args, **kwargs):

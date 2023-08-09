@@ -146,7 +146,7 @@ class VASTForm(ModelForm, CrispyForm):
         return "# Create a new %s ({{ wizard.steps.step1 }}/{{ wizard.steps.count }})" % getattr(self._meta.model, 'verbose_name', str(self._meta.model.__name__))
 
     class Meta:
-        exclude = ('uuid', 'created', 'updated', 'name_md5', '_id', 'id', 'qr_code', 'uriref')
+        exclude = ('uuid', 'created', 'updated', 'name_md5', '_id', 'id', 'qr_code', 'uriref', 'image_uriref')
         widgets = {
             "date":          AdminSplitDateTime(),
             "date_from":     AdminSplitDateTime(),
