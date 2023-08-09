@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 
 from activity_data.serialize import Productserialize
 from activity_data.serialize import Visitorserialize
+from backend.serializers import VisitorSerializer
 from .models import Age, ProductType, Visitor, ActivityStep, Product, Concept, Statement, Predicate
 from .models import Education
 from .models import Gender
@@ -15,6 +16,7 @@ from .models import Language
 from .models import Nationality
 from .models import VisitorGroup
 from .utils import VASTRepositoryAPIView
+
 
 class ProductView(VASTRepositoryAPIView):
     # Create a new instance. (POST)
@@ -95,6 +97,37 @@ def save_statements(request):
                 pass
 
     return Response({"saved_statements": saved_statements}, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+@permission_classes((permissions.AllowAny,))
+def save_visitor(request):
+    # Find user by the username in the POST body, and set it as the user of the request
+    creator_user = User.objects.get(username=request.data['creator_username'])
+    if creator_user is not None:
+        # Create a visitor object
+        new_visitor = Visitor()
+
+        new_visitor.created_by = creator_user
+        new_visitor.name = request.data['name']
+        new_visitor.school = request.data['school']
+        new_visitor.date_of_visit = request.data['date_of_visit']
+
+        new_visitor.activity_id = int(request.data['activity'])
+        new_visitor.activity_step_id = int(request.data['activity_step'])
+        new_visitor.visitor_group = VisitorGroup.objects.filter(id=int(request.data['visitor_group'])).first()
+
+        new_visitor.age = Age.objects.filter(name=request.data['age']).first()
+        new_visitor.gender = Gender.objects.filter(name=request.data['gender']).first()
+        new_visitor.nationality = Nationality.objects.filter(name=request.data['nationality']).first()
+        new_visitor.education = Education.objects.filter(name=request.data['education_level']).first()
+        new_visitor.mother_language = Language.objects.filter(name=request.data['mother_language']).first()
+
+        new_visitor.save()
+        return Response(VisitorSerializer(new_visitor, context={"request": request}).data,
+                        status=status.HTTP_201_CREATED)
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
