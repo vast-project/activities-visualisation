@@ -8,7 +8,7 @@ const backendUrl = "https://activities-backend.vast-project.eu";
  */
 export const saveVisitor = async function (visitorData) {
     // Send the POST request
-    return fetch(backendUrl + '/rest/visitors/', {
+    return fetch(backendUrl + '/api/save-visitor', {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
