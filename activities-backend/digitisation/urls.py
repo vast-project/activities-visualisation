@@ -64,6 +64,36 @@ visitor_wizard = ActivityDigitisationWizardView.as_view(
 )
 
 ##
+## Product Wizard
+##
+product_wizard = ActivityDigitisationWizardView.as_view(
+    form_list = (
+        ('ask_product', SelectProductForm),
+        ('add_product', ProductForm),
+    ),
+    condition_dict = {
+        'add_product':  lambda wizard: SelectProductForm.addNew(wizard, 'ask_product'),
+    },
+    extra_context = { 'segment': 'product-wizard' },
+    url_name='product-wizard-step', done_step_name='finished'
+)
+
+##
+## Statement Wizard
+##
+statement_wizard = ActivityDigitisationWizardView.as_view(
+    form_list = (
+        ('ask_statement', SelectStatementForm),
+        ('add_statement', StatementForm),
+    ),
+    condition_dict = {
+        'add_statement':  lambda wizard: SelectStatementForm.addNew(wizard, 'ask_statement'),
+    },
+    extra_context = { 'segment': 'statement-wizard' },
+    url_name='statement-wizard-step', done_step_name='finished'
+)
+
+##
 ## URLs
 ##
 urlpatterns = [
@@ -75,4 +105,8 @@ urlpatterns = [
     path('wizard/visitorgroupqrcode', qrcode_wizard, name='visitorgroupqrcode-wizard'),
     re_path(r'^wizard/visitor/(?P<step>.+)/$', visitor_wizard, name='visitor-wizard-step'),
     path('wizard/visitor', visitor_wizard, name='visitor-wizard'),
+    re_path(r'^wizard/product/(?P<step>.+)/$', product_wizard, name='product-wizard-step'),
+    path('wizard/product', product_wizard, name='product-wizard'),
+    re_path(r'^wizard/statement/(?P<step>.+)/$', statement_wizard, name='statement-wizard-step'),
+    path('wizard/statement', statement_wizard, name='statement-wizard'),
 ]

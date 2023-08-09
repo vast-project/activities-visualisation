@@ -122,6 +122,40 @@ response = client.post("/rest/languages/", data={
     "description": "Language: Slovene"
 })
 
+## Declare some nationalities...
+for nationality in (
+    'Austrian',
+    'Belgian',
+    'Bulgarian',
+    'Croatian',
+    'Cypriot',
+    'Czech',
+    'Danish',
+    'Estonian',
+    'Finnish',
+    'French',
+    'German',
+    'Greek',
+    'Hungarian',
+    'Irish',
+    'Italian',
+    'Latvian',
+    'Lithuanian',
+    'Luxembourgish',
+    'Maltese',
+    'Dutch',
+    'Polish',
+    'Portuguese',
+    'Romanian',
+    'Slovak',
+    'Slovenian',
+    'Spanish',
+    'Swedish',):
+    response = client.post("/rest/nationalities/", data={
+        "name": nationality,
+        "description": f"Nationality: {nationality}"
+    })
+
 ## Declare some organisation types...
 response = client.post("/rest/organisation_types/", data={
     "name": "Event Host Organisation",

@@ -311,6 +311,14 @@ class VisitorForm(VASTForm):
     class Meta(VASTForm.Meta):
         model = Visitor
 
+class ProductForm(VASTForm):
+    class Meta(VASTForm.Meta):
+        model = Product
+
+class StatementForm(VASTForm):
+    class Meta(VASTForm.Meta):
+        model = Statement
+
 ##
 ## Wizard forms
 ##
@@ -445,3 +453,33 @@ In this step, please decide if you are going to re-use an existing {self.verbose
 
     def headerTableMarkdown(self):
         return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Visitors', self.modelName)}**)"
+
+class SelectProductForm(SelectModelForm):
+    class Meta:
+        model = Product
+
+    def headerMarkdown(self):
+        return f"""
+# {self.verbose_name} Model ({{{{ wizard.steps.step1 }}}}/{{{{ wizard.steps.count }}}})
+The **{self.verbose_name}** represents a the product a visitor has produced (one or more products for each activity step).
+
+In this step, please decide if you are going to re-use an existing {self.verbose_name}, or create a new {self.verbose_name}.
+"""
+
+    def headerTableMarkdown(self):
+        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Products', self.modelName)}**)"
+
+class SelectStatementForm(SelectModelForm):
+    class Meta:
+        model = Statement
+
+    def headerMarkdown(self):
+        return f"""
+# {self.verbose_name} Model ({{{{ wizard.steps.step1 }}}}/{{{{ wizard.steps.count }}}})
+The **{self.verbose_name}** represents a statement inside a product. In VAST, all results are modelled as statements. A statement associates a subject (i.e. value) to an object (i.e. another value) through a predicate (a relation name).
+
+In this step, please decide if you are going to re-use an existing {self.verbose_name}, or create a new {self.verbose_name}.
+"""
+
+    def headerTableMarkdown(self):
+        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Statements', self.modelName)}**)"

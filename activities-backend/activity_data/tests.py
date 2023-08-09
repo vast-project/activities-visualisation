@@ -80,14 +80,14 @@ class ProductModelTests(TestCase):
             "language_local": "/rest/languages/3/",  # Italian
             "type": "/rest/organisation_types/1/",   # Host Organisation
             "location": "Florence",
-            "is_visitor": "No"
+            #"is_visitor": "No"
         })
         response = self.post("/rest/organisations/", data={
             "name": "School in Florence",
             "description": "A school from Florence",
             "type": "/rest/organisation_types/2/",   # School
             "location": "Florence",
-            "is_visitor": "Yes"
+            #"is_visitor": "Yes"
         })
 
     def setUp_activity_add(self):

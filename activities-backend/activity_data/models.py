@@ -85,7 +85,7 @@ class Organisation(VASTObject_NameUserGroupUnique):
     type              = models.ForeignKey('OrganisationType', on_delete=models.CASCADE, null=False, blank=False)
     subtype           = models.ForeignKey('OrganisationType', on_delete=models.CASCADE, related_name='subtype', null=True, blank=True)
     location          = models.CharField(max_length=255, default=None, null=True, blank=True)
-    is_visitor        = models.CharField(max_length=3, choices=[('Yes','Yes'),('No','No')], default='Yes', null=False, blank=False)
+    # is_visitor        = models.CharField(max_length=3, choices=[('Yes','Yes'),('No','No')], default='Yes', null=False, blank=False)
 
 class Class(VASTObject_NameUnique):
     pass

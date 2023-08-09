@@ -27,13 +27,13 @@ class ReadonlyFieldsAdmin(admin.ModelAdmin):
         
         return fieldsets
 
-class FilterUserObjectsAdmin(ReadonlyFieldsAdmin):
     # Preselect the current user...
     def get_changeform_initial_data(self, request):
-        # get_data = super(OrganisationTypeAdmin, self).get_changeform_initial_data(request)
-        get_data = super().get_changeform_initial_data(request)
-        get_data['created_by'] = request.user.pk
-        return get_data
+        initial = super().get_changeform_initial_data(request)
+        initial['created_by'] = request.user.pk
+        return initial
+
+class FilterUserObjectsAdmin(ReadonlyFieldsAdmin):
 
     def get_queryset(self, request): 
         if request.user.is_superuser:
@@ -56,10 +56,11 @@ class FilterUserObjectsAdmin(ReadonlyFieldsAdmin):
 
 for model in (Organisation, Class, Age, 
               Activity, Stimulus, ActivityStep, Event, VisitorGroup, VisitorGroupQRCode,
-              Visitor, Product, Statement,):
+              Visitor, Product, Concept, Statement,):
     admin.site.register(model, FilterUserObjectsAdmin)
 
 for model in (Language, Gender, Nature, Education, Nationality,
               OrganisationType, Context, 
-              ProductType, Concept, DigitisationApplication,):
+              ProductType, DigitisationApplication,
+              Predicate, ):
     admin.site.register(model, ReadonlyFieldsAdmin)
