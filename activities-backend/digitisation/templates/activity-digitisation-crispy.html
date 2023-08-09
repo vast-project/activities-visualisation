@@ -24,7 +24,11 @@
 <p>Crispy!</p>
 <p>Step {{ wizard.steps.step1 }} of {{ wizard.steps.count }}</p>
 -->
-<form action="" method="post" class="form-horizontal">
+{% if form.is_multipart %}
+    <form enctype="multipart/form-data" action="" method="post" class="form-horizontal">
+{% else %}
+    <form action="" method="post" class="form-horizontal">
+{% endif %}
 {% csrf_token %}
 {{ wizard.management_form }}
 {% if wizard.form.forms %}

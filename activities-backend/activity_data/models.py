@@ -169,7 +169,7 @@ class Product(VASTObject_NameUserGroupUnique):
     product_type         = models.ForeignKey('ProductType',  on_delete=models.CASCADE, default=None, null=False, blank=False)
     visitor              = models.ForeignKey('Visitor',      on_delete=models.CASCADE, default=None, null=False, blank=False)
     activity_step        = models.ForeignKey('ActivityStep', on_delete=models.CASCADE, default=None, null=False, blank=False)
-    image                = models.ImageField(upload_to='product_images', default=None, null=True, blank=True)
+    image                = models.ImageField(upload_to='product_images/', default=None, null=True, blank=True)
     image_uriref         = models.URLField(max_length=512, null=True, blank=True)
 
     # We must generate a "unique" name
@@ -177,9 +177,11 @@ class Product(VASTObject_NameUserGroupUnique):
         if not self.name:
             self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
         ## Try to save image in DAM...
+        print("IMAGE:", self.image)
         if self.image:
+            print("SAVING IMAGE:", self.image.path)
             dam = DAMStoreVAST()
-            dam.create_resource(self.image.url, {
+            dam.create_resource(self.image.path, {
                 'associated_class': type(self).__name__,
                 'associated_name':  self.name
             })

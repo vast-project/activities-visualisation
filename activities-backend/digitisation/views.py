@@ -14,7 +14,7 @@ from activity_data.admin import *
 from activity_data.models import *
 
 class ActivityDigitisationWizardView(LoginRequiredMixin, NamedUrlSessionWizardView):
-    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'qr_codes'))
+    file_storage = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, ''))
     template_name = "activity-digitisation-crispy.html"
     #template_name = "activity-digitisation.html"
     wizard_done_template = "pages/wizard-done.html"
