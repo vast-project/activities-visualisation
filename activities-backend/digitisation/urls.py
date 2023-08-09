@@ -84,7 +84,7 @@ product_wizard = ActivityDigitisationWizardView.as_view(
 statement_wizard = ActivityDigitisationWizardView.as_view(
     form_list = (
         ('ask_statement', SelectStatementForm),
-        ('add_statement', StatementForm),
+        ('add_statement', ProductStatementsForm),
     ),
     condition_dict = {
         'add_statement':  lambda wizard: SelectStatementForm.addNew(wizard, 'ask_statement'),

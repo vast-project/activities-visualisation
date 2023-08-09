@@ -128,7 +128,17 @@ class CrispyForm(Form):
         return Layout(*all_other_fields)
 
     class Media:
-        css = {"all": ("css/form_widgets.css",)}
+        js = [
+            "admin/js/vendor/jquery/jquery.min.js",
+            "admin/js/jquery.init.js",
+            "admin/js/core.js",
+            "admin/js/admin/RelatedObjectLookups.js",
+            "admin/js/actions.js",
+            "admin/js/urlify.js",
+            "admin/js/prepopulate.js",
+            "admin/js/vendor/xregexp/xregexp.min.js",
+        ]
+        css = {"all": ("css/form_widgets.css", "admin/css/forms.css",)}
 
 class VASTForm(ModelForm, CrispyForm):
 
@@ -147,18 +157,18 @@ class VASTForm(ModelForm, CrispyForm):
         formfield_callback = formfield_for_dbfield
         field_order = ('name',)
 
-    class Media:
-        js = [
-            "admin/js/vendor/jquery/jquery.min.js",
-            "admin/js/jquery.init.js",
-            "admin/js/core.js",
-            "admin/js/admin/RelatedObjectLookups.js",
-            "admin/js/actions.js",
-            "admin/js/urlify.js",
-            "admin/js/prepopulate.js",
-            "admin/js/vendor/xregexp/xregexp.min.js",
-        ]
-        css = {"all": ("admin/css/forms.css",)}
+    # class Media:
+    #     js = [
+    #         "admin/js/vendor/jquery/jquery.min.js",
+    #         "admin/js/jquery.init.js",
+    #         "admin/js/core.js",
+    #         "admin/js/admin/RelatedObjectLookups.js",
+    #         "admin/js/actions.js",
+    #         "admin/js/urlify.js",
+    #         "admin/js/prepopulate.js",
+    #         "admin/js/vendor/xregexp/xregexp.min.js",
+    #     ]
+    #     css = {"all": ("admin/css/forms.css",)}
 
 class ActivityStepForm(VASTForm):
     class Meta(VASTForm.Meta):
@@ -315,9 +325,110 @@ class ProductForm(VASTForm):
     class Meta(VASTForm.Meta):
         model = Product
 
+##
+## Product Statements form: A form for adding statements into an existing product.
+##
+
 class StatementForm(VASTForm):
     class Meta(VASTForm.Meta):
         model = Statement
+        exclude = ('uuid', 'created', 'updated', 'name_md5', '_id', 'id', 'qr_code', 'uriref',
+                   'name', 'description', 'name_local', 'description_local', 'language_local',)
+
+    def adjustLayout(self):
+        self.classInline()
+
+StatementFormSet = inlineformset_factory(
+    Product,
+    Statement,
+    fields=('subject', 'predicate', 'object'),
+    form=StatementForm,
+    #formset=StatementForm,
+    exclude=('id',),
+    #exclude=('activity',),
+    extra=0,            # number of extra empty forms to display
+    min_num=1,          # number of minimum filled forms
+    can_delete=False,   # show a checkbox in each form to delete the row
+)
+
+class ProductStatementsForm(CrispyForm):
+    product = forms.ModelChoiceField(
+        queryset=Product.objects.all(),
+        # widget=RelatedFieldWidgetWrapper(
+        #     forms.Select, 
+        #     queryset=Product.objects.all(),
+        #     related_url='admin:activity_data_product_changelist',
+        # ),
+    )
+    statements = StatementFormSet()
+    def __init__(self, *args, **kwargs):
+        formset_kwargs = copy.deepcopy(kwargs)
+        # Get prefix
+        prefix = kwargs.get('prefix')
+        # Get number of forms
+        data   = kwargs.get('data')
+        if data:
+            total_forms = int(data.get(f'{prefix}-TOTAL_FORMS')[0])
+            # Set initial...
+            for key in kwargs.get('initial').keys():
+                value = formset_kwargs['data'][f'{prefix}-0-{key}']
+                for i in range(1, total_forms):
+                    formset_kwargs['data'][f'{prefix}-{i}-{key}'] = value
+        else:
+            total_forms = 1
+        # Give as many initial objects as forms...
+        formset_kwargs['initial'] = [kwargs.get('initial')] * (total_forms)
+        # TODO: Handle instances
+        #formset_kwargs.pop('instance')
+        self.statements = StatementFormSet(*args, **formset_kwargs)
+        super().__init__(*args, **kwargs)
+
+    def full_clean(self):
+        super().full_clean()
+        self.statements.full_clean()
+
+    def is_valid(self):
+        is_valid = super().is_valid()
+        print("IS VALID 1:", is_valid, self.errors)
+        if not is_valid:
+            return is_valid
+        is_valid = self.statements.is_valid()
+        print("IS VALID 2:", is_valid, self.statements.errors)
+        return is_valid
+
+    def save(self, commit=True):
+        #print("save:", commit)
+        if commit:
+            instance = super().save(commit)
+            instances = self.statements.save(False)
+            for obj in instances:
+                obj.activity = instance
+                obj.save(commit)
+        else:
+            instance = super().save(commit)
+            instances = self.statements.save(commit)
+        return instance, ( ('statements',), instances)
+
+    def save_m2m():
+        super().save_m2m()
+        self.statements.save_m2m()
+
+    def adjustLayout(self):
+        self.helper.layout.append(
+            Div(
+                Fieldset('Add Statements',
+                    HTML(markdown("""{% load static %}
+A statement associates a subject (i.e. value, concept, etc.) to an object (i.e. another value) through a predicate (a relation name).
+An Product must have one or more **Statements**. (Fields marked with * are required.)
+""")),
+                    Div(
+                        Formset('statements'),
+                        css_class="statements_form"
+                    ),
+                ),
+                css_class='embedded_formset'
+            )
+        )
 
 ##
 ## Wizard forms
