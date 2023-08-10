@@ -112,6 +112,14 @@ class ActivityDigitisationWizardView(LoginRequiredMixin, NamedUrlSessionWizardVi
     #     # data = super().process_step(form)
     #     return super().process_step(form)
 
+    def render_done(self, form, **kwargs):
+        try:
+            done_response = super().render_done(form, **kwargs)
+            return done_response
+        except Exception as e:
+            form.add_error(None, e)
+            return self.render(form)
+
     def done(self, form_list, form_dict, **kwargs):
         for form in form_list:
             if hasattr(form, 'save') and callable(form.save):

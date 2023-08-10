@@ -68,7 +68,7 @@ class DAMStoreVAST:
             raise Exception(f"Image cannot be saved in DAM: {image_absolute_url}")
         if response.text.startswith('"'):
             raise Exception(f"Image cannot be saved in DAM: {image_absolute_url}: {response.text}")
-        return response
+        raise Exception(response.text)
 
     def get_resource(self, resource_id):
         logger.info(f"DAMStoreVAST: get_resource(): {resource_id}")

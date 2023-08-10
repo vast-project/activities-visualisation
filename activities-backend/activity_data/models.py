@@ -180,9 +180,11 @@ class Product(VASTObject_NameUserGroupUnique):
         ## Try to save image in DAM...
         if self.image:
             dam = DAMStoreVAST()
-            dam.create_resource(self.image.url, {
+            self.image_resource_id = dam.create_resource(self.image.url, {
                 'description': f'{type(self).__name__}: {self.name}',
             })
+            json_data = dam.get_resource(self.image_resource_id)
+            self.image_uriref = dam.get_size(json_data)['url']
             del dam
         super().save(*args, **kwargs)
 
