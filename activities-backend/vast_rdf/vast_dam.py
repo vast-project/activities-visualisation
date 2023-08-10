@@ -40,15 +40,15 @@ class DAMStoreVAST:
         return response
 
     def create_resource(self, image_url, metadata={}):
-        json = {}
+        json_data = {}
         for k,v in metadata.items():
             match k:
                 case 'title':
                     pass
-                case 'date': json['12']=v
-                case 'description': json['8']=v
-        logger.info(f"DAMStoreVAST: metadata: {str(json)}")
-        json = requests.utils.quote(str(json))
+                case 'date':        json_data['12']=v
+                case 'description': json_data["8"]=v
+        logger.info(f"DAMStoreVAST: metadata: {json.dumps(json_data)}")
+        json_data = requests.utils.quote(json.dumps(json_data))
         image_absolute_url = self.get_absolute(image_url)
         parameters = {
             'param1': '1',
@@ -57,7 +57,7 @@ class DAMStoreVAST:
             'param4': '',
             'param5': '',
             'param6': '',
-            'param7': json,
+            'param7': json_data,
         }
         logger.info(f"DAMStoreVAST: Saving Image: {image_absolute_url}")
         response = self.query('create_resource', parameters)
@@ -110,14 +110,13 @@ class DAMStoreVAST:
 if __name__ == "__main__":
     logging.basicConfig()
     logger.setLevel(logging.DEBUG)
-    resource_id = 10
+    resource_id = 23
     dam = DAMStoreVAST()
-    resource_id = dam.create_resource('https://www.vast-project.eu/wp-content/uploads/2021/01/VAST_LOGO.jpg', {
-        'title': 'VAST Logo Test',
-        'description': 'A test image for testing API',
-    })
-    print("ID:", resource_id)
-    exit(0)
+    # resource_id = dam.create_resource('https://www.vast-project.eu/wp-content/uploads/2021/01/VAST_LOGO.jpg', {
+    #     'title': 'VAST Logo Test',
+    #     'description': 'A test image for testing API',
+    # })
+    # print("ID:", resource_id)
     json_data = dam.get_resource(resource_id)
     print("url:", dam.get_size(json_data)['url'])
     dam.get_resource_data(resource_id)
