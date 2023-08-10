@@ -82,6 +82,8 @@ class RDFStoreObject:
     product_type:          URIRef  = None
     visitor:               URIRef  = None
     activity_step:         URIRef  = None
+    image_resource_id:     Literal = None
+    image_uriref:          URIRef  = None
 
     # Statement/ProductStatement
     subject:               URIRef  = None
@@ -152,6 +154,10 @@ class RDFStoreObject:
         if (self.product_type):         graph.add((self.id, RDF.type, self.product_type))
         if (self.visitor):              graph.add((self.id, NAMESPACE_VAST.vastMadeBy, self.visitor))
         if (self.activity_step):        graph.add((self.activity_step, NAMESPACE_VAST.vastProduces, self.id))
+        if (self.image_resource_id):    graph.add((self.id, NAMESPACE_VAST.vastResourceId, self.image_resource_id))
+        if (self.image_uriref):
+                                        graph.add((self.id, NAMESPACE_VAST.vastURIRef, self.image_uriref))
+                                        graph.add((self.id, NAMESPACE_VAST.vastResourceType, URIRef(NAMESPACE_VAST.vastImage)))
 
         # Statement/ProductStatement
         if (self.subject):              graph.add((self.id, RDF.subject, self.subject))
@@ -427,11 +433,21 @@ class RDFStoreVAST:
                 robj.product_type = URIRef(NAMESPACE_VAST.vastQuestionnaire)
             case "Interview":
                 robj.product_type = URIRef(NAMESPACE_VAST.vastInterview)
+            case "Image":
+                robj.product_type = URIRef(NAMESPACE_VAST.vastImage)
+            case "Audio":
+                robj.product_type = URIRef(NAMESPACE_VAST.vastAudio)
+            case "Video":
+                robj.product_type = URIRef(NAMESPACE_VAST.vastVideo)
             case _:
                 robj.product_type = URIRef(getattr(NAMESPACE_VAST, "vast" + obj.product_type.name.title().replace(" ", "")))
 
         robj.visitor       = self.getURIRef(self.vast.vastVisitor, obj.visitor)
         robj.activity_step = self.getURIRef(self.vast.vastActivityStep, obj.activity_step)
+        if obj.image_resource_id:
+            robj.image_resource_id = Literal(obj.image_resource_id, datatype=Literal.XSD.integer)
+        if obj.image_uriref:
+            robj.image_uriref = URIRef(obj.image_uriref)
         robj.add(self.g)
     
     def Concept(self, obj): # RDF Checked

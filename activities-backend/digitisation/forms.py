@@ -325,7 +325,7 @@ class ProductForm(VASTForm):
     class Meta(VASTForm.Meta):
         model = Product
         exclude = ('uuid', 'created', 'updated', 'name_md5', '_id', 'id', 'qr_code', 'uriref',
-                   'name', 'description', 'name_local', 'description_local', 'language_local', 'image_uriref', )
+                   'name', 'description', 'name_local', 'description_local', 'language_local', 'image_resource_id', 'image_uriref', )
 
 ##
 ## Product Statements form: A form for adding statements into an existing product.
