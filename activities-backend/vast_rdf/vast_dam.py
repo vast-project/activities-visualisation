@@ -82,6 +82,12 @@ class DAMStoreVAST:
         ## We expect JSON.
         return self.to_json(response)
 
+    def delete_resource(self, resource_id):
+        logger.info(f"DAMStoreVAST: delete_resource(): {resource_id}")
+        response = self.query('delete_resource', {'resource': resource_id})
+        ## We expect boolean.
+        return self.to_boolean(response)
+
     def to_json(self, response):
         return json.loads(response.text)
 
@@ -106,6 +112,11 @@ class DAMStoreVAST:
             return False
         else:
             return float(n).is_integer()
+
+    def to_boolean(self, response):
+        if response.text.lower() in ('true', '1', 't', 'y', 'yes',):
+            return True
+        return False
 
 if __name__ == "__main__":
     logging.basicConfig()

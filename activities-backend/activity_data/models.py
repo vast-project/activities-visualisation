@@ -185,6 +185,9 @@ class Product(VASTObject_NameUserGroupUnique):
         ## Try to save image in DAM...
         if self.image:
             dam = DAMStoreVAST()
+            ## Do we have a resoule id?
+            if self.image_resource_id:
+                dam.delete_resource(self.image_resource_id)
             self.image_resource_id = dam.create_resource(self.image.url, {
                 'description': f'{type(self).__name__}: {self.name}',
             })
