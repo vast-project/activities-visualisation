@@ -14,6 +14,7 @@ def sidebar_menu(*args, **kwargs):
         {'title': 'Add Product',            'url': 'product-wizard'},
         {'title': 'Add Statements',         'url': 'statement-wizard'},
         {'title': 'Add Product Statements', 'url': 'productstatement-wizard'},
+       #{'title': 'Test Exceptions',        'url': 'exception-wizard'},
     )
     context = {'sidebar_menu_items': menu_items}
     for arg in args:

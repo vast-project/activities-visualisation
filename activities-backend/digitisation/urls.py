@@ -105,6 +105,18 @@ productstatement_wizard = ActivityDigitisationWizardView.as_view(
 )
 
 ##
+## Test Exception Wizard
+##
+exception_wizard = ActivityDigitisationWizardView.as_view(
+    form_list = (
+        ('ask_exception', SelectExceptionForm),
+    ),
+    extra_context = { 'segment': 'exception-wizard' },
+    url_name='exception-wizard-step', done_step_name='finished'
+)
+
+
+##
 ## URLs
 ##
 urlpatterns = [
@@ -122,4 +134,6 @@ urlpatterns = [
     path('wizard/statement', statement_wizard, name='statement-wizard'),
     re_path(r'^wizard/productstatement/(?P<step>.+)/$', productstatement_wizard, name='productstatement-wizard-step'),
     path('wizard/productstatement', productstatement_wizard, name='productstatement-wizard'),
+    #re_path(r'^wizard/exception/(?P<step>.+)/$', exception_wizard, name='exception-wizard-step'),
+    #path('wizard/exception', exception_wizard, name='exception-wizard'),
 ]

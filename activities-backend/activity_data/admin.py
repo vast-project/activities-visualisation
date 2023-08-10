@@ -8,10 +8,10 @@ class ReadonlyFieldsAdmin(admin.ModelAdmin):
         fields = ()
         if obj:
             fields = ["created_by"]
-            if getattr(obj, "qr_code", False):
-                fields.append("qr_code")
-            if getattr(obj, "uriref", False):
-                fields.append("uriref")
+            for f in ("qr_code", "uriref", "image_resource_id", "image_uriref", "image_preview"):
+                if getattr(obj, f, False):
+                    fields.append(f)
+
         return fields
 
     def get_fieldsets(self, request, obj=None):

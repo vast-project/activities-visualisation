@@ -6,6 +6,8 @@ import qrcode
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
+from django.utils.html import mark_safe
+import os
 
 ## RDF Graph...
 from vast_rdf.vast_repository import RDFStoreVAST
@@ -173,6 +175,9 @@ class Product(VASTObject_NameUserGroupUnique):
     image_resource_id    = models.IntegerField(default=None, null=True, blank=True)
     image_uriref         = models.URLField(max_length=512, null=True, blank=True)
 
+    def image_preview(self):
+        return mark_safe(f'<img src = "{self.image.url}" width = "300"/>')
+
     # We must generate a "unique" name
     def save(self, *args, **kwargs):
         if not self.name:
@@ -229,6 +234,9 @@ class VisitorGroupQRCode(VASTObject):
     qr_code              = models.ImageField(upload_to='qr_codes', default=None, null=True, blank=True)
     uriref               = models.URLField(max_length=255, null=True, blank=True)
 
+    def image_preview(self):
+        return mark_safe(f'<img src = "{self.qr_code.url}" width = "300"/>')
+
     def save(self, *args, **kwargs):
         frontend_url = self.application.uriref # No need for check, this will be checked during application object creation...
         query = {
@@ -252,5 +260,9 @@ class VisitorGroupQRCode(VASTObject):
             self.name_md5 = hashlib.md5(self.name.encode('utf-8')).hexdigest()
         qrcode_img = qrcode.make(self.uriref, version=1, box_size=4)
         self.qr_code.name = f'qr_codes/qr_code-{self.name_md5}.png'
+        # Make sure the path can be written
+        dirname = os.path.dirname(self.qr_code.path)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
         qrcode_img.save(self.qr_code.path)
         super().save(*args, **kwargs)

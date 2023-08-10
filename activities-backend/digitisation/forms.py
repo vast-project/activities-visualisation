@@ -695,3 +695,11 @@ In this step, please decide if you are going to re-use an existing {self.verbose
 
     def headerTableMarkdown(self):
         return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Statements', self.modelName())}**)"
+
+class SelectExceptionForm(SelectModelForm):
+    class Meta:
+        model = Statement
+
+    def save(commit=True):
+        raise Exception("Test Exception")
+
