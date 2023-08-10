@@ -105,7 +105,7 @@ class Activity(VASTObject_NameUserGroupUnique):
 
 class Stimulus(VASTObject_NameUserGroupUnique):
     uriref            = models.URLField(max_length=512, default=None, null=True, blank=True)
-    stimulus_type     = models.CharField(max_length=16, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool')], null=False, blank=False)
+    stimulus_type     = models.CharField(max_length=16, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire')], null=False, blank=False)
 
     class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Stimuli'
