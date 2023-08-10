@@ -66,7 +66,6 @@ class CrispyForm(Form):
         self.helper.field_class       = ''
 
     def getAdminURL(self, text, model, action='changelist', args=[]):
-        print("=>", text, model, action)
         return f'<a href="{{% url \'admin:activity_data_{model}_{action}\' {" ".join([str(x) for x in args])} %}}" target="_blank">{text}</a>'
 
     def headerMarkdown(self):
