@@ -188,11 +188,15 @@ class Product(VASTObject_NameUserGroupUnique):
             ## Do we have a resoule id?
             if self.image_resource_id:
                 dam.delete_resource(self.image_resource_id)
-            self.image_resource_id = dam.create_resource(self.image.url, {
-                'description': f'{type(self).__name__}: {self.name}',
-            })
-            json_data = dam.get_resource(self.image_resource_id)
-            self.image_uriref = dam.get_size(json_data)['url']
+            if os.path.exists(self.image.path):
+                self.image_resource_id = dam.create_resource(self.image.url, {
+                    'description': f'{type(self).__name__}: {self.name}',
+                })
+                json_data = dam.get_resource(self.image_resource_id)
+                self.image_uriref = dam.get_size(json_data)['url']
+            else:
+                self.image_resource_id = None
+                self.image_uriref      = None
             del dam
         super().save(*args, **kwargs)
 
