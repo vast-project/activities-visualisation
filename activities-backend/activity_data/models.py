@@ -29,18 +29,19 @@ class AutoUpdateTimeFields(models.Model):
 
     def save(self, *args, **kwargs):
         ## Save the object in the django database...
-        super().save(*args, **kwargs)
+        result = super().save(*args, **kwargs)
         ## Save the object in RDF Graph...
         rdf = RDFStoreVAST()
         rdf.save(type(self).__name__, self)
         del rdf
+        return result
 
     def delete(self, *args, **kwargs):
         ## Delete the object from the RDF Graph...
         rdf = RDFStoreVAST()
         rdf.delete(type(self).__name__, self)
         del rdf
-        super().delete(*args, **kwargs)
+        return super().delete(*args, **kwargs)
 
 
 class VASTObject(AutoUpdateTimeFields):
@@ -64,7 +65,7 @@ class VASTObject(AutoUpdateTimeFields):
     def save(self, *args, **kwargs):
         if self.name and not self.name_md5:
             self.name_md5 = hashlib.md5(self.name.encode('utf-8')).hexdigest()
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 class VASTObject_NameUnique(VASTObject):
     name              = models.CharField(max_length=255, default=None, unique=True, null=False, blank=False)
@@ -182,15 +183,20 @@ class Product(VASTObject_NameUserGroupUnique):
     def image_preview(self):
         return mark_safe(f'<img src = "{self.image.url}" width = "300"/>')
 
-    # We must generate a "unique" name
     def save(self, *args, **kwargs):
         logger.info(f"Product: save():", *args, **kwargs)
+        # We must generate a "unique" name
         if not self.name:
             self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
         self.delete_image_resource()
         ## Try to save image in DAM...
         self.create_image_resource()
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        ## Delete the image from the DAM...
+        self.delete_image_resource()
+        return super().delete(*args, **kwargs)
 
     def create_image_resource(self):
         if self.image:
@@ -260,7 +266,7 @@ class Statement(VASTObject_NameUserGroupUnique):
     def save(self, *args, **kwargs):
         if not self.name:
             self.name = ".".join([self.product.name, self.subject.name, self.predicate.name, self.object.name])
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 class ProductStatement(VASTObject_NameUserGroupUnique):
     subject              = models.ForeignKey('Product',   on_delete=models.CASCADE, default=None, null=False, blank=False, related_name='ps_subject')
@@ -270,7 +276,7 @@ class ProductStatement(VASTObject_NameUserGroupUnique):
     def save(self, *args, **kwargs):
         if not self.name:
             self.name = ".".join([self.subject.name, self.subject.name, self.predicate.name, self.object.name])
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
 
 ## QR Codes...
 class DigitisationApplication(VASTObject_NameUserGroupUnique):
@@ -316,4 +322,4 @@ class VisitorGroupQRCode(VASTObject):
         if not os.path.exists(dirname):
             os.makedirs(dirname)
         qrcode_img.save(self.qr_code.path)
-        super().save(*args, **kwargs)
+        return super().save(*args, **kwargs)
