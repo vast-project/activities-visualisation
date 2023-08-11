@@ -6,7 +6,6 @@ import os
 import json
 from urllib.parse import urlparse
 
-
 import logging
 logger = logging.getLogger('DAMStoreVAST')
 

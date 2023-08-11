@@ -13,6 +13,10 @@ import os
 from vast_rdf.vast_repository import RDFStoreVAST
 ## For saving images in DAM...
 from vast_rdf.vast_dam import DAMStoreVAST
+from PIL import Image
+
+import logging
+logger = logging.getLogger('VASTModel')
 
 class AutoUpdateTimeFields(models.Model):
     uuid              = models.UUIDField(default = uuid.uuid4, editable = False)
@@ -180,25 +184,65 @@ class Product(VASTObject_NameUserGroupUnique):
 
     # We must generate a "unique" name
     def save(self, *args, **kwargs):
+        logger.info(f"Product: save():", *args, **kwargs)
         if not self.name:
             self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
+        self.delete_image_resource()
         ## Try to save image in DAM...
+        self.create_image_resource()
+        super().save(*args, **kwargs)
+
+    def create_image_resource(self):
         if self.image:
-            dam = DAMStoreVAST()
-            ## Do we have a resoule id?
-            if self.image_resource_id:
-                dam.delete_resource(self.image_resource_id)
-            if os.path.exists(self.image.path):
+            path = self.image.path
+            url  = self.image.url
+            logger.info(f"Product: save(): Image url:  {url}  (exists: {os.path.exists(path)})")
+            logger.info(f"Product: save(): Image path: {path} (exists: {os.path.exists(path)})")
+            delete_tmp_image = False
+            if not os.path.exists(path):
+                # Image not found at this path. Look into product_images...
+                head_tail = os.path.split(path)
+                path = os.path.join(head_tail[0], 'product_images', head_tail[1])
+                logger.info(f"Product: save(): Trying new Image path: {path} (exists: {os.path.exists(path)})")
+                if os.path.exists(path):
+                    head_tail = os.path.split(url)
+                    url = os.path.join(head_tail[0], 'product_images', head_tail[1])
+                    logger.info(f"Product: save(): Trying new Image url:  {url}  (exists: {os.path.exists(path)})")
+            if not os.path.exists(path):
+                ## Try to save the image in a temporary file...
+                path = self.image.path
+                logger.info(f"Product: save(): Saving Temp Image: {path}")
+                # Open the image using PIL
+                img = Image.open(self.image)
+                img.save(path)
+                delete_tmp_image = True
+            if os.path.exists(path):
+                dam = DAMStoreVAST()
+                logger.info(f"Product: save(): Creating Image resource...")
                 self.image_resource_id = dam.create_resource(self.image.url, {
                     'description': f'{type(self).__name__}: {self.name}',
                 })
+                logger.info(f"Product: save(): Image Resource: {self.image_resource_id}")
                 json_data = dam.get_resource(self.image_resource_id)
                 self.image_uriref = dam.get_size(json_data)['url']
+                logger.info(f"Product: save(): Image url: {self.image_uriref}")
+                del dam
+                if delete_tmp_image:
+                    logger.info(f"Product: save(): Deleting Temp Image: {path}")
+                    os.remove(path)
             else:
                 self.image_resource_id = None
                 self.image_uriref      = None
+
+    def delete_image_resource(self):
+        ## Do we have a resoule id?
+        if self.image_resource_id:
+            dam = DAMStoreVAST()
+            logger.info(f"Product: save(): Deleting DAM resource with id: {self.image_resource_id}")
+            dam.delete_resource(self.image_resource_id)
+            self.image_resource_id = None
             del dam
-        super().save(*args, **kwargs)
+
 
 ## Statements...
 class Concept(VASTObject_NameUnique):

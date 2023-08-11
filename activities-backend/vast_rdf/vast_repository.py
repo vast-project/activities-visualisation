@@ -445,7 +445,7 @@ class RDFStoreVAST:
         robj.visitor       = self.getURIRef(self.vast.vastVisitor, obj.visitor)
         robj.activity_step = self.getURIRef(self.vast.vastActivityStep, obj.activity_step)
         if obj.image_resource_id:
-            robj.image_resource_id = Literal(obj.image_resource_id, datatype=Literal.XSD.integer)
+            robj.image_resource_id = Literal(obj.image_resource_id, datatype=XSD.integer)
         if obj.image_uriref:
             robj.image_uriref = URIRef(obj.image_uriref)
         robj.add(self.g)
