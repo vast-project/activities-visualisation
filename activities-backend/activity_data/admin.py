@@ -1,9 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Q
 from .models import *
 
 class ReadonlyFieldsAdmin(admin.ModelAdmin):
+    ordering = ["name"]
+    search_fields = ["name"]
     def get_readonly_fields(self, request, obj=None):
         fields = ()
         if obj:
@@ -53,14 +56,47 @@ class FilterUserObjectsAdmin(ReadonlyFieldsAdmin):
         qslist = list(dict.fromkeys(qslist))
         return alldata.filter(pk__in=qslist)
 
+class AutoCompleteObjectAdmin(FilterUserObjectsAdmin):
+    def get_autocomplete_fields(self, request):
+        fields = super().get_autocomplete_fields(request)
+        return fields + ("object", )
+
+    # Define a custom function to filter the autocomplete queryset
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+
+        # Custom filtering logic (for example, search in Author's name)
+        queryset |= self.model.objects.filter(Q(object__name__icontains=search_term))
+
+        return queryset, use_distinct
+
+class AutoCompleteSubjectObjectAdmin(FilterUserObjectsAdmin):
+    def get_autocomplete_fields(self, request):
+        fields = super().get_autocomplete_fields(request)
+        return fields + ("subject", "object", )
+
+    # Define a custom function to filter the autocomplete queryset
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+
+        # Custom filtering logic (for example, search in Author's name)
+        queryset |= self.model.objects.filter(Q(subject__name__icontains=search_term) | Q(object__name__icontains=search_term))
+
+        return queryset, use_distinct
 
 for model in (Organisation, Class, Age, 
               Activity, Stimulus, ActivityStep, Event, VisitorGroup, VisitorGroupQRCode,
-              Visitor, Product, Concept, Statement, ProductStatement,):
+              Visitor, Product, Concept, ):
     admin.site.register(model, FilterUserObjectsAdmin)
 
 for model in (Language, Gender, Nature, Education, Nationality,
               OrganisationType, Context, 
               ProductType, DigitisationApplication,
-              Predicate, ):
+              ConceptType, Predicate, ):
     admin.site.register(model, ReadonlyFieldsAdmin)
+
+for model in (Statement, ):
+    admin.site.register(model, AutoCompleteSubjectObjectAdmin)
+
+for model in (ProductStatement, ):
+    admin.site.register(model, AutoCompleteObjectAdmin)

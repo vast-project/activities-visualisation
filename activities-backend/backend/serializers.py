@@ -157,6 +157,12 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSer
         #     )
         # ]
 
+
+class ConceptTypeSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
+    class Meta:
+        model = ConceptType
+        fields = '__all__'
+
 class ConceptSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
     class Meta:
         model = Concept

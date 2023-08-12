@@ -1,0 +1,145 @@
+<canvas id="wheel" width="800" height="800"></canvas>
+
+<script type="application/javascript">
+//var values = {{ values }};
+var values = [
+{name: "Self-direction", color: "#f00"},
+{name: "Stimulation", color: "#f80"},
+{name: "Hedonism", color: "#ff0"},
+{name: "Achievement", color: "#8f0"},
+{name: "Power", color: "#0f0"},
+{name: "Security", color: "#0f8"},
+{name: "Conformity", color: "#0ff"},
+{name: "Tradition", color: "#08f"},
+{name: "Benevolence", color: "#00f"},
+{name: "Universalism", color: "#80f"}
+];
+
+// Get the canvas element and its context
+var canvas = document.getElementById("wheel");
+var ctx = canvas.getContext("2d");
+
+// Get the center and radius of the canvas
+var cx = canvas.width / 2;
+var cy = canvas.height / 2;
+var r = Math.min(cx, cy);
+
+// Define some constants for the wheel
+var arc = Math.PI * 2 / values.length; // The angle of each slice
+var startAngle = 0; // The starting angle of the wheel
+var spinSpeed = 0.01; // The speed of spinning the wheel
+var spinAngle = 0; // The current angle of spinning the wheel
+var selectedIndex = -1; // The index of the selected value
+
+// Draw the wheel
+function drawWheel() {
+// Clear the canvas
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+// Loop through the values array
+for (var i = 0; i < values.length; i++) {
+// Get the current value and its color
+var value = values[i];
+var color = value.color;
+
+// Calculate the angles of the slice
+var angle = startAngle + i * arc;
+var endAngle = angle + arc;
+
+// Draw the slice
+ctx.fillStyle = color;
+ctx.beginPath();
+ctx.moveTo(cx, cy);
+ctx.arc(cx, cy, r, angle, endAngle);
+ctx.closePath();
+ctx.fill();
+
+// Draw the label
+ctx.fillStyle = "#fff";
+ctx.font = "20px Arial";
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+var tx = cx + Math.cos(angle + arc / 2) * r * 0.85;
+var ty = cy + Math.sin(angle + arc / 2) * r * 0.85;
+ctx.fillText(value.name, tx, ty);
+}
+
+// Draw a pointer at the top
+ctx.fillStyle = "#333";
+ctx.beginPath();
+ctx.moveTo(cx - r * 0.05, cy - r);
+ctx.lineTo(cx + r * 0.05, cy - r);
+ctx.lineTo(cx, cy - r * 0.9);
+ctx.closePath();
+ctx.fill();
+}
+
+// Spin the wheel
+function spinWheel() {
+// Increment the spin angle by the spin speed
+spinAngle += spinSpeed;
+
+// Decrease the spin speed by friction
+spinSpeed *= 0.99;
+
+// Update the start angle by the spin angle
+startAngle += spinAngle;
+
+// Draw the wheel with the new start angle
+drawWheel();
+
+// Check if the wheel has stopped spinning
+if (spinSpeed < 0.002) {
+// Cancel the animation frame
+cancelAnimationFrame(animFrame);
+
+// Get the index of the value at the pointer
+selectedIndex = Math.floor((startAngle + Math.PI / values.length) / arc) % values.length;
+
+// Highlight the selected value
+highlightValue(selectedIndex);
+
+// Display a message with the selected value name
+alert("You selected " + values[selectedIndex].name + "!");
+
+// Reset the spin angle and speed
+spinAngle = 0;
+spinSpeed = 0.01;
+} else {
+// Request the next animation frame
+animFrame = requestAnimationFrame(spinWheel);
+}
+}
+
+// Highlight the selected value
+function highlightValue(index) {
+// Get the value and its color
+var value = values[index];
+var color = value.color;
+
+// Calculate the angles of the slice
+var angle = startAngle + index * arc;
+var endAngle = angle + arc;
+
+// Draw a thicker stroke around the slice
+ctx.lineWidth = r * 0.1;
+ctx.strokeStyle = color;
+ctx.beginPath();
+ctx.moveTo(cx, cy);
+ctx.arc(cx, cy, r - ctx.lineWidth / 2, angle, endAngle);
+ctx.closePath();
+ctx.stroke();
+}
+
+// Add a click event listener to the canvas
+canvas.addEventListener("click", function() {
+// Check if the wheel is not spinning
+if (spinSpeed < 0.02) {
+// Start spinning the wheel
+spinWheel();
+}
+});
+
+// Draw the wheel initially
+drawWheel();
+</script>

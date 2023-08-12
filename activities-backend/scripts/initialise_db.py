@@ -82,8 +82,14 @@ class Client:
     def find(self, url, data):
         if not "name" in data:
             return []
-        ## Find if an object already exists, based on "name"
-        response = self.get(url + "?name=" + urllib.parse.quote(data.get("name")))
+        if "concept_type" in data:
+            concept_type = data.get("concept_type")
+            concept_type = concept_type.rstrip('/').split('/')[-1]
+            #print("++++++++", data.get("name"), concept_type, data.get("concept_type"))
+            response = self.get(url + "?name=" + urllib.parse.quote(data.get("name")) + "&concept_type=" + urllib.parse.quote(concept_type))
+        else:
+            ## Find if an object already exists, based on "name"
+            response = self.get(url + "?name=" + urllib.parse.quote(data.get("name")))
         if response.status_code >= 400:
             return []
         return response.json()
@@ -252,3 +258,51 @@ for value in (
         "name": value,
         "description": f"Product Type: {value}"
     })
+
+## Concepts...
+for value in (
+    {'name': 'Concept', 'description': 'The default Concept type'},
+    {'name': 'Higher Order Value', 'description': 'A Schwartz\'s Higher Order Value'},
+    {'name': 'Original Value', 'description': 'A Schwartz\'s value from the 10 Original Values'},
+    {'name': 'Narrowly Defined Value', 'description': 'A Schwartz\'s value from the 19 Narrowly Defined Values'},
+    {'name': 'VAST Keyword', 'description': 'A VAST Keyword (used to annotate in the past of values)'},
+    {'name': 'Non-expert Keyword', 'description': 'A user provided Keyword (used to annotate in the present of values)'},
+    ):
+    response = client.post("/rest/concept_types/", data=value)
+
+for value in (
+    {'name': 'Self-transcendence', 'concept_type': client.url('Higher Order Value')},
+        {'name': 'Benevolence', 'concept_type': client.url('Original Value')},
+            {'name': 'Benevolence-Dependability', 'concept_type': client.url('Narrowly Defined Value')},
+            {'name': 'Benevolence-Caring', 'concept_type': client.url('Narrowly Defined Value')},
+        {'name': 'Universalism', 'concept_type': client.url('Original Value')},
+            {'name': 'Universalism-Tolerance', 'concept_type': client.url('Narrowly Defined Value')},
+            {'name': 'Universalism-Concern', 'concept_type': client.url('Narrowly Defined Value')},
+            {'name': 'Universalism-Nature', 'concept_type': client.url('Narrowly Defined Value')},
+            {'name': 'Humility', 'concept_type': client.url('Narrowly Defined Value')},
+    {'name': 'Conservation', 'concept_type': client.url('Higher Order Value')},
+        {'name': 'Conformity', 'concept_type': client.url('Original Value')},
+            {'name': 'Conformity-Interpersonal', 'concept_type': client.url('Narrowly Defined Value')},
+            {'name': 'Conformity-Rules', 'concept_type': client.url('Narrowly Defined Value')},
+        {'name': 'Tradition (O)', 'concept_type': client.url('Original Value')},
+            {'name': 'Tradition', 'concept_type': client.url('Narrowly Defined Value')},
+        {'name': 'Security', 'concept_type': client.url('Original Value')},
+            {'name': 'Security-Societal', 'concept_type': client.url('Narrowly Defined Value')},
+            {'name': 'Security-Personal', 'concept_type': client.url('Narrowly Defined Value')},
+            {'name': 'Face', 'concept_type': client.url('Narrowly Defined Value')},
+    {'name': 'Self-enhancement', 'concept_type': client.url('Higher Order Value')},
+        {'name': 'Power', 'concept_type': client.url('Original Value')},
+            {'name': 'Power-Resources', 'concept_type': client.url('Narrowly Defined Value')},
+            {'name': 'Power-Dominance', 'concept_type': client.url('Narrowly Defined Value')},
+        {'name': 'Achievement (O)', 'concept_type': client.url('Original Value')},
+            {'name': 'Achievement', 'concept_type': client.url('Narrowly Defined Value')},
+        {'name': 'Hedonism (O)', 'concept_type': client.url('Original Value')},
+            {'name': 'Hedonism', 'concept_type': client.url('Narrowly Defined Value')},
+    {'name': 'Openness to change', 'concept_type': client.url('Higher Order Value')},
+        {'name': 'Stimulation (O)', 'concept_type': client.url('Original Value')},
+            {'name': 'Stimulation', 'concept_type': client.url('Narrowly Defined Value')},
+        {'name': 'Self-Direction', 'concept_type': client.url('Original Value')},
+            {'name': 'Self-Direction-Action', 'concept_type': client.url('Narrowly Defined Value')},
+            {'name': 'Self-Direction-Thought', 'concept_type': client.url('Narrowly Defined Value')},
+    ):
+    response = client.post("/rest/concepts/", data=value)

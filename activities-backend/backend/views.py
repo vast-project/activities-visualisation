@@ -213,6 +213,16 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ['name']
 
 
+class ConceptTypeViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows ConceptType objects to be viewed or edited.
+    """
+    queryset = ConceptType.objects.all()
+    serializer_class = ConceptTypeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
+    search_fields = ['name']
+
 class ConceptViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Concept objects to be viewed or edited.
@@ -221,7 +231,7 @@ class ConceptViewSet(viewsets.ModelViewSet):
     serializer_class = ConceptSerializer
     permission_classes = [permissions.IsAuthenticated]
     filterset_fields = '__all__'
-    search_fields = ['name']
+    search_fields = ['name', 'concept_type']
 
 
 class PredicateViewSet(viewsets.ModelViewSet):

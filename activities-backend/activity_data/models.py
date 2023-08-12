@@ -4,7 +4,7 @@ import uuid
 
 import qrcode
 from django.conf import settings
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import User, Group
 from django.db import models
 from django.utils.html import mark_safe
 import os
@@ -96,7 +96,8 @@ class Organisation(VASTObject_NameUserGroupUnique):
     # is_visitor        = models.CharField(max_length=3, choices=[('Yes','Yes'),('No','No')], default='Yes', null=False, blank=False)
 
 class Class(VASTObject_NameUnique):
-    pass
+    class Meta(VASTObject_NameUserGroupUnique.Meta):
+        verbose_name_plural = 'Classes'
 
 ## Contexts...
 class Context(VASTObject_NameUserGroupUnique):
@@ -251,8 +252,25 @@ class Product(VASTObject_NameUserGroupUnique):
 
 
 ## Statements...
-class Concept(VASTObject_NameUnique):
-    pass
+class ConceptType(VASTObject_NameUnique):
+    @classmethod
+    def get_default_pk(cls):
+        ct, created = cls.objects.get_or_create(
+            name='Concept', 
+            defaults=dict(description='The default Concept type', created_by=User.objects.get(username='admin')),
+        )
+        return ct.pk
+
+class Concept(VASTObject):
+    concept_type         = models.ForeignKey('ConceptType',  on_delete=models.CASCADE, default=ConceptType.get_default_pk, null=False, blank=False)
+    class Meta(VASTObject.Meta):
+        # Enforce a policy for the name to be unique (for each user)
+        unique_together = [["name", "concept_type"]]
+
+    def save(self, *args, **kwargs):
+        if self.name and self.concept_type and not self.name_md5:
+            self.name_md5 = hashlib.md5((self.name + self.concept_type.name).encode('utf-8')).hexdigest()
+        return super().save(*args, **kwargs)
 
 class Predicate(VASTObject_NameUnique):
     pass
