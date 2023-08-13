@@ -17,7 +17,8 @@ logger = logging.getLogger('RDFStoreVAST')
 
 NAMESPACE_VAST                   = Namespace("https://www.vast-project.eu/vast#")
 VAST_GRAPH_OWNER: URIRef         = URIRef(f"{NAMESPACE_VAST.vastGraphObjectOwner}/digitisation_tool")
-GRAPH_ID_ELLOGON_ANNOTATION_TOOL = URIRef("https://www.vast-project.eu/vastOntology/DigitisationTools")
+GRAPH_ID_DIGITISATION_TOOLS      = URIRef("https://www.vast-project.eu/vastOntology/DigitisationTools")
+GRAPH_ID_SURVEY_DATA             = URIRef("https://www.vast-project.eu/vast/graphs#surveyData")
 
 @dataclass
 class RDFStoreObject:
@@ -174,7 +175,7 @@ class RDFStoreConfig:
 
 class RDFStoreVAST:
 
-    def __init__(self, config=None, identifier=GRAPH_ID_ELLOGON_ANNOTATION_TOOL, store=None):
+    def __init__(self, config=None, identifier=GRAPH_ID_DIGITISATION_TOOLS, store=None):
         self.default_config(config)
         # logger.debug(f"RDFStoreVAST(): config: {self.config.config}")
         self.default_store(store)
@@ -209,6 +210,9 @@ class RDFStoreVAST:
     def commit(self):
         if self.store:
             self.store.commit()
+
+    def querySPARQL(self, *args, **kwargs):
+        return self.g.query(*args, **kwargs)
 
     def queryObject(self, id):
         if not self.store:
@@ -355,10 +359,14 @@ class RDFStoreVAST:
                 robj.stimulus_type = URIRef(NAMESPACE_VAST.vastSegment)
             case "Image":
                 robj.stimulus_type = URIRef(NAMESPACE_VAST.vastImage)
+            case "Audio":
+                robj.stimulus_type = URIRef(NAMESPACE_VAST.vastAudio)
             case "Video":
                 robj.stimulus_type = URIRef(NAMESPACE_VAST.vastVideo)
             case "Tool":
                 robj.stimulus_type = URIRef(NAMESPACE_VAST.vastTool)
+            case "Questionnaire":
+                robj.stimulus_type = URIRef(NAMESPACE_VAST.vastQuestionnaire)
         if obj.uriref:
             robj.uriref = URIRef(obj.uriref)
         robj.add(self.g)

@@ -10,7 +10,7 @@ from django.utils.html import mark_safe
 import os
 
 ## RDF Graph...
-from vast_rdf.vast_repository import RDFStoreVAST
+from vast_rdf.vast_repository import RDFStoreVAST, NAMESPACE_VAST, RDF, GRAPH_ID_SURVEY_DATA
 ## For saving images in DAM...
 from vast_rdf.vast_dam import DAMStoreVAST
 from PIL import Image
@@ -181,18 +181,35 @@ class Activity(VASTObject_NameUserGroupUnique):
         verbose_name_plural = 'Activities'
 
 class Stimulus(VASTDAMImage, VASTObject_NameUserGroupUnique):
-    stimulus_type        = models.CharField(max_length=16, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire')], null=False, blank=False)
+    stimulus_type        = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire')], null=False, blank=False)
     uriref               = models.URLField(max_length=512, default=None, null=True, blank=True)
     text                 = models.TextField(default=None, null=True, blank=True)
     image                = models.ImageField(upload_to='stimulus_images/', default=None, null=True, blank=True)
     image_resource_id    = models.IntegerField(default=None, null=True, blank=True)
     image_uriref         = models.URLField(max_length=512, null=True, blank=True)
+    questionnaire        = models.CharField(max_length=512, choices=[('','---------')], null=True, blank=True)
 
     def image_preview(self):
         if self.image:
             return mark_safe(f'<img src = "{self.image.url}" width = "300"/>')
         else:
             return '(No image)'
+
+    @classmethod
+    def get_questionnaires(cls):
+        stimulus    = NAMESPACE_VAST.vastStimulus
+        description = NAMESPACE_VAST.vastDescription
+        rdf = RDFStoreVAST(identifier=GRAPH_ID_SURVEY_DATA)
+        sparql = f'SELECT ?s ?d WHERE {{ ?s rdf:type <{stimulus}> . ?s <{description}> ?d }}'
+        logger.info(f"{cls.__name__}: get_questionnaires(): SPARQL: '{sparql}'")
+        results = rdf.querySPARQL(sparql)
+        logger.info(f"{cls.__name__}: get_questionnaires(): result: (len: {len(results)})")
+        del rdf
+        choices = [('', '---------')]
+        for row in results:
+            # logger.info(f"{cls.__name__}: get_questionnaires(): row: '{row.s}' '{row.d}'")
+            choices.append((row.s, row.d))
+        return choices
 
     class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Stimuli'

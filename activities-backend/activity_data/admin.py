@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
+from django import forms
 from django.db import models
 from django.db.models import Q
 from .models import *
@@ -56,9 +57,6 @@ class FilterUserObjectsAdmin(ReadonlyFieldsAdmin):
         qslist = list(dict.fromkeys(qslist))
         return alldata.filter(pk__in=qslist)
 
-    class Media:
-       js = ["js/models/stimulus.js"]
-
 class AutoCompleteObjectAdmin(FilterUserObjectsAdmin):
     def get_autocomplete_fields(self, request):
         fields = super().get_autocomplete_fields(request)
@@ -87,8 +85,18 @@ class AutoCompleteSubjectObjectAdmin(FilterUserObjectsAdmin):
 
         return queryset, use_distinct
 
+@admin.register(Stimulus)
+class StimulusAdmin(FilterUserObjectsAdmin):
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        if db_field.name == 'questionnaire':
+            kwargs['choices'] = Stimulus.get_questionnaires()
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
+
+    class Media:
+       js = ["js/models/stimulus.js"]
+
 for model in (Organisation, Class, Age, 
-              Activity, Stimulus, ActivityStep, Event, VisitorGroup, VisitorGroupQRCode,
+              Activity, ActivityStep, Event, VisitorGroup, VisitorGroupQRCode,
               Visitor, Product, Concept, ):
     admin.site.register(model, FilterUserObjectsAdmin)
 
