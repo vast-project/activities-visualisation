@@ -18,6 +18,75 @@ from PIL import Image
 import logging
 logger = logging.getLogger('VASTModel')
 
+##
+## DAM Image
+##
+class VASTDAMImage:
+    def save(self, *args, **kwargs):
+        logger.info(f"{self.__class__.__name__}: save():", *args, **kwargs)
+        ## If we have a prior resource in DAM, delete it...
+        self.delete_image_resource()
+        ## Try to save image in DAM...
+        self.create_image_resource()
+        return super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        logger.info(f"{self.__class__.__name__}: delete():", *args, **kwargs)
+        ## Delete the image from the DAM...
+        self.delete_image_resource()
+        return super().delete(*args, **kwargs)
+
+    def create_image_resource(self):
+        if self.image:
+            path = self.image.path
+            url  = self.image.url
+            logger.info(f"{self.__class__.__name__}: create_image_resource(): Image url:  {url}  (exists: {os.path.exists(path)})")
+            logger.info(f"{self.__class__.__name__}: create_image_resource(): Image path: {path} (exists: {os.path.exists(path)})")
+            delete_tmp_image = False
+            # if not os.path.exists(path):
+            #     # Image not found at this path. Look into product_images...
+            #     head_tail = os.path.split(path)
+            #     path = os.path.join(head_tail[0], 'product_images', head_tail[1])
+            #     logger.info(f"Product: save(): Trying new Image path: {path} (exists: {os.path.exists(path)})")
+            #     if os.path.exists(path):
+            #         head_tail = os.path.split(url)
+            #         url = os.path.join(head_tail[0], 'product_images', head_tail[1])
+            #         logger.info(f"Product: save(): Trying new Image url:  {url}  (exists: {os.path.exists(path)})")
+            if not os.path.exists(path):
+                ## Try to save the image in a temporary file...
+                path = self.image.path
+                logger.info(f"{self.__class__.__name__}: create_image_resource(): Saving Temp Image: {path}")
+                # Open the image using PIL
+                img = Image.open(self.image)
+                img.save(path)
+                delete_tmp_image = True
+            if os.path.exists(path):
+                dam = DAMStoreVAST()
+                logger.info(f"{self.__class__.__name__}: create_image_resource(): Creating Image resource...")
+                self.image_resource_id = dam.create_resource(self.image.url, {
+                    'description': f'{type(self).__name__}: {self.name}',
+                })
+                logger.info(f"{self.__class__.__name__}: create_image_resource(): Image Resource: {self.image_resource_id}")
+                json_data = dam.get_resource(self.image_resource_id)
+                self.image_uriref = dam.get_size(json_data)['url']
+                logger.info(f"{self.__class__.__name__}: create_image_resource(): Image url: {self.image_uriref}")
+                del dam
+                if delete_tmp_image:
+                    logger.info(f"{self.__class__.__name__}: create_image_resource(): Deleting Temp Image: {path}")
+                    os.remove(path)
+            else:
+                self.image_resource_id = None
+                self.image_uriref      = None
+
+    def delete_image_resource(self):
+        ## Do we have a resoule id?
+        if self.image_resource_id:
+            dam = DAMStoreVAST()
+            logger.info(f"{self.__class__.__name__}: delete_image_resource(): Deleting DAM resource with id: {self.image_resource_id}")
+            dam.delete_resource(self.image_resource_id)
+            self.image_resource_id = None
+            del dam
+
 class AutoUpdateTimeFields(models.Model):
     uuid              = models.UUIDField(default = uuid.uuid4, editable = False)
     created           = models.DateTimeField(auto_now_add=True, null=True)
@@ -111,9 +180,19 @@ class Activity(VASTObject_NameUserGroupUnique):
     class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Activities'
 
-class Stimulus(VASTObject_NameUserGroupUnique):
-    uriref            = models.URLField(max_length=512, default=None, null=True, blank=True)
-    stimulus_type     = models.CharField(max_length=16, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire')], null=False, blank=False)
+class Stimulus(VASTDAMImage, VASTObject_NameUserGroupUnique):
+    stimulus_type        = models.CharField(max_length=16, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire')], null=False, blank=False)
+    uriref               = models.URLField(max_length=512, default=None, null=True, blank=True)
+    text                 = models.TextField(default=None, null=True, blank=True)
+    image                = models.ImageField(upload_to='stimulus_images/', default=None, null=True, blank=True)
+    image_resource_id    = models.IntegerField(default=None, null=True, blank=True)
+    image_uriref         = models.URLField(max_length=512, null=True, blank=True)
+
+    def image_preview(self):
+        if self.image:
+            return mark_safe(f'<img src = "{self.image.url}" width = "300"/>')
+        else:
+            return '(No image)'
 
     class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Stimuli'
@@ -182,7 +261,10 @@ class Product(VASTObject_NameUserGroupUnique):
     image_uriref         = models.URLField(max_length=512, null=True, blank=True)
 
     def image_preview(self):
-        return mark_safe(f'<img src = "{self.image.url}" width = "300"/>')
+        if self.image:
+            return mark_safe(f'<img src = "{self.image.url}" width = "300"/>')
+        else:
+            return '(No image)'
 
     def save(self, *args, **kwargs):
         logger.info(f"Product: save():", *args, **kwargs)
@@ -310,7 +392,10 @@ class VisitorGroupQRCode(VASTObject):
     uriref               = models.URLField(max_length=255, null=True, blank=True)
 
     def image_preview(self):
-        return mark_safe(f'<img src = "{self.qr_code.url}" width = "300"/>')
+        if self.qr_code:
+            return mark_safe(f'<img src = "{self.qr_code.url}" width = "300"/>')
+        else:
+            return '(No image)'
 
     def save(self, *args, **kwargs):
         frontend_url = self.application.uriref # No need for check, this will be checked during application object creation...

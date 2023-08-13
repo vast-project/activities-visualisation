@@ -56,6 +56,9 @@ class FilterUserObjectsAdmin(ReadonlyFieldsAdmin):
         qslist = list(dict.fromkeys(qslist))
         return alldata.filter(pk__in=qslist)
 
+    class Media:
+       js = ["js/models/stimulus.js"]
+
 class AutoCompleteObjectAdmin(FilterUserObjectsAdmin):
     def get_autocomplete_fields(self, request):
         fields = super().get_autocomplete_fields(request)
