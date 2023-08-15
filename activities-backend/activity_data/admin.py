@@ -31,6 +31,21 @@ class ReadonlyFieldsAdmin(admin.ModelAdmin):
         
         return fieldsets
 
+    def get_list_filter(self, request):
+        list_filter = []
+
+        for field in self.get_fields(request):
+            match field:
+                case 'activity'|'activity_step'|'visitor_group'|'stimulus':
+                    list_filter.append(f"{field}__name")
+                case 'visitor':
+                    list_filter.append(f"{field}__visitor_group__name")
+        list_filter.append('created_by__username')
+        return super().get_list_filter(request) + tuple(list_filter)
+
+    def lookup_allowed(self, key, value):
+        return True
+    
     # Preselect the current user...
     def get_changeform_initial_data(self, request):
         initial = super().get_changeform_initial_data(request)
@@ -94,20 +109,25 @@ class StimulusAdmin(FilterUserObjectsAdmin):
 
     class Media:
        js = ["js/models/stimulus.js"]
+Stimulus.set_fields_verbose_names()
 
 for model in (Organisation, Class, Age, 
               Activity, ActivityStep, Event, VisitorGroup, VisitorGroupQRCode,
               Visitor, Product, Concept, ):
     admin.site.register(model, FilterUserObjectsAdmin)
+    model.set_fields_verbose_names()
 
 for model in (Language, Gender, Nature, Education, Nationality,
               OrganisationType, Context, 
               ProductType, DigitisationApplication,
               ConceptType, Predicate, ):
     admin.site.register(model, ReadonlyFieldsAdmin)
+    model.set_fields_verbose_names()
 
 for model in (Statement, ):
     admin.site.register(model, AutoCompleteSubjectObjectAdmin)
+    model.set_fields_verbose_names()
 
 for model in (ProductStatement, ):
     admin.site.register(model, AutoCompleteObjectAdmin)
+    model.set_fields_verbose_names()

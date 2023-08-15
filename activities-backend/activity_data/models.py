@@ -125,6 +125,13 @@ class VASTObject(AutoUpdateTimeFields):
     updated           = models.DateTimeField(auto_now=True, null=True)
     created_by        = models.ForeignKey(settings.AUTH_USER_MODEL, null=False, blank=False, on_delete=models.CASCADE)
 
+    @classmethod
+    def set_fields_verbose_names(cls):
+        cls._meta.get_field('name').verbose_name= f"{cls.__name__} Name"
+        #field = cls.get_field('name')
+        #_meta.get_field('name')
+        #field.verbose_name = f"{self.__class__.__name__} Name"
+
     def __str__(self):
         return f'{self.name}'
 
@@ -151,6 +158,9 @@ class Language(AutoUpdateTimeFields):
     code              = models.CharField(max_length=6,   default=None, unique=True, null=False, blank=False)
     name              = models.CharField(max_length=255, default=None, unique=True, null=False, blank=False)
     description       = models.CharField(max_length=255, default=None, null=True, blank=True)
+    @classmethod
+    def set_fields_verbose_names(cls):
+        cls._meta.get_field('name').verbose_name= f"{cls.__name__} Name"
     def __str__(self):
         return f'{self.name}'
 

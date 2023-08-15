@@ -72,6 +72,8 @@ INSTALLED_APPS = [
     'formtools',
     'crispy_forms',
     'crispy_bootstrap5',
+    'django_tables2',
+    'django_htmx',
 
     # django-allauth
     'django.contrib.sites',
@@ -97,6 +99,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'

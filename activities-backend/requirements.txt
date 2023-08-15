@@ -9,6 +9,9 @@ django-cors-headers
 django-cleanup
 django-formtools
 django-crispy-forms
+django-tables2
+django-filter
+django-htmx
 crispy-bootstrap5
 whitenoise
 django-admin-soft-dashboard
