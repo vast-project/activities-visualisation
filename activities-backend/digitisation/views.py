@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.template.response import TemplateResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 ##
 ## Form Wizards
@@ -146,7 +147,7 @@ from .tables import *
 from .filters import *
 import sys
 
-class ActivityHTMxTableView(SingleTableMixin, FilterView):
+class ActivityHTMxTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     table_class     = None
     queryset        = None
     filterset_class = None

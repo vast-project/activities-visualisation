@@ -5,6 +5,7 @@
 {% block content %}
 <div class="container-fluid py-4">
 
+{% if request.user.is_authenticated %}
 <div class="row my-4">
 {% include "includes/dashboard-model-table.html" with model='Activity' %}
 {% include "includes/dashboard-model-table.html" with model='ActivityStep' %}
@@ -21,6 +22,7 @@
 {% include "includes/dashboard-model-table.html" with model='ProductStatement' %}
 {% include "includes/dashboard-model-table.html" with model='Statement' %}
 </div>
+{% endif %}
 {% include "includes/footer.html" %}
 </div>
 {% endblock content %}
