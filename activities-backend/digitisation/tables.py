@@ -3,8 +3,12 @@ from activity_data.models import *
 from django.urls import reverse
 
 class HTMxTable(tables.Table):
-    selected = tables.CheckBoxColumn(accessor="pk")
-    name = tables.Column(linkify=True, attrs={'a': {'target': 'blank_'}})
+    selected = tables.CheckBoxColumn(accessor="pk", attrs={
+        'input': {'class': 'form-check-input'}
+    })
+    name = tables.Column(linkify=True, attrs={
+        'a': {'target': 'blank_'}
+    })
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.id  = self._meta.model.__name__
