@@ -1,4 +1,5 @@
 from django.urls import path, re_path
+from django.contrib.auth.decorators import login_required
 
 from .views import *
 
@@ -120,21 +121,21 @@ exception_wizard = ActivityDigitisationWizardView.as_view(
 ## URLs
 ##
 urlpatterns = [
-    path('dashboard/table/<str:model>', ActivityHTMxTableView.as_view(), name='dashboard-table-model'),
-    re_path(r'^wizard/activity/(?P<step>.+)/$', activity_wizard, name='activity-wizard-step'),
-    path('wizard/activity', activity_wizard, name='activity-wizard'),
-    re_path(r'^wizard/event-visitorgroup/(?P<step>.+)/$', event_visitorgroup_wizard, name='event-visitorgroup-wizard-step'),
-    path('wizard/event-visitorgroup', event_visitorgroup_wizard, name='event-visitorgroup-wizard'),
-    re_path(r'^wizard/visitorgroupqrcode/(?P<step>.+)/$', qrcode_wizard, name='visitorgroupqrcode-wizard-step'),
-    path('wizard/visitorgroupqrcode', qrcode_wizard, name='visitorgroupqrcode-wizard'),
-    re_path(r'^wizard/visitor/(?P<step>.+)/$', visitor_wizard, name='visitor-wizard-step'),
-    path('wizard/visitor', visitor_wizard, name='visitor-wizard'),
-    re_path(r'^wizard/product/(?P<step>.+)/$', product_wizard, name='product-wizard-step'),
-    path('wizard/product', product_wizard, name='product-wizard'),
-    re_path(r'^wizard/statement/(?P<step>.+)/$', statement_wizard, name='statement-wizard-step'),
-    path('wizard/statement', statement_wizard, name='statement-wizard'),
-    re_path(r'^wizard/productstatement/(?P<step>.+)/$', productstatement_wizard, name='productstatement-wizard-step'),
-    path('wizard/productstatement', productstatement_wizard, name='productstatement-wizard'),
-    #re_path(r'^wizard/exception/(?P<step>.+)/$', exception_wizard, name='exception-wizard-step'),
-    #path('wizard/exception', exception_wizard, name='exception-wizard'),
+    path('dashboard/table/<str:model>',                     login_required(ActivityHTMxTableView.as_view()),    name='dashboard-table-model'),
+    re_path(r'^wizard/activity/(?P<step>.+)/$',             login_required(activity_wizard),                    name='activity-wizard-step'),
+    path('wizard/activity',                                 login_required(activity_wizard),                    name='activity-wizard'),
+    re_path(r'^wizard/event-visitorgroup/(?P<step>.+)/$',   login_required(event_visitorgroup_wizard),          name='event-visitorgroup-wizard-step'),
+    path('wizard/event-visitorgroup',                       login_required(event_visitorgroup_wizard),          name='event-visitorgroup-wizard'),
+    re_path(r'^wizard/visitorgroupqrcode/(?P<step>.+)/$',   login_required(qrcode_wizard),                      name='visitorgroupqrcode-wizard-step'),
+    path('wizard/visitorgroupqrcode',                       login_required(qrcode_wizard),                      name='visitorgroupqrcode-wizard'),
+    re_path(r'^wizard/visitor/(?P<step>.+)/$',              login_required(visitor_wizard),                     name='visitor-wizard-step'),
+    path('wizard/visitor',                                  login_required(visitor_wizard),                     name='visitor-wizard'),
+    re_path(r'^wizard/product/(?P<step>.+)/$',              login_required(product_wizard),                     name='product-wizard-step'),
+    path('wizard/product',                                  login_required(product_wizard),                     name='product-wizard'),
+    re_path(r'^wizard/statement/(?P<step>.+)/$',            login_required(statement_wizard),                   name='statement-wizard-step'),
+    path('wizard/statement',                                login_required(statement_wizard),                   name='statement-wizard'),
+    re_path(r'^wizard/productstatement/(?P<step>.+)/$',     login_required(productstatement_wizard),            name='productstatement-wizard-step'),
+    path('wizard/productstatement',                         login_required(productstatement_wizard),            name='productstatement-wizard'),
+    #re_path(r'^wizard/exception/(?P<step>.+)/$',           login_required(exception_wizard),                   name='exception-wizard-step'),
+    #path('wizard/exception',                               login_required(exception_wizard),                   name='exception-wizard'),
 ]
