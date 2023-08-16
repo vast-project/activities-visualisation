@@ -137,6 +137,7 @@ class VASTObject(AutoUpdateTimeFields):
 
     class Meta(AutoUpdateTimeFields.Meta):
         abstract = True
+        ordering = ["name",]
 
     def save(self, *args, **kwargs):
         if self.name and not self.name_md5:
@@ -163,6 +164,8 @@ class Language(AutoUpdateTimeFields):
         cls._meta.get_field('name').verbose_name= f"{cls.__name__} Name"
     def __str__(self):
         return f'{self.name}'
+    class Meta:
+        ordering = ["name",]
 
 ## Organisations...
 class OrganisationType(VASTObject_NameUnique):

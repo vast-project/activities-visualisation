@@ -4,7 +4,7 @@
 
 {% block main %}
     {# Search form #}
-    <form hx-get="{% url 'dashboard-table-model' model=model %}" 
+    <form hx-get="{{table.url}}" 
           hx-target="div.table-container-{{ table.id }}" 
           hx-swap="outerHTML" 
           hx-indicator=".progress-{{ table.id }}" 

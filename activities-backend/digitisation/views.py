@@ -166,7 +166,6 @@ class ActivityHTMxTableView(SingleTableMixin, FilterView):
                 self.table_class     = getattr(sys.modules[__name__],
                                                class_name + 'HTMxTable')
 
-
     def get_template_names(self):
         # print("get_template_names()", self.args, self.kwargs)
         if self.request.htmx:

@@ -1,10 +1,12 @@
 import django_tables2 as tables
 from activity_data.models import *
+from django.urls import reverse
 
 class HTMxTable(tables.Table):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.id = self._meta.model.__name__.lower()
+        self.id  = self._meta.model.__name__
+        self.url = reverse('dashboard-table-model', kwargs={'model': self.id})
 
     class Meta:
         template_name = "tables/bootstrap_htmx.html"
