@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.db import models
 from django.utils.html import mark_safe
+from django.urls import reverse
 import os
 
 ## RDF Graph...
@@ -112,6 +113,8 @@ class AutoUpdateTimeFields(models.Model):
         del rdf
         return super().delete(*args, **kwargs)
 
+    def get_absolute_url(self, action='change'):
+        return reverse(f'admin:activity_data_{self._meta.model._meta.model_name}_{action}', args=[self.pk])
 
 class VASTObject(AutoUpdateTimeFields):
     uuid              = models.UUIDField(default = uuid.uuid4, editable = False)
