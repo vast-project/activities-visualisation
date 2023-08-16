@@ -33,6 +33,7 @@ env = environ.Env(
     DATABASE_URL=(str, ''),
     DJANGO_MEDIA_DATA_LAKE_BASE_DIR=(str, ""),
     DJANGO_SECRET_KEY=(str, secrets.token_urlsafe(64)),
+    DJANGO_LOG_LEVEL=(str, 'WARNING'),
 )
 # reading .env file
 environ.Env.read_env()
@@ -226,6 +227,13 @@ LOGGING = {
         "handlers": ["console", "file"],
         "level": "DEBUG" if DEBUG else "INFO",
         "propagate": True,
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": env("DJANGO_LOG_LEVEL"),
+            "propagate": False,
+        },
     },
 }
 

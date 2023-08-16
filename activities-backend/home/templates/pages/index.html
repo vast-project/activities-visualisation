@@ -1,12 +1,31 @@
 {% extends 'layouts/base.html' %}
 
+{% block title %}Dashboard{% endblock %}
+
 {% block content %}
 <div class="container-fluid py-4">
+
+<div class="row my-4">
+{% include "includes/dashboard-model-table.html" with model='Activity' %}
+{% include "includes/dashboard-model-table.html" with model='ActivityStep' %}
+</div>
+<div class="row my-4">
+{% include "includes/dashboard-model-table.html" with model='Event' %}
+{% include "includes/dashboard-model-table.html" with model='VisitorGroup' %}
+</div>
+<div class="row my-4">
+{% include "includes/dashboard-model-table.html" with model='Visitor' %}
+{% include "includes/dashboard-model-table.html" with model='Product' %}
+</div>
+<div class="row my-4">
+{% include "includes/dashboard-model-table.html" with model='ProductStatement' %}
+{% include "includes/dashboard-model-table.html" with model='Statement' %}
+</div>
 {% include "includes/footer.html" %}
 </div>
 {% endblock content %}
 
-<!-- Specific JS goes HERE --> 
+<!-- Specific JS goes HERE -->
 {% block scripts %}
 
 {% endblock scripts %}

@@ -136,3 +136,66 @@ class ActivityDigitisationWizardView(LoginRequiredMixin, NamedUrlSessionWizardVi
             'form_dict': form_dict,
         })
         #return HttpResponseRedirect('/')
+
+##
+## Model Tables...
+##
+from django_tables2 import SingleTableMixin
+from django_filters.views import FilterView
+from .tables import *
+from .filters import *
+import sys
+
+class ActivityHTMxTableView(SingleTableMixin, FilterView):
+    table_class     = None
+    queryset        = None
+    filterset_class = None
+    paginate_by     = 5
+
+    def setup(self, *args, **kwargs):
+        super().setup(*args, **kwargs)
+        # print("ActivityHTMxTableView: setup():", args, kwargs, self.args, self.kwargs)
+        class_name = self.kwargs.get('model', None)
+        if class_name:
+            class_model = getattr(sys.modules[__name__], class_name)
+            self.queryset = class_model.objects.all().order_by('name')
+            if not self.filterset_class:
+                self.filterset_class = getattr(sys.modules[__name__],
+                                               class_name + 'Filter')
+            if not self.table_class:
+                self.table_class     = getattr(sys.modules[__name__],
+                                               class_name + 'HTMxTable')
+
+
+    def get_template_names(self):
+        # print("get_template_names()", self.args, self.kwargs)
+        if self.request.htmx:
+            template_name = "tables/table_partial.html"
+        else:
+            template_name = "tables/table_htmx.html"
+        return template_name
+
+    # def get_table_class(self):
+    #     print("get_filterset_class():", self.args, self.kwargs)
+    #     table_class = super().get_table_class()
+    #     class_name = self.kwargs.get('model', None)
+    #     if class_name and class_name != table_class.__name__:
+    #         table_class = getattr(sys.modules[__name__],
+    #                               class_name + 'HTMxTable')
+    #     return table_class
+
+    # def get_filterset_class(self):
+    #     print("get_filterset_class():", self.args, self.kwargs)
+    #     filterset_class = super().get_filterset_class()
+    #     class_name = self.kwargs.get('model', None)
+    #     if class_name and class_name != filterset_class.__name__:
+    #         filterset_class = getattr(sys.modules[__name__],
+    #                                   class_name + 'Filter')
+    #     return filterset_class
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args,**kwargs)
+        context.update(kwargs)
+        context.update(self.kwargs)
+        # print('get_context_data():', context)
+        return context

@@ -120,6 +120,7 @@ exception_wizard = ActivityDigitisationWizardView.as_view(
 ## URLs
 ##
 urlpatterns = [
+    path('dashboard/table/<str:model>', ActivityHTMxTableView.as_view(), name='dashboard-table-model'),
     re_path(r'^wizard/activity/(?P<step>.+)/$', activity_wizard, name='activity-wizard-step'),
     path('wizard/activity', activity_wizard, name='activity-wizard'),
     re_path(r'^wizard/event-visitorgroup/(?P<step>.+)/$', event_visitorgroup_wizard, name='event-visitorgroup-wizard-step'),
