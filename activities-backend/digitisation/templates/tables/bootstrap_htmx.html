@@ -5,7 +5,7 @@
 {% load i18n %}
 
 {% block table-wrapper %}
-<div class="table-container table-responsive table-container-{{ table.id }}">
+<div id="table-container-{{ table.id }}" class="table-container table-responsive table-container-{{ table.id }}">
     {% block table %}
         {{ block.super }}
     {% endblock table %}
@@ -22,15 +22,25 @@
       <tr>
           {% for column in table.columns %}
             {% if column.orderable %}
-              <th {{ column.attrs.th.as_html }}
+              <!--<th {{ column.attrs.th.as_html }}
                   hx-get="{{table.url}}{% querystring table.prefixed_order_by_field=column.order_by_alias.next %}"
                   hx-trigger="click"
                   hx-target="div.table-container-{{ table.id }}"
                   hx-swap="outerHTML"
                   hx-indicator=".progress-{{ table.id }}"
+                  style="cursor: pointer;">-->
+              <th {{ column.attrs.th.as_html }}
+                  x-data="{ col_name: '{{ column.order_by_alias }}',
+                    toggleSort(event) {
+                      this.col_name = this.col_name.startsWith('-') ? this.col_name.substring(1) : ('-' + this.col_name);
+                      sort_by = this.col_name;
+                    }
+                  }"
+                  @click="toggleSort()"
+                  :class="sort_by !== '' ? (sort_by === col_name ? (sort_by.startsWith('-') ? 'desc' : 'asc') : '') : ''"
                   style="cursor: pointer;">
             {% else %}
-              <th {{ column.attrs.th.as_html }} scope="col">
+              <th {{ column.attrs.th.as_html }}>
             {% endif %}
                   {{ column.header }}
               </th>

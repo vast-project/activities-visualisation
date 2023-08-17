@@ -193,6 +193,15 @@ class ActivityHTMxTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     #                                   class_name + 'Filter')
     #     return filterset_class
 
+    def get_table_kwargs(self):
+        kwargs = super().get_table_kwargs()
+        selected_rows = self.request.GET.get("selected", None)
+        # print("get_table_kwargs():", kwargs, selected_rows)
+        if selected_rows:
+            selected_rows = [int(_) for _ in selected_rows.split(",")]
+            kwargs["selected_rows"] = selected_rows
+        return kwargs
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args,**kwargs)
         context.update(kwargs)

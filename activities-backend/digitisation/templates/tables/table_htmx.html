@@ -5,15 +5,46 @@
 {% block main %}
     {# Search form #}
     <form hx-get="{{table.url}}" 
-          hx-target="div.table-container-{{ table.id }}" 
+          hx-target=".table-container-{{ table.id }}" 
           hx-swap="outerHTML" 
           hx-indicator=".progress-{{ table.id }}" 
           class="form-inline">
         {% crispy filter.form %}
     </form>
 
+    {# Table header #}
+    <form id="table-{{ table.id }}"
+        hx-get="{{table.url}}"
+        hx-target=".table-container-{{ table.id }}"
+        hx-trigger="sort-initiated, pagination-initiated"
+        hx-swap="outerHTML"
+        hx-include="#id_query-{{ table.id }}"
+        hx-indicator=".progress-{{ table.id }}"
+        x-data="{ sort_by: '',
+                  page_by: 1,
+                  select_all: false,
+                  last_checked: false }"
+        @clear-pagination-and-sort.window="page_by = 1; sort_by = ''"
+        x-on:htmx:after-swap="select_all = false">
+
+    {% csrf_token %}
+
+    {# Hidden input to store pagination page and column to sort by #}
+    <input type="hidden" name="sort" x-ref="sort_input" x-model="sort_by"
+           x-init="$watch('sort_by',
+                           () => $refs.sort_input.dispatchEvent(
+                                    new Event('sort-initiated',
+                                              { bubbles: true })))">
+
+    <input type="hidden" name="page" x-ref="paginate_input" x-model="page_by"
+           x-init="$watch('page_by',
+                           () => $refs.paginate_input.dispatchEvent(
+                                    new Event('pagination-initiated',
+                                              { bubbles: true })))">
+
+
     {# Progress indicator #}
-    <div class="progress-{{ table.id }}">
+    <div class="progress progress-{{ table.id }}">
         <div class="indeterminate"></div>
     </div>
 

@@ -21,6 +21,22 @@
     width: 30%;
 }
 
+/* Rows highlight */
+.highlight-me {  
+  background-color: white;  
+  animation-name: blink;  
+  animation-duration: 2s;  
+  transition-timing-function: ease-in;  
+  transition: 0.2s;  
+} 
+
+@keyframes blink {  
+  0% { background-color: orange; color: white;}  
+  50% { background-color: orange; color: white; }  
+  51% { background-color: white; }  
+  100% { background-color: white; }  
+}
+
 /* Progress bar */
 .progress {
     height: 4px;
