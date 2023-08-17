@@ -27,27 +27,28 @@
         @clear-pagination-and-sort.window="page_by = 1; sort_by = ''"
         x-on:htmx:after-swap="select_all = false">
 
-    {% csrf_token %}
+        {% csrf_token %}
 
-    {# Hidden input to store pagination page and column to sort by #}
-    <input type="hidden" name="sort" x-ref="sort_input" x-model="sort_by"
-           x-init="$watch('sort_by',
-                           () => $refs.sort_input.dispatchEvent(
-                                    new Event('sort-initiated',
-                                              { bubbles: true })))">
+        {# Hidden input to store pagination page and column to sort by #}
+        <input type="hidden" name="sort" x-ref="sort_input" x-model="sort_by"
+               x-init="$watch('sort_by',
+                               () => $refs.sort_input.dispatchEvent(
+                                        new Event('sort-initiated',
+                                                  { bubbles: true })))">
 
-    <input type="hidden" name="page" x-ref="paginate_input" x-model="page_by"
-           x-init="$watch('page_by',
-                           () => $refs.paginate_input.dispatchEvent(
-                                    new Event('pagination-initiated',
-                                              { bubbles: true })))">
+        <input type="hidden" name="page" x-ref="paginate_input" x-model="page_by"
+               x-init="$watch('page_by',
+                               () => $refs.paginate_input.dispatchEvent(
+                                        new Event('pagination-initiated',
+                                                  { bubbles: true })))">
 
 
-    {# Progress indicator #}
-    <div class="progress progress-{{ table.id }}">
-        <div class="indeterminate"></div>
-    </div>
+        {# Progress indicator #}
+        <div class="progress progress-{{ table.id }}">
+            <div class="indeterminate"></div>
+        </div>
 
-    {# The actual table #}
-    {% render_table table %}
+        {# The actual table #}
+        {% render_table table %}
+    </form>
 {% endblock %}
