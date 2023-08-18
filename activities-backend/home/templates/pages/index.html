@@ -3,31 +3,54 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
+<div class="container-fluid py-4" x-data>
 
-{% if request.user.is_authenticated %}
-<div class="row my-4">
-{% include "includes/dashboard-model-table.html" with model='Activity' %}
-{% include "includes/dashboard-model-table.html" with model='ActivityStep' %}
-</div>
-<div class="row my-4">
-{% include "includes/dashboard-model-table.html" with model='Event' %}
-{% include "includes/dashboard-model-table.html" with model='VisitorGroup' %}
-</div>
-<div class="row my-4">
-{% include "includes/dashboard-model-table.html" with model='Visitor' %}
-{% include "includes/dashboard-model-table.html" with model='Product' %}
-</div>
-<div class="row my-4">
-{% include "includes/dashboard-model-table.html" with model='ProductStatement' %}
-{% include "includes/dashboard-model-table.html" with model='Statement' %}
-</div>
-{% endif %}
-{% include "includes/footer.html" %}
+  {% if request.user.is_authenticated %}
+  <div class="row my-4">
+  {% include "includes/dashboard-model-table.html" with model='Activity' %}
+  {% include "includes/dashboard-model-table.html" with model='ActivityStep' %}
+  </div>
+  <div class="row my-4">
+  {% include "includes/dashboard-model-table.html" with model='Event' %}
+  {% include "includes/dashboard-model-table.html" with model='VisitorGroup' %}
+  </div>
+  <div class="row my-4">
+  {% include "includes/dashboard-model-table.html" with model='Visitor' %}
+  {% include "includes/dashboard-model-table.html" with model='Product' %}
+  </div>
+  <div class="row my-4">
+  {% include "includes/dashboard-model-table.html" with model='ProductStatement' %}
+  {% include "includes/dashboard-model-table.html" with model='Statement' %}
+  </div>
+  {% endif %}
+
+  {% include "includes/footer.html" %}
 </div>
 {% endblock content %}
 
 <!-- Specific JS goes HERE -->
 {% block scripts %}
+<!-- AlpineJS global store -->
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('dashboardInteractiveFiltering', {
+            // selected: $persist(new Object()).using(sessionStorage),
+            selected: new Object(),
+ 
+            addPK(vast_class, pk, checked=true) {
+                if (this.selected[vast_class] == undefined) {
+                    this.selected[vast_class] = new Set();
+                }
+                if (checked) {
+                    this.selected[vast_class].add(pk);
+                } else {
+                    this.selected[vast_class].delete(pk);
+                }
+                //this.$dispatch('dashboardSelectionModified', { class_name: vast_class, pk: pk, added: checked });
+                console.error(vast_class, this.selected[vast_class])
+            }
+        })
+    })
+</script>
 
 {% endblock scripts %}

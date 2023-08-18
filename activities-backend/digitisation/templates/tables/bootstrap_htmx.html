@@ -7,7 +7,53 @@
 {% block table-wrapper %}
 <div id="table-container-{{ table.id }}" class="table-container table-responsive table-container-{{ table.id }}">
     {% block table %}
-        {{ block.super }}
+      <table {% render_attrs table.attrs class="table" %}
+             x-data="{
+  checkboxes: [{% for row in table.paginated_rows %}{ isChecked: false }{% if not forloop.last %},{% endif %}{% endfor %}],
+  toggleAll({ currentTarget }) {
+      this.checkboxes.forEach(cb =&gt; cb.isChecked = currentTarget.checked);
+  },
+}">
+       {% block table.thead %}
+         {% if table.show_header %}
+             <thead {{ table.attrs.thead.as_html }}>
+             <tr>
+                 {% for column in table.columns %}
+                   {% if column.orderable %}
+                     <!--<th {{ column.attrs.th.as_html }}
+                         hx-get="{{table.url}}{% querystring table.prefixed_order_by_field=column.order_by_alias.next %}"
+                         hx-trigger="click"
+                         hx-target="div.table-container-{{ table.id }}"
+                         hx-swap="outerHTML"
+                         hx-indicator=".progress-{{ table.id }}"
+                         style="cursor: pointer;">-->
+                     <th {{ column.attrs.th.as_html }}
+                         x-data="{ col_name: '{{ column.order_by_alias }}',
+                           toggleSort(event) {
+                             this.col_name = this.col_name.startsWith('-') ? this.col_name.substring(1) : ('-' + this.col_name);
+                             sort_by = this.col_name;
+                           }
+                         }"
+                         @click="toggleSort()"
+                         :class="sort_by !== '' ? (sort_by === col_name ? (sort_by.startsWith('-') ? 'desc' : 'asc') : '') : ''"
+                         style="cursor: pointer;">
+                   {% else %}
+                     <th {{ column.attrs.th.as_html }}>
+                   {% endif %}
+                         {{ column.header }}
+                     </th>
+                 {% endfor %}
+             </tr>
+             </thead>
+         {% endif %}
+       {% endblock table.thead %}
+       {% block table.tbody %}
+         {{ block.super }}
+       {% endblock table.tbody %}
+       {% block table.tfoot %}
+         {{ block.super }}
+       {% endblock table.tfoot %}
+      </table>
     {% endblock table %}
 
     {% block pagination %}
@@ -15,40 +61,6 @@
     {% endblock pagination %}
 </div>
 {% endblock table-wrapper %}
-
-{% block table.thead %}
-  {% if table.show_header %}
-      <thead {{ table.attrs.thead.as_html }}>
-      <tr>
-          {% for column in table.columns %}
-            {% if column.orderable %}
-              <!--<th {{ column.attrs.th.as_html }}
-                  hx-get="{{table.url}}{% querystring table.prefixed_order_by_field=column.order_by_alias.next %}"
-                  hx-trigger="click"
-                  hx-target="div.table-container-{{ table.id }}"
-                  hx-swap="outerHTML"
-                  hx-indicator=".progress-{{ table.id }}"
-                  style="cursor: pointer;">-->
-              <th {{ column.attrs.th.as_html }}
-                  x-data="{ col_name: '{{ column.order_by_alias }}',
-                    toggleSort(event) {
-                      this.col_name = this.col_name.startsWith('-') ? this.col_name.substring(1) : ('-' + this.col_name);
-                      sort_by = this.col_name;
-                    }
-                  }"
-                  @click="toggleSort()"
-                  :class="sort_by !== '' ? (sort_by === col_name ? (sort_by.startsWith('-') ? 'desc' : 'asc') : '') : ''"
-                  style="cursor: pointer;">
-            {% else %}
-              <th {{ column.attrs.th.as_html }}>
-            {% endif %}
-                  {{ column.header }}
-              </th>
-          {% endfor %}
-      </tr>
-      </thead>
-  {% endif %}
-{% endblock table.thead %}
 
 {# Pagination block overrides #}
 {% block pagination.previous %}
