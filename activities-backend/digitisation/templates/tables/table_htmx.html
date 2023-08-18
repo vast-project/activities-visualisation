@@ -4,10 +4,10 @@
 
 {% block main %}
     {# Search form #}
-    <form hx-get="{{table.url}}" 
-          hx-target=".table-container-{{ table.id }}" 
-          hx-swap="outerHTML" 
-          hx-indicator=".progress-{{ table.id }}" 
+    <form hx-get="{{table.url}}"
+          hx-target=".table-container-{{ table.id }}"
+          hx-swap="outerHTML"
+          hx-indicator=".progress-{{ table.id }}"
           class="form-inline">
         {% crispy filter.form %}
     </form>
