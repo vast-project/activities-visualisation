@@ -7,7 +7,7 @@ def HTMxTable_show_args(result="", *args, **kwargs):
     return result
 
 def HTMxTable_row_x_data(**kwargs):
-    row_index = int(repr(kwargs["table"]._counter)[6:-1]) - len(kwargs["table"].rows) - 1
+    row_index = int(repr(kwargs["table"]._counter)[6:-1]) - len(kwargs["table"].paginated_rows) - 1
     return f"{{ rowIndex: {row_index} }}"
 
 def HTMxTable_row_x_init(**kwargs):
