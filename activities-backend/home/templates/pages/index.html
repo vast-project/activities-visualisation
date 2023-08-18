@@ -36,7 +36,7 @@
         Alpine.store('dashboardInteractiveFiltering', {
             // selected: $persist(new Object()).using(sessionStorage),
             selected: new Object(),
- 
+
             addPK(vast_class, pk, checked=true) {
                 if (this.selected[vast_class] == undefined) {
                     this.selected[vast_class] = new Set();
