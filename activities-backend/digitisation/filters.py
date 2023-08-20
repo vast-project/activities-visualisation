@@ -9,6 +9,7 @@ from crispy_forms.layout import Layout, Field, Submit, Row, Column
 from crispy_forms.bootstrap import AppendedText, PrependedText, FormActions
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+import json
 
 class VASTObjectFilter(django_filters.FilterSet):
     query = django_filters.CharFilter(method='universal_search', label="",
@@ -18,6 +19,8 @@ class VASTObjectFilter(django_filters.FilterSet):
             "x-on:htmx:before-request": "$dispatch('clear-pagination-and-sort')",
         })
     )
+
+    filter_if_selected = None
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -47,6 +50,16 @@ class VASTObjectFilter(django_filters.FilterSet):
             ),
           )
         )
+        # Get selection_data...
+        selection_data = None
+        if kwargs.get('data'):
+            selection_data = kwargs['data'].get('selection_data')
+        if selection_data:
+            selection_data = json.loads(selection_data)
+            for key,value in selection_data.items():
+                selection_data[key] = [int(_) for _ in value]
+        self.selection_data = selection_data
+        # print(self.id, kwargs, flush=True)
 
     def universal_search(self, queryset, name, value):
         return self._meta.model.objects.filter(
@@ -63,7 +76,15 @@ class VASTObjectFilter(django_filters.FilterSet):
         for group in user.groups.all():
             group_users.update(User.objects.filter(groups__id=group.pk))
         # print("Users:", group_users)
-        return parent.filter(created_by__in=group_users)
+        result = parent.filter(created_by__in=group_users)
+        # Check if we need to do additional filtering...
+        if self.selection_data and self.filter_if_selected:
+            for key,value in self.filter_if_selected.items():
+                if key in self.selection_data:
+                    pks = self.selection_data[key]
+                    if len(pks):
+                        result = result.filter(**{value: pks})
+        return result
 
     class Meta:
         model = VASTObject
@@ -74,22 +95,42 @@ class ActivityFilter(VASTObjectFilter):
         model = Activity
 
 class ActivityStepFilter(VASTObjectFilter):
+    filter_if_selected = {
+        'Activity': 'activity__in',
+    }
     class Meta(VASTObjectFilter.Meta):
         model = ActivityStep
 
 class EventFilter(VASTObjectFilter):
+    filter_if_selected = {
+        'Activity': 'activity__in',
+    }
     class Meta(VASTObjectFilter.Meta):
         model = Event
 
 class VisitorGroupFilter(VASTObjectFilter):
+    filter_if_selected = {
+        'Event': 'event__in',
+        'Activity': 'event__activity__in',
+    }
     class Meta(VASTObjectFilter.Meta):
         model = VisitorGroup
 
 class VisitorFilter(VASTObjectFilter):
+    filter_if_selected = {
+        'Activity': 'activity__in',
+        'VisitorGroup': 'visitor_group__in',
+    }
     class Meta(VASTObjectFilter.Meta):
         model = Visitor
 
 class ProductFilter(VASTObjectFilter):
+    filter_if_selected = {
+        'Visitor': 'visitor__in',
+        'ActivityStep': 'activity_step__in',
+        'Activity': 'visitor__activity__in',
+        'VisitorGroup': 'visitor__visitor_group__in',
+    }
     class Meta(VASTObjectFilter.Meta):
         model = Product
 
