@@ -11,32 +11,24 @@ def HTMxTable_row_x_data(**kwargs):
     return f"{{ rowIndex: {row_index} }}"
 
 def HTMxTable_row_x_init(**kwargs):
-    selected_rows = getattr(["table"], 'selected_rows  ', None)
+    #table = kwargs["table"]
+    selected_rows = getattr(kwargs["table"], 'selected_rows', None)
     if selected_rows and kwargs["record"].pk in selected_rows:
+        #print("HTMxTable_row_x_init:", table.id, selected_rows, kwargs["record"].pk, "TRUE")
         return "checkboxes[rowIndex].isChecked = true"
+    #print("HTMxTable_row_x_init:", table.id, selected_rows, kwargs["record"].pk, "FALSE")
     return "checkboxes[rowIndex].isChecked = false"
 
 class HTMxTable(tables.Table):
     selected = tables.CheckBoxColumn(accessor="pk", orderable=False, attrs={
-        'th': {
-            # 'x-data': lambda table: f"""{{ toggleSelection(event) {{
-            #    select_all = !select_all;
-            #    let checkboxes = document.querySelectorAll('#table-container-{table.id} input[name^=\"selected\"]');
-            #    [...checkboxes].map((el) => {{
-            #      el.checked = select_all;
-            #      $store.dashboardInteractiveFiltering.addPK('{table.id}', el.value, el.checked);
-            #    }});
-            #    }} }}""",
-            # '@click': 'toggleSelection()',
-            # 'style': 'cursor: pointer;',
-        },
-        'th__input': {'class': 'form-check-input', 'x-model': "select_all",
+        'th__input': {'class': 'form-check-input',
                       '@change':"toggleAll", ':checked':"checkboxes.every(cb => cb.isChecked)",
                       ':inditerminate':"checkboxes.some(cb => cb.isChecked)"},
         'td__input': {
-            'class': 'form-check-input',
+            'class':   'form-check-input',
             'x-model': 'checkboxes[rowIndex].isChecked',
             'x-text':  'checkboxes[rowIndex].isChecked',
+            '@click':  '$nextTick(() => $store.dashboardInteractiveFiltering.notify())',
         },
         'td': {
             #'x-data' : HTMxTable_show_args,
@@ -45,7 +37,7 @@ class HTMxTable(tables.Table):
     name = tables.Column(linkify=True, attrs={
         'a': {'target': 'blank_'}
     })
-    def __init__(self, selected_rows=None, *args, **kwargs):
+    def __init__(self, selected_rows=None, selectionData=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.id  = self._meta.model.__name__
         # self.id  = self._meta.model._meta.model_name
@@ -55,6 +47,8 @@ class HTMxTable(tables.Table):
         self.columns['selected'].attrs['td__input']['x-init'] = f'$watch("checkboxes[rowIndex].isChecked", value => $store.dashboardInteractiveFiltering.addPK("{self.id}", $el.value, value));'
         self.attrs['class'] += ' table-' + self.id
         self.selected_rows = selected_rows
+        self.selectionData = selectionData
+        # print(self.id, selected_rows)
 
     class Meta:
         template_name = "tables/bootstrap_htmx.html"

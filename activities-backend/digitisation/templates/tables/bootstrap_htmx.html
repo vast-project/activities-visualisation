@@ -12,6 +12,7 @@
   checkboxes: [{% for row in table.paginated_rows %}{ isChecked: false }{% if not forloop.last %},{% endif %}{% endfor %}],
   toggleAll({ currentTarget }) {
       this.checkboxes.forEach(cb =&gt; cb.isChecked = currentTarget.checked);
+      $nextTick(() => this.$store.dashboardInteractiveFiltering.notify());
   },
 }">
        {% block table.thead %}

@@ -195,10 +195,9 @@ class ActivityHTMxTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
 
     def get_table_kwargs(self):
         kwargs = super().get_table_kwargs()
-        selected_rows = self.request.GET.get("selected", None)
-        # print("get_table_kwargs():", kwargs, selected_rows)
+        selected_rows = self.request.GET.getlist("selected", None)
         if selected_rows:
-            selected_rows = [int(_) for _ in selected_rows.split(",")]
+            selected_rows = [int(_) for _ in selected_rows]
             kwargs["selected_rows"] = selected_rows
         return kwargs
 

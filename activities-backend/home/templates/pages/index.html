@@ -3,8 +3,8 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4" x-data>
-
+<div class="container-fluid py-4" x-data="dashboard()" x-init="init()">
+<div x-ref="dashboard">
   {% if request.user.is_authenticated %}
   <div class="row my-4">
   {% include "includes/dashboard-model-table.html" with model='Activity' %}
@@ -23,6 +23,7 @@
   {% include "includes/dashboard-model-table.html" with model='Statement' %}
   </div>
   {% endif %}
+</div>
 
   {% include "includes/footer.html" %}
 </div>
@@ -32,10 +33,18 @@
 {% block scripts %}
 <!-- AlpineJS global store -->
 <script>
-    document.addEventListener('alpine:init', () => {
+function dashboard() {
+    return { init: function() {
+        $root = this.$root;
         Alpine.store('dashboardInteractiveFiltering', {
             // selected: $persist(new Object()).using(sessionStorage),
             selected: new Object(),
+
+            notify() {
+                $root.querySelectorAll('[x-ref="vastobject_table"]').forEach((el) => {el.dispatchEvent(
+                    new Event('selection-changed', { bubbles: false }))}
+                );
+	    },
 
             addPK(vast_class, pk, checked=true) {
                 if (this.selected[vast_class] == undefined) {
@@ -46,11 +55,17 @@
                 } else {
                     this.selected[vast_class].delete(pk);
                 }
-                //this.$dispatch('dashboardSelectionModified', { class_name: vast_class, pk: pk, added: checked });
-                console.error(vast_class, this.selected[vast_class])
+                // console.error(vast_class, this.selected[vast_class]);
+                // console.error(vast_class, JSON.parse(JSON.stringify(this.selected)));
+                console.error(vast_class, JSON.stringify(this.selected));
+
+                /*$root.querySelectorAll('[x-ref="vastobject_table"]').forEach((el) => {el.dispatchEvent(
+                    new Event('selection-changed', { bubbles: true, detail: {} }))}
+                );*/
             }
-        })
-    })
+        });
+    }};
+};
 </script>
 
 {% endblock scripts %}
