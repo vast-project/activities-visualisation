@@ -23,7 +23,7 @@
         hx-swap="outerHTML"
         hx-include="#id_query-{{ table.id }}"
         hx-indicator=".progress-{{ table.id }}"
-        hx-vals="javascript:{selectionData: Alpine.store('dashboardInteractiveFiltering').selected}"
+        hx-vals="javascript:{selection_data: Alpine.store('dashboardInteractiveFiltering').selected}"
         x-data="{ sort_by: '',
                   page_by: 1,
                   last_checked: false,

@@ -146,6 +146,7 @@ from django_filters.views import FilterView
 from .tables import *
 from .filters import *
 import sys
+import json
 
 class ActivityHTMxTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     table_class     = None
@@ -199,6 +200,12 @@ class ActivityHTMxTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
         if selected_rows:
             selected_rows = [int(_) for _ in selected_rows]
             kwargs["selected_rows"] = selected_rows
+        selection_data = self.request.GET.get("selection_data", None)
+        if selection_data:
+            selection_data = json.loads(selection_data)
+            for key,value in selection_data.items():
+                selection_data[key] = [int(_) for _ in value]
+            kwargs['selection_data'] = selection_data
         return kwargs
 
     def get_context_data(self, *args, **kwargs):

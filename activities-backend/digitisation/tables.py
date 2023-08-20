@@ -11,12 +11,12 @@ def HTMxTable_row_x_data(**kwargs):
     return f"{{ rowIndex: {row_index} }}"
 
 def HTMxTable_row_x_init(**kwargs):
-    #table = kwargs["table"]
-    selected_rows = getattr(kwargs["table"], 'selected_rows', None)
+    # table = kwargs["table"]
+    selected_rows  = getattr(kwargs["table"], 'selected_rows', None)
     if selected_rows and kwargs["record"].pk in selected_rows:
-        #print("HTMxTable_row_x_init:", table.id, selected_rows, kwargs["record"].pk, "TRUE")
+        # print("HTMxTable_row_x_init:", table.id, selected_rows, kwargs["record"].pk, "TRUE")
         return "checkboxes[rowIndex].isChecked = true"
-    #print("HTMxTable_row_x_init:", table.id, selected_rows, kwargs["record"].pk, "FALSE")
+    # print("HTMxTable_row_x_init:", table.id, selected_rows, kwargs["record"].pk, "FALSE")
     return "checkboxes[rowIndex].isChecked = false"
 
 class HTMxTable(tables.Table):
@@ -37,7 +37,7 @@ class HTMxTable(tables.Table):
     name = tables.Column(linkify=True, attrs={
         'a': {'target': 'blank_'}
     })
-    def __init__(self, selected_rows=None, selectionData=None, *args, **kwargs):
+    def __init__(self, selected_rows=None, selection_data=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.id  = self._meta.model.__name__
         # self.id  = self._meta.model._meta.model_name
@@ -46,9 +46,16 @@ class HTMxTable(tables.Table):
         self.columns['selected'].attrs['td__input'].update({'id': f'selected-{self.id}'})
         self.columns['selected'].attrs['td__input']['x-init'] = f'$watch("checkboxes[rowIndex].isChecked", value => $store.dashboardInteractiveFiltering.addPK("{self.id}", $el.value, value));'
         self.attrs['class'] += ' table-' + self.id
-        self.selected_rows = selected_rows
-        self.selectionData = selectionData
-        # print(self.id, selected_rows)
+        if selection_data:
+            extra_selected_rows = selection_data.get(self.id, None)
+            if extra_selected_rows:
+                if selected_rows:
+                    selected_rows.extend(extra_selected_rows)
+                else:
+                    selected_rows = extra_selected_rows
+        self.selected_rows  = selected_rows
+        self.selection_data = selection_data
+        # print(self.id, selected_rows, selection_data, args, kwargs)
 
     class Meta:
         template_name = "tables/bootstrap_htmx.html"
