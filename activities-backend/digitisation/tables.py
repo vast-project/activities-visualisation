@@ -21,13 +21,13 @@ def HTMxTable_row_x_init(**kwargs):
 
 class HTMxTable(tables.Table):
     selected = tables.CheckBoxColumn(accessor="pk", orderable=False, attrs={
-        'th__input': {'class': 'form-check-input', 'x-text': '"check"',
+        'th__input': {'class': 'form-check-input',
                       '@change':"toggleAll", ':checked':"checkboxes.length && checkboxes.every(cb => cb.isChecked)",
                       ':inditerminate':"checkboxes.some(cb => cb.isChecked)"},
         'td__input': {
             'class':   'form-check-input',
             'x-model': 'checkboxes[rowIndex].isChecked',
-            'x-text':  'checkboxes[rowIndex].isChecked',
+            #'x-text':  'checkboxes[rowIndex].isChecked',
             '@click':  '$nextTick(() => $store.dashboardInteractiveFiltering.notify())',
         },
         'td': {

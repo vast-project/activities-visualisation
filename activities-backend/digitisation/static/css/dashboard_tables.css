@@ -21,6 +21,11 @@
     width: 30%;
 }
 
+/* Checkboxes... */
+input[type=checkbox] {
+	background-color: #D3D3D3 !important;
+}
+
 /* Rows highlight */
 .highlight-me {  
   background-color: white;  
