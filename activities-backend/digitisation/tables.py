@@ -68,7 +68,7 @@ class HTMxTable(tables.Table):
             'x-data': HTMxTable_row_x_data,
             'x-init': HTMxTable_row_x_init,
             ':class': "{ 'highlight-me table-primary': checkboxes[rowIndex].isChecked }",
-            '@click': "checkboxes[rowIndex].isChecked = !checkboxes[rowIndex].isChecked",
+            '@click': "checkboxes[rowIndex].isChecked = !checkboxes[rowIndex].isChecked; $nextTick(() => $store.dashboardInteractiveFiltering.notify())",
         }
         #show_header = False
 
