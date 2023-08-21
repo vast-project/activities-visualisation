@@ -26,6 +26,72 @@ input[type=checkbox] {
 	background-color: #D3D3D3 !important;
 }
 
+/* Table Pagination */
+.page-link:hover {
+  z-index:2;
+  border-color:#dee2e6
+}
+.page-link:focus,
+.page-link:hover {
+  color:#830866;
+  background-color:#e9ecef
+}
+.page-link:focus {
+  z-index:3;
+  outline:0;
+  box-shadow:0 0 0 .2rem rgba(203,12,159,.25)
+}
+.page-item:not(:first-child) .page-link {
+  margin-left:-1px
+}
+.page-item.active .page-link {
+  z-index:3;
+  color:#fff;
+  background-color:#cb0c9f;
+  border-color:#cb0c9f
+}
+.page-item.disabled .page-link {
+  color:#6c757d;
+  pointer-events:none;
+  background-color:#fff;
+  border-color:#dee2e6
+}
+.page-link {
+  padding:.375rem .75rem
+}
+.page-item:first-child .page-link {
+  border-top-left-radius:.5rem;
+  border-bottom-left-radius:.5rem
+}
+.page-item:last-child .page-link {
+  border-top-right-radius:.5rem;
+  border-bottom-right-radius:.5rem
+}
+.pagination-lg .page-link {
+  padding:.75rem 1.5rem;
+  font-size:1.125rem
+}
+.pagination-lg .page-item:first-child .page-link {
+  border-top-left-radius:.75rem;
+  border-bottom-left-radius:.75rem
+}
+.pagination-lg .page-item:last-child .page-link {
+  border-top-right-radius:.75rem;
+  border-bottom-right-radius:.75rem
+}
+.pagination-sm .page-link {
+  padding:.25rem .5rem;
+  font-size:.875rem
+}
+.pagination-sm .page-item:first-child .page-link {
+  border-top-left-radius:.25rem;
+  border-bottom-left-radius:.25rem
+}
+.pagination-sm .page-item:last-child .page-link {
+  border-top-right-radius:.25rem;
+  border-bottom-right-radius:.25rem
+}
+
 /* Rows highlight */
 .highlight-me {  
   background-color: white;  
