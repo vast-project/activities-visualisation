@@ -62,12 +62,13 @@ class HTMxTable(tables.Table):
         fields   = ('selected', 'name', 'created_by')
         sequence = ('selected', '...')
         attrs = {
-            'class': 'table table-sm',
+            'class': 'table table-sm table-hover',
         }
         row_attrs = {
             'x-data': HTMxTable_row_x_data,
             'x-init': HTMxTable_row_x_init,
-            ':class': "{ 'highlight-me': checkboxes[rowIndex].isChecked }"
+            ':class': "{ 'highlight-me table-primary': checkboxes[rowIndex].isChecked }",
+            '@click': "checkboxes[rowIndex].isChecked = !checkboxes[rowIndex].isChecked",
         }
         #show_header = False
 
