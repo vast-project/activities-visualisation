@@ -2,9 +2,9 @@
 <ol type="1" class="flex-column nav" style="list-style: decimal !important;">
   {% for item in sidebar_menu_items %}
     {% if item.url %}
-    <li class="nav-item {% if item.url == segment %} active {% endif %}" style="::before {content:none} !important" >
+    <li class="nav-item {% if item.url == segment or item.reverse_url in request.path %} active {% endif %}" style="::before {content:none} !important" >
       <a class="nav-link" style="padding-left: 0px;" href="{% url item.url %}">
-        <span class="nav-link-text ms-1">{{ item.title }}</span>
+	      <span class="nav-link-text ms-1">{{ item.title }}</span>
       </a>
     </li>
     {% else %}

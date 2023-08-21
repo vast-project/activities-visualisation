@@ -61,6 +61,7 @@ urlpatterns = [
     path('api/',      include('activity_data.urls')),
     path('rest/',     include(router.urls), name="rest"),
     path('digitisation/', include('digitisation.urls')),
+    path('dashboards/',   include('dashboards.urls')),
     re_path('^static/(?P<path>.*)$', StaticView.serve, {'document_root': settings.STATIC_ROOT}),
     re_path(r'^media/(?P<path>.*)$', StaticView.serve, {'document_root': settings.MEDIA_ROOT}),
     path('', include('home.urls')),

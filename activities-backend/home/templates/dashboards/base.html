@@ -1,0 +1,14 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}{{ dashboard.get_meta.name }}{% endblock title %}
+
+{% block extrahead %}
+{% block dashboards_js %}
+{% endblock dashboards_js %}
+{% endblock extrahead %}
+{% block extrastyle %}
+{% comment %}
+{% block dashboards_style %}
+{% endblock dashboards_style %}
+{% endcomment %}
+{% endblock extrastyle %}

@@ -75,6 +75,8 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'django_tables2',
     'django_htmx',
+    'dashboards',
+    'vast_dashboards',
 
     # django-allauth
     'django.contrib.sites',
