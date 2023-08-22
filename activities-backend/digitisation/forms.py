@@ -19,7 +19,7 @@ import os
 
 def formfield_for_dbfield(db_field, **kwargs):
     match db_field.name:
-        case "date" | "date_from" | "date_to":
+        case "date" | "date_from" | "date_to" | "date_of_visit":
             # Change the form field for dates to a SplitDateTimeField
             return forms.SplitDateTimeField(**kwargs)
 
@@ -148,6 +148,8 @@ class VASTForm(ModelForm, CrispyForm):
     class Meta:
         exclude = ('uuid', 'created', 'updated', 'name_md5', '_id', 'id', 'qr_code', 'uriref', 'image_uriref')
         widgets = {
+            # Important: If more fields are added here for AdminSplitDateTime(),
+            # function formfield_for_dbfield() must be also updated.
             "date":          AdminSplitDateTime(),
             "date_from":     AdminSplitDateTime(),
             "date_to":       AdminSplitDateTime(),

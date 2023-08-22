@@ -122,12 +122,12 @@ class ActivityDigitisationWizardView(LoginRequiredMixin, NamedUrlSessionWizardVi
             return self.render(form)
 
     def done(self, form_list, form_dict, **kwargs):
+        for form_name in form_dict:
+            print("Form:", form_name, form_dict[form_name].cleaned_data, form_dict[form_name].data)
         for form in form_list:
             if hasattr(form, 'save') and callable(form.save):
                 form.save()
         #print("Form dict:", form_dict)
-        for form_name in form_dict:
-            print("Form:", form_name, form_dict[form_name].cleaned_data, form_dict[form_name].data)
         # data = {}
         # for form in form_list:
         #     data.update(form.cleaned_data)
