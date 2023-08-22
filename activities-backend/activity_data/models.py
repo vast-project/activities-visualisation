@@ -3,6 +3,7 @@ import urllib.parse
 import uuid
 
 import qrcode
+from django.core.files import File
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.db import models
@@ -88,6 +89,12 @@ class VASTDAMImage:
             self.image_resource_id = None
             del dam
 
+    def image_preview(self):
+        if self.image:
+            return mark_safe(f'<img src = "{self.image.url}" width = "300"/>')
+        else:
+            return '(No image)'
+
 ##
 ## DAM Document
 ##
@@ -116,10 +123,12 @@ class VASTDAMDocument:
             if not os.path.exists(path):
                 ## Try to save the document in a temporary file...
                 path = self.document.path
-                logger.info(f"{self.__class__.__name__}: create_document_resource(): Saving Temp Document: {path}")
-                # Open the document using PIL
-                img = Document.open(self.document)
-                img.save(path)
+                logger.info(f"{self.__class__.__name__}: create_document_resource(): Saving Temp Document: {path} ({self.document.name})")
+                # Save the file on disk...
+                self.document.save(self.document.name, self.document.file, save=False)
+                path = self.document.path
+                url  = self.document.url
+                logger.info(f"{self.__class__.__name__}: create_document_resource(): Saved Temp Document: {path} ({self.document.name})")
                 delete_tmp_document = True
             if os.path.exists(path):
                 dam = DAMStoreVAST()
@@ -268,12 +277,6 @@ class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
     document_uriref      = models.URLField(max_length=512, null=True, blank=True)
     text                 = models.TextField(default=None, null=True, blank=True)
 
-    def image_preview(self):
-        if self.image:
-            return mark_safe(f'<img src = "{self.image.url}" width = "300"/>')
-        else:
-            return '(No image)'
-
     @classmethod
     def get_questionnaires(cls):
         stimulus    = NAMESPACE_VAST.vastStimulus
@@ -348,7 +351,7 @@ class Visitor(VASTObject):
 class ProductType(VASTObject_NameUnique):
     pass
 
-class Product(VASTObject_NameUserGroupUnique):
+class Product(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
     product_type         = models.ForeignKey('ProductType',  on_delete=models.CASCADE, default=None, null=False, blank=False)
     visitor              = models.ForeignKey('Visitor',      on_delete=models.CASCADE, default=None, null=False, blank=False)
     activity_step        = models.ForeignKey('ActivityStep', on_delete=models.CASCADE, default=None, null=False, blank=False)
