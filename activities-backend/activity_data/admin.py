@@ -20,7 +20,7 @@ class ReadonlyFieldsAdmin(admin.ModelAdmin):
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super().get_fieldsets(request, obj)
-        
+
         # Rearrange the fields to have 'name' as the first field
         for section_name, section_options in fieldsets:
             if 'name' in section_options['fields']:
@@ -28,7 +28,7 @@ class ReadonlyFieldsAdmin(admin.ModelAdmin):
                     field for field in section_options['fields'] if field != 'name'
                 )
                 break
-        
+
         return fieldsets
 
     def get_list_filter(self, request):
@@ -45,7 +45,7 @@ class ReadonlyFieldsAdmin(admin.ModelAdmin):
 
     def lookup_allowed(self, key, value):
         return True
-    
+
     # Preselect the current user...
     def get_changeform_initial_data(self, request):
         initial = super().get_changeform_initial_data(request)
@@ -54,13 +54,13 @@ class ReadonlyFieldsAdmin(admin.ModelAdmin):
 
 class FilterUserObjectsAdmin(ReadonlyFieldsAdmin):
 
-    def get_queryset(self, request): 
+    def get_queryset(self, request):
         if request.user.is_superuser:
             return super().get_queryset(request)
 
         # For Django < 1.6, override queryset instead of get_queryset
-        # alldata = super(OrganisationTypeAdmin, self).get_queryset(request) 
-        alldata = super().get_queryset(request) 
+        # alldata = super(OrganisationTypeAdmin, self).get_queryset(request)
+        alldata = super().get_queryset(request)
         requsergroups = request.user.groups.all()
         qslist = []
         for group in requsergroups:
@@ -103,22 +103,25 @@ class AutoCompleteSubjectObjectAdmin(FilterUserObjectsAdmin):
 @admin.register(Stimulus)
 class StimulusAdmin(FilterUserObjectsAdmin):
     def formfield_for_choice_field(self, db_field, request, **kwargs):
-        if db_field.name == 'questionnaire':
-            kwargs['choices'] = Stimulus.get_questionnaires()
+        match db_field.name:
+            case 'questionnaire':
+                kwargs['choices'] = Stimulus.get_questionnaires()
+            case 'questionnaire_wp_post':
+                kwargs['choices'] = Stimulus.get_wp_blog_posts()
         return super().formfield_for_choice_field(db_field, request, **kwargs)
 
     class Media:
        js = ["js/models/stimulus.js"]
 Stimulus.set_fields_verbose_names()
 
-for model in (Organisation, Class, Age, 
+for model in (Organisation, Class, Age,
               Activity, ActivityStep, Event, VisitorGroup, VisitorGroupQRCode,
               Visitor, Product, Concept, ):
     admin.site.register(model, FilterUserObjectsAdmin)
     model.set_fields_verbose_names()
 
 for model in (Language, Gender, Nature, Education, Nationality,
-              OrganisationType, Context, 
+              OrganisationType, Context,
               ProductType, DigitisationApplication,
               ConceptType, Predicate, ):
     admin.site.register(model, ReadonlyFieldsAdmin)

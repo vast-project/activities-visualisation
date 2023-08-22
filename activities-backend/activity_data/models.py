@@ -1,6 +1,7 @@
 import hashlib
 import urllib.parse
 import uuid
+import html
 
 import qrcode
 from django.core.files import File
@@ -16,6 +17,8 @@ from vast_rdf.vast_repository import RDFStoreVAST, NAMESPACE_VAST, RDF, GRAPH_ID
 ## For saving images in DAM...
 from vast_rdf.vast_dam import DAMStoreVAST
 from PIL import Image
+## For getting WordPress data...
+from vast_rdf.vast_wp import WPStoreVAST
 
 import logging
 logger = logging.getLogger('VASTModel')
@@ -266,16 +269,18 @@ class Activity(VASTObject_NameUserGroupUnique):
         verbose_name_plural = 'Activities'
 
 class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
-    stimulus_type        = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire')], null=False, blank=False)
-    uriref               = models.URLField(max_length=512, default=None, null=True, blank=True)
-    image                = models.ImageField(upload_to='stimulus_images/', default=None, null=True, blank=True)
-    image_resource_id    = models.IntegerField(default=None, null=True, blank=True)
-    image_uriref         = models.URLField(max_length=512, null=True, blank=True)
-    questionnaire        = models.CharField(max_length=512, choices=[('','---------')], null=True, blank=True)
-    document             = models.FileField(upload_to='stimulus_documents/', default=None, null=True, blank=True)
-    document_resource_id = models.IntegerField(default=None, null=True, blank=True)
-    document_uriref      = models.URLField(max_length=512, null=True, blank=True)
-    text                 = models.TextField(default=None, null=True, blank=True)
+    stimulus_type          = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire')], null=False, blank=False)
+    uriref                 = models.URLField(max_length=512, default=None, null=True, blank=True)
+    image                  = models.ImageField(upload_to='stimulus_images/', default=None, null=True, blank=True)
+    image_resource_id      = models.IntegerField(default=None, null=True, blank=True)
+    image_uriref           = models.URLField(max_length=512, null=True, blank=True)
+    document               = models.FileField(upload_to='stimulus_documents/', default=None, null=True, blank=True)
+    document_resource_id   = models.IntegerField(default=None, null=True, blank=True)
+    document_uriref        = models.URLField(max_length=512, null=True, blank=True)
+    text                   = models.TextField(default=None, null=True, blank=True)
+    questionnaire          = models.CharField(max_length=512, choices=[('','---------')], null=True, blank=True)
+    questionnaire_wp_post  = models.CharField(max_length=512, choices=[('','---------')], null=True, blank=True)
+    questionnaire_wp_form  = models.CharField(max_length=512, choices=[('','---------')], null=True, blank=True)
 
     @classmethod
     def get_questionnaires(cls):
@@ -291,6 +296,17 @@ class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
         for row in results:
             # logger.info(f"{cls.__name__}: get_questionnaires(): row: '{row.s}' '{row.d}'")
             choices.append((row.s, row.d))
+        return choices
+
+    @classmethod
+    def get_wp_blog_posts(cls):
+        wp = WPStoreVAST()
+        posts = wp.get_posts_in_category()
+        del wp
+        logger.info(f"{cls.__name__}: get_wp_blog_posts(): result: (len: {len(posts)})")
+        choices = [('', '---------')]
+        for post in posts:
+            choices.append((post['link'], f"{html.unescape(post['title']['rendered'])} [id: {post['id']}]"))
         return choices
 
     class Meta(VASTObject_NameUserGroupUnique.Meta):
@@ -315,7 +331,7 @@ class Event(VASTObject_NameUserGroupUnique):
 ## Visitor fields...
 class Age(VASTObject_NameUnique):
     pass
-       
+
 class Education(VASTObject_NameUserGroupUnique):
     pass
 
@@ -440,7 +456,7 @@ class ConceptType(VASTObject_NameUnique):
     @classmethod
     def get_default_pk(cls):
         ct, created = cls.objects.get_or_create(
-            name='Concept', 
+            name='Concept',
             defaults=dict(description='The default Concept type', created_by=User.objects.get(username='admin')),
         )
         return ct.pk
