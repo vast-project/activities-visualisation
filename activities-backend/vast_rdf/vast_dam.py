@@ -38,7 +38,7 @@ class DAMStoreVAST:
         response.raise_for_status()
         return response
 
-    def create_resource(self, image_url, metadata={}):
+    def create_resource(self, artifact_url, metadata={}, artifact_type='image'):
         json_data = {}
         for k,v in metadata.items():
             match k:
@@ -48,25 +48,34 @@ class DAMStoreVAST:
                 case 'description': json_data["8"]=v
         logger.info(f"DAMStoreVAST: metadata: {json.dumps(json_data)}")
         json_data = requests.utils.quote(json.dumps(json_data))
-        image_absolute_url = self.get_absolute(image_url)
+        artifact_absolute_url = self.get_absolute(artifact_url)
+        match artifact_type:
+            case 'document':
+                artifact_type_code = '2'
+            case 'video':
+                artifact_type_code = '3'
+            case 'audio':
+                artifact_type_code = '4'
+            case _:
+                artifact_type_code = '1' # image
         parameters = {
-            'param1': '1',
+            'param1': artifact_type_code,
             'param2': '0',
-            'param3': image_absolute_url,
+            'param3': artifact_absolute_url,
             'param4': '',
             'param5': '',
             'param6': '',
             'param7': json_data,
         }
-        logger.info(f"DAMStoreVAST: Saving Image: {image_absolute_url}")
+        logger.info(f"DAMStoreVAST: Saving {artifact_type.title()}: {artifact_absolute_url}")
         response = self.query('create_resource', parameters)
         # We expect an integer...
         if self.is_integer(response.text):
             return int(response.text)
         if response.text.lower() == "false":
-            raise Exception(f"Image cannot be saved in DAM: {image_absolute_url}")
+            raise Exception(f"{artifact_type.title()} cannot be saved in DAM: {artifact_absolute_url}")
         if response.text.startswith('"'):
-            raise Exception(f"Image cannot be saved in DAM: {image_absolute_url}: {response.text}")
+            raise Exception(f"{artifact_type.title()} cannot be saved in DAM: {artifact_absolute_url}: {response.text}")
         raise Exception(response.text)
 
     def get_resource(self, resource_id):

@@ -66,7 +66,7 @@ class VASTDAMImage:
                 logger.info(f"{self.__class__.__name__}: create_image_resource(): Creating Image resource...")
                 self.image_resource_id = dam.create_resource(self.image.url, {
                     'description': f'{type(self).__name__}: {self.name}',
-                })
+                }, artifact_type='image')
                 logger.info(f"{self.__class__.__name__}: create_image_resource(): Image Resource: {self.image_resource_id}")
                 json_data = dam.get_resource(self.image_resource_id)
                 self.image_uriref = dam.get_size(json_data)['url']
@@ -86,6 +86,66 @@ class VASTDAMImage:
             logger.info(f"{self.__class__.__name__}: delete_image_resource(): Deleting DAM resource with id: {self.image_resource_id}")
             dam.delete_resource(self.image_resource_id)
             self.image_resource_id = None
+            del dam
+
+##
+## DAM Document
+##
+class VASTDAMDocument:
+    def save(self, *args, **kwargs):
+        logger.info(f"{self.__class__.__name__}: save():", *args, **kwargs)
+        ## If we have a prior resource in DAM, delete it...
+        self.delete_document_resource()
+        ## Try to save document in DAM...
+        self.create_document_resource()
+        return super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        logger.info(f"{self.__class__.__name__}: delete():", *args, **kwargs)
+        ## Delete the document from the DAM...
+        self.delete_document_resource()
+        return super().delete(*args, **kwargs)
+
+    def create_document_resource(self):
+        if self.document:
+            path = self.document.path
+            url  = self.document.url
+            logger.info(f"{self.__class__.__name__}: create_document_resource(): Document url:  {url}  (exists: {os.path.exists(path)})")
+            logger.info(f"{self.__class__.__name__}: create_document_resource(): Document path: {path} (exists: {os.path.exists(path)})")
+            delete_tmp_document = False
+            if not os.path.exists(path):
+                ## Try to save the document in a temporary file...
+                path = self.document.path
+                logger.info(f"{self.__class__.__name__}: create_document_resource(): Saving Temp Document: {path}")
+                # Open the document using PIL
+                img = Document.open(self.document)
+                img.save(path)
+                delete_tmp_document = True
+            if os.path.exists(path):
+                dam = DAMStoreVAST()
+                logger.info(f"{self.__class__.__name__}: create_document_resource(): Creating Document resource...")
+                self.document_resource_id = dam.create_resource(self.document.url, {
+                    'description': f'{type(self).__name__}: {self.name}',
+                }, artifact_type='document')
+                logger.info(f"{self.__class__.__name__}: create_document_resource(): Document Resource: {self.document_resource_id}")
+                json_data = dam.get_resource(self.document_resource_id)
+                self.document_uriref = dam.get_size(json_data)['url']
+                logger.info(f"{self.__class__.__name__}: create_document_resource(): Document url: {self.document_uriref}")
+                del dam
+                if delete_tmp_document:
+                    logger.info(f"{self.__class__.__name__}: create_document_resource(): Deleting Temp Document: {path}")
+                    os.remove(path)
+            else:
+                self.document_resource_id = None
+                self.document_uriref      = None
+
+    def delete_document_resource(self):
+        ## Do we have a resoule id?
+        if self.document_resource_id:
+            dam = DAMStoreVAST()
+            logger.info(f"{self.__class__.__name__}: delete_document_resource(): Deleting DAM resource with id: {self.document_resource_id}")
+            dam.delete_resource(self.document_resource_id)
+            self.document_resource_id = None
             del dam
 
 class AutoUpdateTimeFields(models.Model):
@@ -196,14 +256,17 @@ class Activity(VASTObject_NameUserGroupUnique):
     class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Activities'
 
-class Stimulus(VASTDAMImage, VASTObject_NameUserGroupUnique):
+class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
     stimulus_type        = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire')], null=False, blank=False)
     uriref               = models.URLField(max_length=512, default=None, null=True, blank=True)
-    text                 = models.TextField(default=None, null=True, blank=True)
     image                = models.ImageField(upload_to='stimulus_images/', default=None, null=True, blank=True)
     image_resource_id    = models.IntegerField(default=None, null=True, blank=True)
     image_uriref         = models.URLField(max_length=512, null=True, blank=True)
     questionnaire        = models.CharField(max_length=512, choices=[('','---------')], null=True, blank=True)
+    document             = models.FileField(upload_to='stimulus_documents/', default=None, null=True, blank=True)
+    document_resource_id = models.IntegerField(default=None, null=True, blank=True)
+    document_uriref      = models.URLField(max_length=512, null=True, blank=True)
+    text                 = models.TextField(default=None, null=True, blank=True)
 
     def image_preview(self):
         if self.image:
@@ -292,6 +355,9 @@ class Product(VASTObject_NameUserGroupUnique):
     image                = models.ImageField(upload_to='product_images/', default=None, null=True, blank=True)
     image_resource_id    = models.IntegerField(default=None, null=True, blank=True)
     image_uriref         = models.URLField(max_length=512, null=True, blank=True)
+    document             = models.FileField(upload_to='product_documents/', default=None, null=True, blank=True)
+    document_resource_id = models.IntegerField(default=None, null=True, blank=True)
+    document_uriref      = models.URLField(max_length=512, null=True, blank=True)
 
     def image_preview(self):
         if self.image:

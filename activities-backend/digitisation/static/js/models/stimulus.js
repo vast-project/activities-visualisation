@@ -1,6 +1,9 @@
 $(document).ready(function($) {
     var triggerField = $("#id_stimulus_type");
     var targetField = {
+	document: $("#id_document"),
+        document_resource_id: $("#id_document_resource_id"),
+        document_uriref: $("#id_document_uriref"),
         text: $("#id_text"),
         image: $("#id_image"),
         image_resource_id: $("#id_image_resource_id"),
@@ -20,6 +23,9 @@ $(document).ready(function($) {
     function toggleFieldVisibility(triggerValue) {
         switch(triggerValue) {
             case "Questionnaire":
+                targetField.document.closest(".form-row").hide();
+                targetField.document_resource_id.closest(".form-row").hide();
+                targetField.document_uriref.closest(".form-row").hide();
                 targetField.text.closest(".form-row").hide();
                 targetField.image.closest(".form-row").hide();
                 targetField.image_resource_id.closest(".form-row").hide();
@@ -27,6 +33,9 @@ $(document).ready(function($) {
                 targetField.questionnaire.closest(".form-row").show();
                 break;
             case "Image":
+                targetField.document.closest(".form-row").hide();
+                targetField.document_resource_id.closest(".form-row").hide();
+                targetField.document_uriref.closest(".form-row").hide();
                 targetField.text.closest(".form-row").hide();
                 targetField.image.closest(".form-row").show();
                 targetField.image_resource_id.closest(".form-row").show();
@@ -35,6 +44,9 @@ $(document).ready(function($) {
                 break;
             case "Document":
             case "Segment":
+                targetField.document.closest(".form-row").show();
+                targetField.document_resource_id.closest(".form-row").show();
+                targetField.document_uriref.closest(".form-row").show();
                 targetField.text.closest(".form-row").show();
                 targetField.image.closest(".form-row").hide();
                 targetField.image_resource_id.closest(".form-row").hide();
@@ -42,6 +54,9 @@ $(document).ready(function($) {
                 targetField.questionnaire.closest(".form-row").hide();
                 break;
             default:
+                targetField.document.closest(".form-row").hide();
+                targetField.document_resource_id.closest(".form-row").hide();
+                targetField.document_uriref.closest(".form-row").hide();
                 targetField.text.closest(".form-row").hide();
                 targetField.image.closest(".form-row").hide();
                 targetField.image_resource_id.closest(".form-row").hide();

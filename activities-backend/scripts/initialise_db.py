@@ -250,9 +250,12 @@ for value in (
     'Annotation',
     'Questionnaire',
     'Interview',
+    'Document',
+    'Segment',
     'Image',
     'Audio',
-    'Video'
+    'Video',
+    'Tool',
     ):
     response = client.post("/rest/product_types/", data={
         "name": value,
