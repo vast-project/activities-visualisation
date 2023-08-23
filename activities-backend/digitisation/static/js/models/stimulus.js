@@ -11,7 +11,7 @@ $(document).ready(function($) {
         image_preview: $(".field-image_preview"),
         questionnaire: $("#id_questionnaire"),
         questionnaire_wp_post: $("#id_questionnaire_wp_post"),
-        questionnaire_wp_form: $("#id_questionnaire_wp_form"),
+        questionnaire_wp_form_id: $("#id_questionnaire_wp_form_id"),
     };
 
     // Initial visibility state
@@ -36,7 +36,7 @@ $(document).ready(function($) {
                 targetField.image_preview.closest(".form-row").hide();
                 targetField.questionnaire.closest(".form-row").show();
                 targetField.questionnaire_wp_post.closest(".form-row").show();
-                targetField.questionnaire_wp_form.closest(".form-row").show();
+                targetField.questionnaire_wp_form_id.closest(".form-row").show();
                 break;
             case "Image":
                 targetField.document.closest(".form-row").hide();
@@ -49,7 +49,7 @@ $(document).ready(function($) {
                 targetField.image_preview.closest(".form-row").show();
                 targetField.questionnaire.closest(".form-row").hide();
                 targetField.questionnaire_wp_post.closest(".form-row").hide();
-                targetField.questionnaire_wp_form.closest(".form-row").hide();
+                targetField.questionnaire_wp_form_id.closest(".form-row").hide();
                 break;
             case "Document":
             case "Segment":
@@ -63,7 +63,7 @@ $(document).ready(function($) {
                 targetField.image_preview.closest(".form-row").hide();
                 targetField.questionnaire.closest(".form-row").hide();
                 targetField.questionnaire_wp_post.closest(".form-row").hide();
-                targetField.questionnaire_wp_form.closest(".form-row").hide();
+                targetField.questionnaire_wp_form_id.closest(".form-row").hide();
                 break;
             default:
                 targetField.document.closest(".form-row").hide();
@@ -76,7 +76,7 @@ $(document).ready(function($) {
                 targetField.image_preview.closest(".form-row").hide();
                 targetField.questionnaire.closest(".form-row").hide();
                 targetField.questionnaire_wp_post.closest(".form-row").hide();
-                targetField.questionnaire_wp_form.closest(".form-row").hide();
+                targetField.questionnaire_wp_form_id.closest(".form-row").hide();
                 break;
         };
     };

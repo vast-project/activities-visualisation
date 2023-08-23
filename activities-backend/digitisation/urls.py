@@ -30,7 +30,7 @@ event_visitorgroup_wizard = ActivityDigitisationWizardView.as_view(
         'add_event':            lambda wizard: SelectEventForm.addNew(wizard, 'ask_event'),
         'add_visitorgroup':     lambda wizard: SelectVisitorGroupForm.addNew(wizard, 'ask_visitorgroup'),
     },
-    extra_context = { 'segment': 'event-visitorgroup-wizard' },
+    extra_context = { 'segment': 'event-visitorgroup-wizard', 'save_on_steps': ('add_event',), },
     url_name='event-visitorgroup-wizard-step', done_step_name='finished'
 )
 

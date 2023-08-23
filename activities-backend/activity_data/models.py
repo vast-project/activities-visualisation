@@ -11,6 +11,7 @@ from django.db import models
 from django.utils.html import mark_safe
 from django.urls import reverse
 import os
+import re
 
 ## RDF Graph...
 from vast_rdf.vast_repository import RDFStoreVAST, NAMESPACE_VAST, RDF, GRAPH_ID_SURVEY_DATA
@@ -269,21 +270,24 @@ class Activity(VASTObject_NameUserGroupUnique):
         verbose_name_plural = 'Activities'
 
 class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
-    stimulus_type          = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire')], null=False, blank=False)
-    uriref                 = models.URLField(max_length=512, default=None, null=True, blank=True)
-    image                  = models.ImageField(upload_to='stimulus_images/', default=None, null=True, blank=True)
-    image_resource_id      = models.IntegerField(default=None, null=True, blank=True)
-    image_uriref           = models.URLField(max_length=512, null=True, blank=True)
-    document               = models.FileField(upload_to='stimulus_documents/', default=None, null=True, blank=True)
-    document_resource_id   = models.IntegerField(default=None, null=True, blank=True)
-    document_uriref        = models.URLField(max_length=512, null=True, blank=True)
-    text                   = models.TextField(default=None, null=True, blank=True)
-    questionnaire          = models.CharField(max_length=512, choices=[('','---------')], null=True, blank=True)
-    questionnaire_wp_post  = models.CharField(max_length=512, choices=[('','---------')], null=True, blank=True)
-    questionnaire_wp_form  = models.CharField(max_length=512, choices=[('','---------')], null=True, blank=True)
+    stimulus_type            = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire')], null=False, blank=False)
+    uriref                   = models.URLField(max_length=512, default=None, null=True, blank=True)
+    image                    = models.ImageField(upload_to='stimulus_images/', default=None, null=True, blank=True)
+    image_resource_id        = models.IntegerField(default=None, null=True, blank=True)
+    image_uriref             = models.URLField(max_length=512, null=True, blank=True)
+    document                 = models.FileField(upload_to='stimulus_documents/', default=None, null=True, blank=True)
+    document_resource_id     = models.IntegerField(default=None, null=True, blank=True)
+    document_uriref          = models.URLField(max_length=512, null=True, blank=True)
+    text                     = models.TextField(default=None, null=True, blank=True)
+    questionnaire            = models.CharField(max_length=512, choices=[('','---------')], null=True, blank=True)
+    questionnaire_wp_post    = models.CharField(max_length=512, choices=[('','---------')], null=True, blank=True)
+    questionnaire_wp_form_id = models.IntegerField(default=None, null=True, blank=True)
 
+    rdf_questionnaires_choices = None
     @classmethod
     def get_questionnaires(cls):
+        if cls.rdf_questionnaires_choices:
+            return cls.rdf_questionnaires_choices
         stimulus    = NAMESPACE_VAST.vastStimulus
         description = NAMESPACE_VAST.vastDescription
         rdf = RDFStoreVAST(identifier=GRAPH_ID_SURVEY_DATA)
@@ -296,18 +300,39 @@ class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
         for row in results:
             # logger.info(f"{cls.__name__}: get_questionnaires(): row: '{row.s}' '{row.d}'")
             choices.append((row.s, row.d))
+        cls.rdf_questionnaires_choices = choices
         return choices
 
+    wp_bloq_posts_choices = None
     @classmethod
     def get_wp_blog_posts(cls):
+        if cls.wp_bloq_posts_choices:
+            return cls.wp_bloq_posts_choices
         wp = WPStoreVAST()
         posts = wp.get_posts_in_category()
         del wp
         logger.info(f"{cls.__name__}: get_wp_blog_posts(): result: (len: {len(posts)})")
         choices = [('', '---------')]
+        cls.wp_bloq_posts_data = {}
         for post in posts:
             choices.append((post['link'], f"{html.unescape(post['title']['rendered'])} [id: {post['id']}]"))
+            wp_form_id = re.search(r'<form\s+id="wpforms-form-(\d+)"', post['content']['rendered']).group(1)
+            #print(wp_form_id, post['id'])
+            cls.wp_bloq_posts_data[post['link']] = (post['id'], wp_form_id,)
+        cls.wp_bloq_posts_choices = choices
         return choices
+
+    def update_field_values(self):
+        if self.questionnaire_wp_post:
+            if not cls.wp_bloq_posts_data:
+                self.get_wp_blog_posts()
+            data = self.cls.wp_bloq_posts_data.get(self.questionnaire_wp_post)
+            if data:
+                self.questionnaire_wp_form_id = data[1]
+
+    def save(self, *args, **kwargs):
+        self.update_field_values()
+        return super().save(*args, **kwargs)
 
     class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Stimuli'

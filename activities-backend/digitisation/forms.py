@@ -43,6 +43,7 @@ def formfield_for_dbfield(db_field, **kwargs):
 class CrispyForm(Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # self._form_has_been_saved = False
         self.helper = FormHelper(self)
         self.helper.form_class        = 'form-horizontal'
         self.helper.label_class       = 'col-lg-2'
@@ -126,6 +127,18 @@ class CrispyForm(Form):
             manually_rendered_fields = self.manually_rendered_fields
         all_other_fields = [f.name for f in self.model._meta.get_fields() if f not in manually_rendered_fields]
         return Layout(*all_other_fields)
+
+    ##
+    ## Storing save information...
+    ##
+    # @property
+    # def saved(self):
+    #     return self._form_has_been_saved
+
+    # def save(self, *args, **kwargs):
+    #     result = super().save(*args, **kwargs)
+    #     self._form_has_been_saved = True
+    #     return result
 
     class Media:
         js = [

@@ -6,6 +6,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
 from django.template.response import TemplateResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
+import sys
+
+import logging
+logger = logging.getLogger(__name__)
 
 ##
 ## Form Wizards
@@ -19,6 +23,15 @@ class ActivityDigitisationWizardView(LoginRequiredMixin, NamedUrlSessionWizardVi
     template_name = "activity-digitisation-crispy.html"
     #template_name = "activity-digitisation.html"
     wizard_done_template = "pages/wizard-done.html"
+
+    @property
+    def saved_steps_instances(self):
+        if 'saved_steps_instances' not in self.storage.data:
+            self.storage.data['saved_steps_instances'] = {}
+        return self.storage.data['saved_steps_instances']
+    @saved_steps_instances.setter
+    def saved_steps_instances(self, value):
+        self.storage.data['saved_steps_instances'] = value
 
     # instances = {
     #     #'activity': Activity.objects.all().first(),
@@ -81,37 +94,62 @@ class ActivityDigitisationWizardView(LoginRequiredMixin, NamedUrlSessionWizardVi
     #     # print("Context:", context)
     #     return context
 
-    # def process_step(self, form):
-    #     # If this is a model form, save the data!
-    #     if hasattr(form, 'save') and callable(form.save):
-    #         # Create, but don't save the new model instance.
-    #         instances = form.save(commit=False)
-    #         user = self.get_current_user()
-    #         if isinstance(instances, tuple):
-    #             # If result is a tuple, it is a model instance,
-    #             # that has a list of formsets.
-    #             instance = instances[0]
-    #         else:
-    #             instance = instances
-    #         # Save the main instance...
-    #         instance.created_by = user
-    #         instance.save()
-    #         # Iterate over formsets, and save all instances...
-    #         if isinstance(instances, tuple):
-    #             for formset in instances[1:]:
-    #                 # The first tuple is the set of properties...
-    #                 attrs = formset[0]
-    #                 for inst in formset[1]:
-    #                     inst.created_by = user
-    #                     for attr in attrs:
-    #                         setattr(inst, attr, instance)
-    #                         inst.save()
-    #         form.save_m2m()
-    #         # match self.steps.current:
-    #         #     case 'add_activity':
-    #         #         self.instances['activity'] = instance
-    #     # data = super().process_step(form)
-    #     return super().process_step(form)
+    def process_step(self, form):
+        # Get the form context
+        context = self.get_context_data(form)
+        # Is this step listed in context's save_on_steps?
+        save_on_steps = context.get('save_on_steps')
+        if save_on_steps and self.steps.current in save_on_steps:
+            logger.info(f"process_step(): Saving on step: {self.steps.current}")
+            # If this is a model form, save the data!
+            if hasattr(form, 'save') and callable(form.save):
+                logger.info(f"process_step(): Form can be saved: {form.instance}")
+                saved_steps_instances = []
+                # Create, but don't save the new model instance.
+                instances = form.save(commit=False)
+                user = self.get_current_user()
+                if isinstance(instances, tuple):
+                    # If result is a tuple, it is a model instance,
+                    # that has a list of formsets.
+                    instance = instances[0]
+                else:
+                    instance = instances
+                # Save the main instance...
+                instance.created_by = user
+                instance.save()
+                saved_steps_instances.append((instance.__class__.__name__, instance.pk))
+                # Iterate over formsets, and save all instances...
+                if isinstance(instances, tuple):
+                    for formset in instances[1:]:
+                        # The first tuple is the set of properties...
+                        attrs = formset[0]
+                        for inst in formset[1]:
+                            inst.created_by = user
+                            for attr in attrs:
+                                setattr(inst, attr, instance)
+                                inst.save()
+                                saved_steps_instances.append((inst__class__.__name__, inst.pk))
+                form.save_m2m()
+                logger.info(f"process_step(): Form saved on step: {self.steps.current}")
+                self.saved_steps_instances[self.steps.current] = saved_steps_instances
+        return super().process_step(form)
+
+    def get_form_instance(self, step):
+        # Return the saved instance if has been saved before
+        if step in self.saved_steps_instances:
+            classname, pk = self.saved_steps_instances[step][0] # TODO: Fix embedded formsets
+            cls = getattr(sys.modules[__name__], classname, None)
+            if cls:
+                try:
+                    instance = cls.objects.get(pk=pk)
+                except (KeyError, cls.DoesNotExist):
+                    instance = super().get_form_instance(step)
+            else:
+                instance = super().get_form_instance(step)
+        else:
+            instance = super().get_form_instance(step)
+        logger.info(f"get_form_instance({step}): {instance}")
+        return instance
 
     def render_done(self, form, **kwargs):
         try:
@@ -122,16 +160,11 @@ class ActivityDigitisationWizardView(LoginRequiredMixin, NamedUrlSessionWizardVi
             return self.render(form)
 
     def done(self, form_list, form_dict, **kwargs):
-        for form_name in form_dict:
-            print("Form:", form_name, form_dict[form_name].cleaned_data, form_dict[form_name].data)
+        # for form_name in form_dict:
+        #     print("Form:", form_name, form_dict[form_name].cleaned_data, form_dict[form_name].data)
         for form in form_list:
             if hasattr(form, 'save') and callable(form.save):
                 form.save()
-        #print("Form dict:", form_dict)
-        # data = {}
-        # for form in form_list:
-        #     data.update(form.cleaned_data)
-        # print("Form data:", data)
         return TemplateResponse(self.request, self.wizard_done_template, {
             'form_list': form_list,
             'form_dict': form_dict,
