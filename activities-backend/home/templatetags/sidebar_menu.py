@@ -18,7 +18,7 @@ def sidebar_menu(*args, **kwargs):
             menu_items = (
                 {'title': 'Add Activity',           'url': 'activity-wizard'},
                 {'title': 'Add Event',              'url': 'event-visitorgroup-wizard'},
-                {'title': 'Add QR Code',            'url': 'visitorgroupqrcode-wizard'},
+                {'title': 'Add QR Code',            'url': 'qrcode-visitorgroup-wizard'},
                 {'title': 'Add Visitor',            'url': 'visitor-wizard'},
                 {'title': 'Add Product',            'url': 'product-wizard'},
                 {'title': 'Add Statements',         'url': 'statement-wizard'},
@@ -27,7 +27,7 @@ def sidebar_menu(*args, **kwargs):
             )
     mi = []
     for item in menu_items:
-        item['reverse_url'] = reverse(item['url'])
+        item['reverse_url'] = reverse(item['url'])+'/' # Adding a slash to not having multiple menu items active
         mi.append(item)
     context = {'sidebar_menu_items': mi}
     for arg in args:

@@ -45,8 +45,8 @@ qrcode_wizard=ActivityDigitisationWizardView.as_view(
     condition_dict = {
         'add_qrcode':  lambda wizard: SelectVisitorGroupQRCodeForm.addNew(wizard, 'ask_qrcode'),
     },
-    extra_context = { 'segment': 'visitorgroupqrcode-wizard' },
-    url_name='visitorgroupqrcode-wizard-step', done_step_name='finished'
+    extra_context = { 'segment': 'qrcode-visitorgroup-wizard' },
+    url_name='qrcode-visitorgroup-wizard-step', done_step_name='finished'
 )
 
 ##
@@ -126,8 +126,8 @@ urlpatterns = [
     path('wizard/activity',                                 login_required(activity_wizard),                    name='activity-wizard'),
     re_path(r'^wizard/event-visitorgroup/(?P<step>.+)/$',   login_required(event_visitorgroup_wizard),          name='event-visitorgroup-wizard-step'),
     path('wizard/event-visitorgroup',                       login_required(event_visitorgroup_wizard),          name='event-visitorgroup-wizard'),
-    re_path(r'^wizard/visitorgroupqrcode/(?P<step>.+)/$',   login_required(qrcode_wizard),                      name='visitorgroupqrcode-wizard-step'),
-    path('wizard/visitorgroupqrcode',                       login_required(qrcode_wizard),                      name='visitorgroupqrcode-wizard'),
+    re_path(r'^wizard/qrcode-visitorgroup/(?P<step>.+)/$',  login_required(qrcode_wizard),                      name='qrcode-visitorgroup-wizard-step'),
+    path('wizard/qrcode-visitorgroup',                      login_required(qrcode_wizard),                      name='qrcode-visitorgroup-wizard'),
     re_path(r'^wizard/visitor/(?P<step>.+)/$',              login_required(visitor_wizard),                     name='visitor-wizard-step'),
     path('wizard/visitor',                                  login_required(visitor_wizard),                     name='visitor-wizard'),
     re_path(r'^wizard/product/(?P<step>.+)/$',              login_required(product_wizard),                     name='product-wizard-step'),
