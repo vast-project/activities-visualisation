@@ -26,3 +26,19 @@
   text-align: left;
   width: 200px;
 }
+
+/*
+ * Form widgets
+ */
+/* SplitDateTimeField */
+.datetime {
+  display: inline-grid;
+  grid-template-columns: repeat(6, auto);
+  vertical-align: middle;
+}
+.vDateField, .datetimeshortcuts {
+  display: inline-block;
+}
+.datetimeshortcuts {
+  padding: 0.5rem 0.75rem;
+}
