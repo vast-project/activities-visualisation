@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     'django_htmx',
     'dashboards',
     'vast_dashboards',
+    'location_field.apps.DefaultConfig',
 
     # django-allauth
     'django.contrib.sites',
@@ -237,6 +238,14 @@ LOGGING = {
             "propagate": False,
         },
     },
+}
+
+##
+## Location Field
+##
+LOCATION_FIELD = {
+    'map.provider': 'openstreetmap',
+    'search.provider': 'nominatim',
 }
 
 ##

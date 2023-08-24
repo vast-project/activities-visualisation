@@ -13,6 +13,7 @@ django-tables2
 django-filter
 django-htmx
 django-dashboards
+django-location-field
 crispy-bootstrap5
 whitenoise
 django-admin-soft-dashboard

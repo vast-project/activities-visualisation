@@ -11,6 +11,7 @@ from django.db import models
 from django.utils.html import mark_safe
 from django.urls import reverse
 #from django.utils.translation import gettext as _
+from location_field.models.plain import PlainLocationField
 import os
 import re
 
@@ -353,6 +354,9 @@ class Event(VASTObject_NameUserGroupUnique):
     language          = models.ForeignKey('Language',     on_delete=models.CASCADE, null=True, blank=True, related_name='event_language')
     nature            = models.ForeignKey('Nature',       on_delete=models.CASCADE, default=None, null=True, blank=True)
     education         = models.ForeignKey('Education',    on_delete=models.CASCADE, default=None, null=True, blank=True)
+
+    city              = models.CharField(max_length=255, null=True, blank=True)
+    location          = PlainLocationField(based_fields=['city'], null=True, blank=True, zoom=7, default='37.983810,23.727539')
 
 ## Visitor fields...
 class Age(VASTObject_NameUnique):
