@@ -48,3 +48,10 @@
   grid-template-columns: minmax(10em, 100fr) repeat(3, 1fr);
   vertical-align: middle;
 }
+
+.map-widget {
+  display: flex;
+  width: 100%;
+  align-self: center;
+  align-content: center;
+}

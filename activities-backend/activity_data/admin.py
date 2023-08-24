@@ -52,6 +52,11 @@ class ReadonlyFieldsAdmin(admin.ModelAdmin):
         initial['created_by'] = request.user.pk
         return initial
 
+    class Media:
+        css = {
+             'all': ('css/admin_form_widgets.css',)
+        }
+
 class FilterUserObjectsAdmin(ReadonlyFieldsAdmin):
 
     def get_queryset(self, request):

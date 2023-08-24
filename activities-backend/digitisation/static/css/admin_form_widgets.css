@@ -1,0 +1,6 @@
+.map-widget {
+  display: flex;
+  width: 100%;
+  align-self: center;
+  align-content: center;
+}
