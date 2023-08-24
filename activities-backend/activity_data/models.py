@@ -10,6 +10,7 @@ from django.contrib.auth.models import User, Group
 from django.db import models
 from django.utils.html import mark_safe
 from django.urls import reverse
+#from django.utils.translation import gettext as _
 import os
 import re
 
@@ -270,7 +271,7 @@ class Activity(VASTObject_NameUserGroupUnique):
         verbose_name_plural = 'Activities'
 
 class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
-    stimulus_type            = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire')], null=False, blank=False)
+    stimulus_type            = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire'), ('Live Performance','Live Performance')], null=False, blank=False)
     uriref                   = models.URLField(max_length=512, default=None, null=True, blank=True)
     image                    = models.ImageField(upload_to='stimulus_images/', default=None, null=True, blank=True)
     image_resource_id        = models.IntegerField(default=None, null=True, blank=True)
@@ -279,8 +280,8 @@ class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
     document_resource_id     = models.IntegerField(default=None, null=True, blank=True)
     document_uriref          = models.URLField(max_length=512, null=True, blank=True)
     text                     = models.TextField(default=None, null=True, blank=True)
-    questionnaire            = models.CharField(max_length=512, choices=[('','---------')], null=True, blank=True)
-    questionnaire_wp_post    = models.CharField(max_length=512, choices=[('','---------')], null=True, blank=True)
+    questionnaire            = models.CharField(max_length=512, null=True, blank=True)
+    questionnaire_wp_post    = models.CharField(max_length=512, null=True, blank=True)
     questionnaire_wp_form_id = models.IntegerField(default=None, null=True, blank=True)
 
     rdf_questionnaires_choices = None
@@ -324,9 +325,9 @@ class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
 
     def update_field_values(self):
         if self.questionnaire_wp_post:
-            if not cls.wp_bloq_posts_data:
+            if not self.wp_bloq_posts_data:
                 self.get_wp_blog_posts()
-            data = self.cls.wp_bloq_posts_data.get(self.questionnaire_wp_post)
+            data = self.wp_bloq_posts_data.get(self.questionnaire_wp_post)
             if data:
                 self.questionnaire_wp_form_id = data[1]
 

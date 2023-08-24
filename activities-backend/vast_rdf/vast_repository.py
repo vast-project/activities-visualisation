@@ -337,7 +337,7 @@ class RDFStoreVAST:
         robj.type       = self.getURIRef(self.vast.vastOrganisationType, obj.type)
         robj.subtype    = self.getURIRef(self.vast.vastOrganisationType, obj.subtype)
         robj.location   = Literal(obj.location, lang="en")
-        robj.is_visitor = Literal(obj.is_visitor, lang="en")
+        # robj.is_visitor = Literal(obj.is_visitor, lang="en")
         robj.add(self.g)
 
     def Context(self, obj): # RDF Checked

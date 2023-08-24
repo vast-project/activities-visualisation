@@ -128,8 +128,21 @@ response = client.post("/rest/languages/", data={
     "description": "Language: Slovene"
 })
 
+## Declare some ages...
+for value in (
+    '18-24', '25-34', '35-44', '45-54', '55-64', '65+',
+    'Any',
+    'Minor',
+    'Adult'
+    ):
+    response = client.post("/rest/ages/", data={
+        "name": value,
+        "description": f"Age Range: {value}"
+    })
+
 ## Declare some nationalities...
 for nationality in (
+    'Any',
     'Austrian',
     'Belgian',
     'Bulgarian',
@@ -156,7 +169,8 @@ for nationality in (
     'Slovak',
     'Slovenian',
     'Spanish',
-    'Swedish',):
+    'Swedish',
+    'Unknown',):
     response = client.post("/rest/nationalities/", data={
         "name": nationality,
         "description": f"Nationality: {nationality}"
@@ -190,24 +204,20 @@ response = client.post("/rest/natures/", data={
 })
 
 ## Declare some education levels...
-response = client.post("/rest/educations/", data={
-    "name": "Preschool",
-})
-response = client.post("/rest/educations/", data={
-    "name": "Elementary school",
-})
-response = client.post("/rest/educations/", data={
-    "name": "Middle school",
-})
-response = client.post("/rest/educations/", data={
-    "name": "High school",
-})
-response = client.post("/rest/educations/", data={
-    "name": "Primary school",
-})
-response = client.post("/rest/educations/", data={
-    "name": "Secondary school",
-})
+for value in (
+    'Preschool',
+    'Elementary school',
+    'Middle school',
+    'High school',
+    'Primary school',
+    'Secondary school',
+    'Unknown',
+    'Any Level',
+    ):
+    response = client.post("/rest/educations/", data={
+        "name": value,
+        "description": f"Education Level: {value}"
+    })
 
 ## Declare some genders...
 response = client.post("/rest/genders/", data={
@@ -218,15 +228,16 @@ response = client.post("/rest/genders/", data={
 })
 
 ## Declare some groups...
-response = client.post("/rest/groups/", data={
-    "name": "Aylon Lyceum",
-})
-response = client.post("/rest/groups/", data={
-    "name": "Fairy Tales Museum",
-})
-response = client.post("/rest/groups/", data={
-    "name": " Museo Galileo - Istituto e Museo di Storia della Scienza",
-})
+for value in (
+    'Aylon Lyceum',
+    'Fairy Tales Museum',
+    'Museo Galileo - Istituto e Museo di Storia della Scienza',
+    'Athens Epidaurus Festival',
+    ):
+    response = client.post("/rest/groups/", data={
+        "name": value,
+        "description": f"Group: {value}"
+    })
 
 ## Declare some applications...
 response = client.post("/rest/applications/", data={

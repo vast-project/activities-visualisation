@@ -102,13 +102,21 @@ class AutoCompleteSubjectObjectAdmin(FilterUserObjectsAdmin):
 
 @admin.register(Stimulus)
 class StimulusAdmin(FilterUserObjectsAdmin):
-    def formfield_for_choice_field(self, db_field, request, **kwargs):
+    # def formfield_for_choice_field(self, db_field, request, **kwargs):
+    #     match db_field.name:
+    #         case 'questionnaire':
+    #             kwargs['choices'] = Stimulus.get_questionnaires()
+    #         case 'questionnaire_wp_post':
+    #             kwargs['choices'] = Stimulus.get_wp_blog_posts()
+    #     return super().formfield_for_choice_field(db_field, request, **kwargs)
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
         match db_field.name:
             case 'questionnaire':
-                kwargs['choices'] = Stimulus.get_questionnaires()
+                return db_field.formfield(widget=forms.Select(choices = Stimulus.get_questionnaires()))
             case 'questionnaire_wp_post':
-                kwargs['choices'] = Stimulus.get_wp_blog_posts()
-        return super().formfield_for_choice_field(db_field, request, **kwargs)
+                return db_field.formfield(widget=forms.Select(choices = Stimulus.get_wp_blog_posts()))
+        return super().formfield_for_dbfield(db_field, **kwargs)
 
     class Media:
        js = ["js/models/stimulus.js"]
