@@ -21,6 +21,7 @@ from django.conf import settings
 #from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 from django.views import static as StaticView
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 router = routers.DefaultRouter()
 router.register(r'languages',            views.LanguageViewSet)
@@ -64,8 +65,9 @@ urlpatterns = [
     path('dashboards/',   include('dashboards.urls')),
     re_path('^static/(?P<path>.*)$', StaticView.serve, {'document_root': settings.STATIC_ROOT}),
     re_path(r'^media/(?P<path>.*)$', StaticView.serve, {'document_root': settings.MEDIA_ROOT}),
+    path("favicon.ico", RedirectView.as_view(url=staticfiles_storage.url("img/vast.ico"))),
     path('', include('home.urls')),
-    path("", include('admin_soft.urls'))
+    path("", include('admin_soft.urls')),
     #path('', RedirectView.as_view(url='rest/', permanent=False), name='index'),
 ]
 #urlpatterns += static(settings.MEDIA_URL,  document_root=settings.MEDIA_ROOT)

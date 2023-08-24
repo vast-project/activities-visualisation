@@ -42,3 +42,9 @@
 .datetimeshortcuts {
   padding: 0.5rem 0.75rem;
 }
+
+.related-widget-wrapper {
+  display: inline-grid;
+  grid-template-columns: minmax(10em, 100fr) repeat(3, 1fr);
+  vertical-align: middle;
+}
