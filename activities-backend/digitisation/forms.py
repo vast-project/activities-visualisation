@@ -21,6 +21,8 @@ def formfield_for_dbfield(db_field, **kwargs):
     match db_field.name:
         case "date" | "date_from" | "date_to" | "date_of_visit":
             # Change the form field for dates to a SplitDateTimeField
+            if 'widget' in kwargs:
+                kwargs.update({'required': kwargs['widget'].is_required})
             return forms.SplitDateTimeField(**kwargs)
 
     formfield = db_field.formfield(**kwargs)

@@ -6,11 +6,11 @@ import sys
 
 # Initialize parser
 parser = argparse.ArgumentParser()
- 
+
 # Adding optional argument
 parser.add_argument("-l", "--local", help="Enable local server (http://127.0.0.1:8000)", action=argparse.BooleanOptionalAction)
 parser.set_defaults(local=False)
- 
+
 # Read arguments from command line
 args = parser.parse_args()
 # print(args)
@@ -233,6 +233,7 @@ for value in (
     'Fairy Tales Museum',
     'Museo Galileo - Istituto e Museo di Storia della Scienza',
     'Athens Epidaurus Festival',
+    'Common Data Group',
     ):
     response = client.post("/rest/groups/", data={
         "name": value,
