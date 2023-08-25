@@ -265,6 +265,26 @@ class ProductStatementViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+class QuestionnaireEntryViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Context objects to be viewed or edited.
+    """
+    queryset = QuestionnaireEntry.objects.all()
+    serializer_class = QuestionnaireEntrySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
+    search_fields = ['name']
+
+class QuestionnaireAnswerViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Context objects to be viewed or edited.
+    """
+    queryset = QuestionnaireAnswer.objects.all()
+    serializer_class = QuestionnaireAnswerSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
+    search_fields = ['name']
+
 class DigitisationApplicationViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Context objects to be viewed or edited.

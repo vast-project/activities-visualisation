@@ -31,7 +31,7 @@ logger = logging.getLogger('VASTModel')
 ##
 class VASTDAMImage:
     def save(self, *args, **kwargs):
-        logger.info(f"{self.__class__.__name__}: save():", *args, **kwargs)
+        logger.info(f"{self.__class__.__name__}: save(): args: {args}, kwargs: {kwargs}")
         ## If we have a prior resource in DAM, delete it...
         self.delete_image_resource()
         ## Try to save image in DAM...
@@ -39,7 +39,7 @@ class VASTDAMImage:
         return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        logger.info(f"{self.__class__.__name__}: delete():", *args, **kwargs)
+        logger.info(f"{self.__class__.__name__}: delete(): args: {args}, kwargs: {kwargs}")
         ## Delete the image from the DAM...
         self.delete_image_resource()
         return super().delete(*args, **kwargs)
@@ -106,7 +106,7 @@ class VASTDAMImage:
 ##
 class VASTDAMDocument:
     def save(self, *args, **kwargs):
-        logger.info(f"{self.__class__.__name__}: save():", *args, **kwargs)
+        logger.info(f"{self.__class__.__name__}: save(): args: {args}, kwargs: {kwargs}")
         ## If we have a prior resource in DAM, delete it...
         self.delete_document_resource()
         ## Try to save document in DAM...
@@ -114,7 +114,7 @@ class VASTDAMDocument:
         return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
-        logger.info(f"{self.__class__.__name__}: delete():", *args, **kwargs)
+        logger.info(f"{self.__class__.__name__}: delete(): args: {args}, kwargs: {kwargs}")
         ## Delete the document from the DAM...
         self.delete_document_resource()
         return super().delete(*args, **kwargs)
@@ -184,6 +184,9 @@ class AutoUpdateTimeFields(models.Model):
     def delete(self, *args, **kwargs):
         ## Delete the object from the RDF Graph...
         rdf = RDFStoreVAST()
+        rdf.delete(type(self).__name__, self)
+        del rdf
+        rdf = RDFStoreVAST(identifier=GRAPH_ID_SURVEY_DATA)
         rdf.delete(type(self).__name__, self)
         del rdf
         return super().delete(*args, **kwargs)
@@ -334,7 +337,14 @@ class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
 
     def save(self, *args, **kwargs):
         self.update_field_values()
-        return super().save(*args, **kwargs)
+        result = super().save(*args, **kwargs)
+        match self.stimulus_type:
+            case 'Questionnaire':
+                ## Save Stimulus also in the surveys graph...
+                rdf = RDFStoreVAST(identifier=GRAPH_ID_SURVEY_DATA)
+                rdf.save(type(self).__name__, self)
+                del rdf
+        return result
 
     class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Stimuli'
@@ -358,7 +368,7 @@ class Event(VASTObject_NameUserGroupUnique):
     city              = models.CharField(max_length=255, null=True, blank=True)
     location          = PlainLocationField(based_fields=['city'], null=True, blank=True, zoom=7, default='37.983810,23.727539')
 
-## Visitor fields...
+## Helper fields...
 class Age(VASTObject_NameUnique):
     pass
 
@@ -376,11 +386,11 @@ class Nationality(VASTObject_NameUnique):
 class VisitorGroup(VASTObject_NameUserGroupUnique):
     composition          = models.IntegerField(default=None, null=True, blank=True)
     event                = models.ForeignKey('Event',        on_delete=models.CASCADE, default=None, null=False, blank=False)
+    age                  = models.ForeignKey('Age',          on_delete=models.CASCADE, default=None, null=True,  blank=True)
     education            = models.ForeignKey('Education',    on_delete=models.CASCADE, default=None, null=True,  blank=True)
     nationality          = models.ForeignKey('Nationality',  on_delete=models.CASCADE, default=None, null=True,  blank=True)
     mother_language      = models.ForeignKey('Language',     on_delete=models.CASCADE, default=None, null=True,  blank=True, related_name='visitor_group_language')
     visitor_organisation = models.ForeignKey('Organisation', on_delete=models.CASCADE, default=None, null=True,  blank=True)
-    age                  = models.ForeignKey('Age',          on_delete=models.CASCADE, default=None, null=True,  blank=True)
 
 class Visitor(VASTObject):
     userid               = models.CharField(max_length=255,  default=None, null=True, blank=True)
@@ -390,8 +400,14 @@ class Visitor(VASTObject):
     education            = models.ForeignKey('Education',    on_delete=models.CASCADE, default=None, null=True, blank=True)
     nationality          = models.ForeignKey('Nationality',  on_delete=models.CASCADE, default=None, null=True, blank=True)
     mother_language      = models.ForeignKey('Language',     on_delete=models.CASCADE, default=None, null=True, blank=True, related_name='mother_language')
+    city                 = models.CharField(max_length=255, null=True, blank=True)
+    location             = PlainLocationField(based_fields=['city'], null=True, blank=True, zoom=7, default='37.983810,23.727539')
+
     activity             = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None, null=False, blank=False)
     visitor_group        = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None, null=False, blank=False)
+
+    class Meta(VASTObject.Meta):
+        unique_together = [["activity", "visitor_group", "name"]]
 
 ## Products...
 class ProductType(VASTObject_NameUnique):
@@ -407,79 +423,6 @@ class Product(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
     document             = models.FileField(upload_to='product_documents/', default=None, null=True, blank=True)
     document_resource_id = models.IntegerField(default=None, null=True, blank=True)
     document_uriref      = models.URLField(max_length=512, null=True, blank=True)
-
-    def image_preview(self):
-        if self.image:
-            return mark_safe(f'<img src = "{self.image.url}" width = "300"/>')
-        else:
-            return '(No image)'
-
-    def save(self, *args, **kwargs):
-        logger.info(f"Product: save():", *args, **kwargs)
-        # We must generate a "unique" name
-        if not self.name:
-            self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
-        self.delete_image_resource()
-        ## Try to save image in DAM...
-        self.create_image_resource()
-        return super().save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        ## Delete the image from the DAM...
-        self.delete_image_resource()
-        return super().delete(*args, **kwargs)
-
-    def create_image_resource(self):
-        if self.image:
-            path = self.image.path
-            url  = self.image.url
-            logger.info(f"Product: save(): Image url:  {url}  (exists: {os.path.exists(path)})")
-            logger.info(f"Product: save(): Image path: {path} (exists: {os.path.exists(path)})")
-            delete_tmp_image = False
-            if not os.path.exists(path):
-                # Image not found at this path. Look into product_images...
-                head_tail = os.path.split(path)
-                path = os.path.join(head_tail[0], 'product_images', head_tail[1])
-                logger.info(f"Product: save(): Trying new Image path: {path} (exists: {os.path.exists(path)})")
-                if os.path.exists(path):
-                    head_tail = os.path.split(url)
-                    url = os.path.join(head_tail[0], 'product_images', head_tail[1])
-                    logger.info(f"Product: save(): Trying new Image url:  {url}  (exists: {os.path.exists(path)})")
-            if not os.path.exists(path):
-                ## Try to save the image in a temporary file...
-                path = self.image.path
-                logger.info(f"Product: save(): Saving Temp Image: {path}")
-                # Open the image using PIL
-                img = Image.open(self.image)
-                img.save(path)
-                delete_tmp_image = True
-            if os.path.exists(path):
-                dam = DAMStoreVAST()
-                logger.info(f"Product: save(): Creating Image resource...")
-                self.image_resource_id = dam.create_resource(self.image.url, {
-                    'description': f'{type(self).__name__}: {self.name}',
-                })
-                logger.info(f"Product: save(): Image Resource: {self.image_resource_id}")
-                json_data = dam.get_resource(self.image_resource_id)
-                self.image_uriref = dam.get_size(json_data)['url']
-                logger.info(f"Product: save(): Image url: {self.image_uriref}")
-                del dam
-                if delete_tmp_image:
-                    logger.info(f"Product: save(): Deleting Temp Image: {path}")
-                    os.remove(path)
-            else:
-                self.image_resource_id = None
-                self.image_uriref      = None
-
-    def delete_image_resource(self):
-        ## Do we have a resoule id?
-        if self.image_resource_id:
-            dam = DAMStoreVAST()
-            logger.info(f"Product: save(): Deleting DAM resource with id: {self.image_resource_id}")
-            dam.delete_resource(self.image_resource_id)
-            self.image_resource_id = None
-            del dam
-
 
 ## Statements...
 class ConceptType(VASTObject_NameUnique):
@@ -525,6 +468,32 @@ class ProductStatement(VASTObject_NameUserGroupUnique):
         if not self.name:
             self.name = ".".join([self.subject.name, self.subject.name, self.predicate.name, self.object.name])
         return super().save(*args, **kwargs)
+
+class QuestionnaireEntry(VASTObject):
+    product              = models.ForeignKey('Product',   on_delete=models.CASCADE, default=None, null=False, blank=False)
+    wpforms_entry_id     = models.IntegerField(default=None, null=True, blank=True)
+    wpforms_form_id      = models.IntegerField(default=None, null=True, blank=True)
+    wpforms_status       = models.CharField(max_length=32,  default='', null=True, blank=True)
+
+    class Meta(VASTObject.Meta):
+        verbose_name_plural = 'Questionnaire Entries'
+        unique_together = [["product", "wpforms_form_id", "wpforms_entry_id"]]
+
+class QuestionnaireQuestion(VASTObject):
+    wpforms_form_id      = models.IntegerField(default=None, null=True, blank=True)
+    question             = models.CharField(max_length=512,         default=None, null=True, blank=True)
+
+    class Meta(VASTObject.Meta):
+        unique_together = [["wpforms_form_id", "question"]]
+
+class QuestionnaireAnswer(VASTObject):
+    questionnaire_entry  = models.ForeignKey('QuestionnaireEntry',   on_delete=models.CASCADE, default=None, null=False, blank=False)
+    question             = models.ForeignKey('QuestionnaireQuestion',on_delete=models.CASCADE, default=None, null=False, blank=False)
+    answer_type          = models.CharField(max_length=32,           default=None, null=True, blank=True)
+    answer_value         = models.CharField(max_length=256,          default='', null=True, blank=True)
+    answer_value_raw     = models.CharField(max_length=256,          default='', null=True, blank=True)
+    class Meta(VASTObject.Meta):
+        unique_together = [["question", "questionnaire_entry"]]
 
 ## QR Codes...
 class DigitisationApplication(VASTObject_NameUserGroupUnique):

@@ -39,10 +39,18 @@ class RDFStoreObject:
 
     # Activity
     event:                 URIRef  = None
-    
-    # Strimulus
+
+    # Stimulus
     uriref:                URIRef  = None
     stimulus_type:         URIRef  = None
+    image_resource_id:     Literal = None
+    image_uriref:          URIRef  = None
+    document_resource_id:  Literal = None
+    document_uriref:       URIRef  = None
+    text:                  Literal = None
+    questionnaire:         URIRef  = None
+    questionnaire_wp_post: URIRef  = None
+    questionnaire_wp_form_id: Literal = None
 
     # ActivityStep
     activity:              URIRef  = None
@@ -58,6 +66,8 @@ class RDFStoreObject:
     language:              URIRef  = None
     nature:                Literal = None
     education:             Literal = None
+    city:                  Literal = None
+    location:              Literal = None
 
     # VisitorGroup
     composition:           Literal = None
@@ -83,13 +93,22 @@ class RDFStoreObject:
     product_type:          URIRef  = None
     visitor:               URIRef  = None
     activity_step:         URIRef  = None
-    image_resource_id:     Literal = None
-    image_uriref:          URIRef  = None
 
     # Statement/ProductStatement
+    product:               URIRef  = None
     subject:               URIRef  = None
     object:                URIRef  = None
     predicate:             URIRef  = None
+
+    # Questionnaires
+    wpforms_form_id:       Literal = None
+    question:              Literal = None
+    wpforms_entry_id:      Literal = None
+    wpforms_status:        Literal = None
+    questionnaire_question:URIRef  = None
+    answer_type:           Literal = None
+    answer_value:          Literal = None
+    answer_value_raw:      Literal = None
 
 
     rdf_graph_owner:    Literal = VAST_GRAPH_OWNER
@@ -115,9 +134,21 @@ class RDFStoreObject:
         # Activity
         if (self.event):                graph.add((self.id, NAMESPACE_VAST.vastAssociatedEvent, self.event))
 
-        # stimulus
-        if (self.stimulus_type):        graph.add((self.id, RDF.type, self.stimulus_type))
+        # Stimulus
+        if (self.stimulus_type):        graph.add((self.id, NAMESPACE_VAST.vastStimulusType, self.stimulus_type))
         if (self.uriref):               graph.add((self.id, NAMESPACE_VAST.vastURIRef, self.uriref))
+        if (self.image_resource_id):    graph.add((self.id, NAMESPACE_VAST.vastResourceId, self.image_resource_id))
+        if (self.image_uriref):
+                                        graph.add((self.id, NAMESPACE_VAST.vastImageURIRef, self.image_uriref))
+                                        graph.add((self.id, NAMESPACE_VAST.vastResourceType, URIRef(NAMESPACE_VAST.vastImage)))
+        if (self.document_resource_id): graph.add((self.id, NAMESPACE_VAST.vastResourceId, self.document_resource_id))
+        if (self.document_uriref):
+                                        graph.add((self.id, NAMESPACE_VAST.vastDocumentURIRef, self.document_uriref))
+                                        graph.add((self.id, NAMESPACE_VAST.vastResourceType, URIRef(NAMESPACE_VAST.vastDocument)))
+        if (self.text):                 graph.add((self.id, NAMESPACE_VAST.vastDocumentText, self.text))
+        if (self.questionnaire):        graph.add((self.id, NAMESPACE_VAST.vastQuestionnaire, self.questionnaire))
+        if (self.questionnaire_wp_post):    graph.add((self.id, NAMESPACE_VAST.vastQuestionnaireWPPost, self.questionnaire_wp_post))
+        if (self.questionnaire_wp_form_id): graph.add((self.id, NAMESPACE_VAST.vastQuestionnaireWPFormId, self.questionnaire_wp_form_id))
 
         # ActivityStep
         if (self.activity):             graph.add((self.activity, NAMESPACE_VAST.vastStep, self.id))
@@ -135,6 +166,8 @@ class RDFStoreObject:
         if (self.language):             graph.add((self.id, NAMESPACE_VAST.vastTongue, self.language))
         if (self.nature):               graph.add((self.id, NAMESPACE_VAST.vastNature, self.nature))
         if (self.education):            graph.add((self.id, NAMESPACE_VAST.vastEducation, self.education))
+        if (self.city):                 graph.add((self.id, NAMESPACE_VAST.vastLocationCity, self.city))
+        if (self.location):             graph.add((self.id, NAMESPACE_VAST.vastLocation, self.location))
 
         # VisitorGroup
         if (self.composition):          pass
@@ -148,22 +181,33 @@ class RDFStoreObject:
         if (self.gender):               graph.add((self.id, NAMESPACE_VAST.vastGender, self.gender))
         if (self.date_of_visit):        graph.add((self.id, NAMESPACE_VAST.vastVisitDate, self.date_of_visit))
         if (self.visitor_activity):     graph.add((self.id, NAMESPACE_VAST.vastParticipatesIn, self.visitor_activity))
-        if (self.group):                graph.add((self.id, NAMESPACE_VAST.vastMemberOf, self.group))
+        if (self.group):
+                                        graph.add((self.id, NAMESPACE_VAST.vastMemberOf, self.group))
+                                        graph.add((self.group, NAMESPACE_VAST.vastParticipant, self.id))
         #if (self.school):               graph.add((self.id, NAMESPACE_VAST.vastShool, self.school))
 
         # Product
         if (self.product_type):         graph.add((self.id, RDF.type, self.product_type))
-        if (self.visitor):              graph.add((self.id, NAMESPACE_VAST.vastMadeBy, self.visitor))
+        if (self.visitor):
+                                        graph.add((self.id, NAMESPACE_VAST.vastMadeBy, self.visitor))
+                                        graph.add((self.visitor, NAMESPACE_VAST.vastProduct, self.id))
         if (self.activity_step):        graph.add((self.activity_step, NAMESPACE_VAST.vastProduces, self.id))
-        if (self.image_resource_id):    graph.add((self.id, NAMESPACE_VAST.vastResourceId, self.image_resource_id))
-        if (self.image_uriref):
-                                        graph.add((self.id, NAMESPACE_VAST.vastURIRef, self.image_uriref))
-                                        graph.add((self.id, NAMESPACE_VAST.vastResourceType, URIRef(NAMESPACE_VAST.vastImage)))
 
         # Statement/ProductStatement
+        if (self.product):              graph.add((self.id, NAMESPACE_VAST.vastProduct, self.product))
         if (self.subject):              graph.add((self.id, RDF.subject, self.subject))
         if (self.object):               graph.add((self.id, RDF.object, self.object))
         if (self.predicate):            graph.add((self.id, RDF.predicate, self.predicate))
+
+        # Questionnaires
+        if (self.wpforms_form_id):      graph.add((self.id, NAMESPACE_VAST.vastWPFormID,          self.wpforms_form_id))
+        if (self.question):             graph.add((self.id, NAMESPACE_VAST.vastQuestion,          self.question))
+        if (self.wpforms_entry_id):     graph.add((self.id, NAMESPACE_VAST.vastWPFormEntryID,     self.wpforms_entry_id))
+        if (self.wpforms_status):       graph.add((self.id, NAMESPACE_VAST.vastWPFormEntryStatus, self.wpforms_status))
+        if (self.questionnaire_question): graph.add((self.id, NAMESPACE_VAST.vastQuestion,        self.questionnaire_question))
+        if (self.answer_type):          graph.add((self.id, NAMESPACE_VAST.vastAnswerType,        self.answer_type))
+        if (self.answer_value):         graph.add((self.id, NAMESPACE_VAST.vastAnswer,            self.answer_value))
+        if (self.answer_value_raw):     graph.add((self.id, NAMESPACE_VAST.vastAnswerRaw,         self.answer_value_raw))
 
 class RDFStoreConfig:
 
@@ -225,8 +269,9 @@ class RDFStoreVAST:
             self.g.remove(triple)
         self.commit()
 
-    def delete(self, class_name, obj):
-        logger.info(f"RDFStoreVAST(): delete(): class: {class_name}, obj: {obj}")
+    def classNameToRDFType(self, obj, class_name=None):
+        if not class_name:
+            class_name = type(obj).__name__
         match class_name:
             case "Language":
                 T = None
@@ -266,8 +311,19 @@ class RDFStoreVAST:
                 T = self.vast.vastPredicate
             case "Statement" | "ProductStatement":
                 T = self.vast.vastStatement
+            case 'QuestionnaireEntry':
+                T = None
+            case 'QuestionnaireQuestion':
+                T = self.vast.vastSurveyQuestion
+            case 'QuestionnaireAnswer':
+                T = self.vast.vastSurveyAnswer
             case _:
                 T = None
+        return T
+
+    def delete(self, class_name, obj):
+        logger.info(f"RDFStoreVAST(): delete(): class: {class_name}, obj: {obj}")
+        T = self.classNameToRDFType(obj, class_name)
         if T:
             robj = RDFStoreObject(T=T, id=URIRef(f"{T}/{obj.name_md5}"))
             self.removeObject(robj.id)
@@ -277,14 +333,29 @@ class RDFStoreVAST:
         logger.info(f"RDFStoreVAST(): save(): class: {class_name}, obj: {obj}")
         method = getattr(self, class_name, None)
         logger.info(f"RDFStoreVAST(): save(): method: {method}")
+        result = None
         if method:
-            method(obj)
+            result = method(obj)
             self.commit()
+        return result
+
+    def getURI(self, obj):
+        T = self.classNameToRDFType(obj)
+        return URIRef(f"{T}/{obj.name_md5}")
+
+    def addStatement(self, s, p, o):
+        sID = self.getURI(s)
+        oID = self.getURI(o)
+        logger.info(f"RDFStoreVAST(): addStatement(): ({sID}, {p}, {oID})")
+        self.g.add((sID, p, oID))
+        self.commit()
+        return sID
 
     def hash(self, string):
         return hashlib.md5(string.encode('utf-8')).hexdigest()
 
     def serialiseDateTime(self, dt):
+        #print("serialiseDateTime():", dt)
         if dt:
             return Literal(dt, datatype=XSD.dateTime)
         return None
@@ -319,8 +390,10 @@ class RDFStoreVAST:
         return None
 
     def getLiteral(self, obj, lang="en"):
-        if obj and obj.name:
-            return Literal(obj.name, lang=lang)
+        if obj:
+            if getattr(obj, 'name', None):
+                return Literal(obj.name, lang=lang)
+            return Literal(str(obj), lang=lang)
         return None
 
     def Language(self, obj):
@@ -336,7 +409,7 @@ class RDFStoreVAST:
         robj = self.createVASTObject(obj, self.vast.vastOrganisation)
         robj.type       = self.getURIRef(self.vast.vastOrganisationType, obj.type)
         robj.subtype    = self.getURIRef(self.vast.vastOrganisationType, obj.subtype)
-        robj.location   = Literal(obj.location, lang="en")
+        robj.location   = self.getLiteral(obj.location)
         # robj.is_visitor = Literal(obj.is_visitor, lang="en")
         robj.add(self.g)
 
@@ -367,8 +440,16 @@ class RDFStoreVAST:
                 robj.stimulus_type = URIRef(NAMESPACE_VAST.vastTool)
             case "Questionnaire":
                 robj.stimulus_type = URIRef(NAMESPACE_VAST.vastQuestionnaire)
-        if obj.uriref:
-            robj.uriref = URIRef(obj.uriref)
+        if obj.uriref:                   robj.uriref = URIRef(obj.uriref)
+        if obj.image_resource_id:        robj.image_resource_id = Literal(obj.image_resource_id, datatype=XSD.integer)
+        if obj.image_uriref:             robj.image_uriref = URIRef(obj.image_uriref)
+        if obj.document_resource_id:     robj.document_resource_id = Literal(obj.document_resource_id, datatype=XSD.integer)
+        if obj.document_uriref:          robj.document_uriref = URIRef(obj.document_uriref)
+        if obj.text:                     robj.text = self.getLiteral(obj.text)
+        if obj.questionnaire:            robj.questionnaire = URIRef(obj.questionnaire)
+        if obj.questionnaire_wp_post:    robj.questionnaire_wp_post = URIRef(obj.questionnaire_wp_post)
+        if obj.questionnaire_wp_form_id: robj.questionnaire_wp_form_id = Literal(obj.questionnaire_wp_form_id, datatype=XSD.integer)
+
         robj.add(self.g)
 
     def ActivityStep(self, obj): # RDF Checked
@@ -376,7 +457,7 @@ class RDFStoreVAST:
         robj.activity = self.getURIRef(self.vast.vastActivity, obj.activity)
         robj.stimulus = self.getURIRef(self.vast.vastStimulus, obj.stimulus)
         robj.add(self.g)
-    
+
     def Age(self, obj): # RDF Checked
         robj = self.createVASTObject(obj, self.vast.vastAge)
 
@@ -391,9 +472,11 @@ class RDFStoreVAST:
         robj.date_from         = self.serialiseDateTime(obj.date_from)
         robj.date_to           = self.serialiseDateTime(obj.date_to)
         robj.context           = self.getURIRef(self.vast.vastContext, obj.context)
-        robj.language          = Literal(obj.language, lang="en")
+        robj.language          = self.getLiteral(obj.language)
         robj.nature            = self.getLiteral(obj.nature)
         robj.education         = self.getLiteral(obj.education)
+        robj.city              = self.getLiteral(obj.city)
+        robj.location          = self.getLiteral(obj.location)
         robj.add(self.g)
 
     def Gender(self, obj): # RDF Checked
@@ -404,26 +487,29 @@ class RDFStoreVAST:
 
     def VisitorGroup(self, obj): # RDF Checked
         robj = self.createVASTObject(obj, self.vast.vastGroup)
-        robj.composition            = Literal(obj.composition, lang="en")
+        robj.composition            = self.getLiteral(obj.composition)
+        robj.event                  = self.getURIRef(self.vast.vastEvent, obj.event)
         robj.age                    = self.getURIRef(self.vast.vastAge, obj.age)
         robj.education              = self.getURIRef(self.vast.vastEducation, obj.education)
         robj.nationality            = self.getURIRef(self.vast.vastNationality, obj.nationality)
-        robj.mother_language        = Literal(obj.mother_language, lang="en")
+        robj.mother_language        = self.getLiteral(obj.mother_language)
         robj.visitor_organisation   = self.getURIRef(self.vast.vastOrganisation, obj.visitor_organisation)
         robj.add(self.g)
-        
+
     def Visitor(self, obj): # RDF Checked
         robj = self.createVASTObject(obj, self.vast.vastNonExpert)
-        robj.userid             = Literal(obj.userid, lang="en")
+        robj.userid             = self.getLiteral(obj.userid)
         robj.age                = self.getURIRef(self.vast.vastAge, obj.age)
         robj.gender             = self.getURIRef(self.vast.vastGender, obj.gender)
         robj.date_of_visit      = self.serialiseDateTime(obj.date_of_visit)
         robj.education          = self.getURIRef(self.vast.vastEducation, obj.education)
         robj.nationality        = self.getURIRef(self.vast.vastNationality, obj.nationality)
-        robj.mother_language    = Literal(obj.mother_language, lang="en")
+        robj.mother_language    = self.getLiteral(obj.mother_language)
         robj.visitor_activity   = self.getURIRef(self.vast.vastActivity, obj.activity)
         robj.group              = self.getURIRef(self.vast.vastGroup, obj.visitor_group)
-        #robj.school             = Literal(obj.school, lang="en")
+        robj.city               = self.getLiteral(obj.city)
+        robj.location           = self.getLiteral(obj.location)
+        #robj.school             = self.getLiteral(obj.school)
         robj.add(self.g)
 
     # Product types are converted to class references in Product
@@ -452,12 +538,12 @@ class RDFStoreVAST:
 
         robj.visitor       = self.getURIRef(self.vast.vastVisitor, obj.visitor)
         robj.activity_step = self.getURIRef(self.vast.vastActivityStep, obj.activity_step)
-        if obj.image_resource_id:
-            robj.image_resource_id = Literal(obj.image_resource_id, datatype=XSD.integer)
-        if obj.image_uriref:
-            robj.image_uriref = URIRef(obj.image_uriref)
+        if obj.image_resource_id:        robj.image_resource_id = Literal(obj.image_resource_id, datatype=XSD.integer)
+        if obj.image_uriref:             robj.image_uriref = URIRef(obj.image_uriref)
+        if obj.document_resource_id:     robj.document_resource_id = Literal(obj.document_resource_id, datatype=XSD.integer)
+        if obj.document_uriref:          robj.document_uriref = URIRef(obj.document_uriref)
         robj.add(self.g)
-    
+
     def Concept(self, obj): # RDF Checked
         robj = self.createVASTObject(obj, self.vast.vastConcept)
 
@@ -477,4 +563,26 @@ class RDFStoreVAST:
         robj.subject    = self.getURIRef(self.vast.vastProduct,   obj.subject)
         robj.predicate  = self.getURIRef(self.vast.vastPredicate, obj.predicate)
         robj.object     = self.getURIRef(self.vast.vastConcept,   obj.object)
+        robj.add(self.g)
+
+    # Questionnaire entries are converted to class references in QuestionnaireAnswer
+    def QuestionnaireEntry(self, obj):
+        pass
+
+    def QuestionnaireQuestion(self, obj): # RDF Checked
+        robj = self.createVASTObject(obj, self.classNameToRDFType(obj))
+        if obj.wpforms_form_id: robj.wpforms_form_id = Literal(obj.wpforms_form_id, datatype=XSD.integer)
+        robj.question = self.getLiteral(obj.question)
+        robj.add(self.g)
+
+    def QuestionnaireAnswer(self, obj): # RDF Checked
+        robj = self.createVASTObject(obj, self.classNameToRDFType(obj))
+        robj.product                = self.getURIRef(self.vast.vastProduct, obj.questionnaire_entry.product)
+        if obj.questionnaire_entry.wpforms_entry_id:      robj.wpforms_entry_id = Literal(obj.questionnaire_entry.wpforms_entry_id, datatype=XSD.integer)
+        if obj.questionnaire_entry.wpforms_form_id:       robj.wpforms_form_id  = Literal(obj.questionnaire_entry.wpforms_form_id,  datatype=XSD.integer)
+        robj.wpforms_status         = self.getLiteral(obj.questionnaire_entry.wpforms_status)
+        robj.questionnaire_question = self.getURIRef(self.classNameToRDFType(obj.question), obj.question)
+        robj.answer_type            = self.getLiteral(obj.answer_type)
+        robj.answer_value           = self.getLiteral(obj.answer_value)
+        robj.answer_value_raw       = self.getLiteral(obj.answer_value_raw)
         robj.add(self.g)

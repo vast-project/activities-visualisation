@@ -13,6 +13,12 @@ from .custom_layout_object import *
 from activity_data.models import *
 from activity_data.admin import *
 from markdown import markdown
+## RDF Graph...
+from vast_rdf.vast_repository import RDFStoreVAST, NAMESPACE_VAST, RDF, GRAPH_ID_SURVEY_DATA
+## For getting WordPress data...
+from vast_rdf.vast_wp import WPStoreVAST
+## Parsing php dates...
+import dateutil
 import re
 import copy
 import os
@@ -382,7 +388,7 @@ class ProductStatementsForm(CrispyForm):
     product = forms.ModelChoiceField(
         queryset=Product.objects.all(),
         # widget=RelatedFieldWidgetWrapper(
-        #     forms.Select, 
+        #     forms.Select,
         #     queryset=Product.objects.all(),
         #     related_url='admin:activity_data_product_changelist',
         # ),
@@ -481,7 +487,7 @@ class ProductProductStatementsForm(CrispyForm):
     product = forms.ModelChoiceField(
         queryset=Product.objects.all(),
         # widget=RelatedFieldWidgetWrapper(
-        #     forms.Select, 
+        #     forms.Select,
         #     queryset=Product.objects.all(),
         #     related_url='admin:activity_data_product_changelist',
         # ),
@@ -730,18 +736,32 @@ class SelectExceptionForm(SelectModelForm):
 
 class ImportVisitorsSelectActivityStepForm(CrispyForm):
     activity_step = forms.ModelChoiceField(queryset=None, required=True)
+    visitor_group = forms.ModelChoiceField(queryset=None, required=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        queryset = ActivityStep.objects.filter(stimulus__stimulus_type__iexact='Questionnaire')
         if 'initial' in kwargs and 'created_by' in kwargs['initial']:
             user = kwargs['initial']['created_by']
+        else:
+            user = None
+        queryset = ActivityStep.objects.filter(stimulus__stimulus_type__iexact='Questionnaire')
+        if user:
             if not user.is_superuser:
                 group_users = {user, }
                 for group in user.groups.all():
                     group_users.update(User.objects.filter(groups__id=group.pk))
                 queryset = queryset.filter(created_by__in=group_users)
         self.fields['activity_step'].queryset = queryset
+        self.fields['visitor_group'].queryset = \
+            VisitorGroup.objects.filter(event__activity__in=[step.activity for step in queryset])
+
+    def clean(self):
+        cleaned_data = super().clean()
+        activity_step_value = cleaned_data.get('activity_step')
+        visitor_group_value = cleaned_data.get('visitor_group')
+        # Make sure activity step and visitor group are related!
+        if visitor_group_value.event.activity != activity_step_value.activity:
+            raise forms.ValidationError("Activity step and Visitor Group must be related (i.e. be in the same Event)")
 
     def headerMarkdown(self):
         return """# Import Visitors ({{ wizard.steps.step1 }}/{{ wizard.steps.count }})
@@ -755,18 +775,134 @@ class ImportVisitorsShowActivityStepForm(CrispyForm):
     activity_step            = forms.CharField(disabled=True, required=True)
     stimulus                 = forms.CharField(disabled=True, required=True)
     stimulus_type            = forms.CharField(disabled=True, required=True)
+    visitor_group            = forms.CharField(disabled=True, required=True)
     questionnaire            = forms.CharField(disabled=True, required=False)
     questionnaire_wp_post    = forms.CharField(disabled=True, required=False)
     questionnaire_wp_form_id = forms.IntegerField(disabled=True, required=False)
+    questionnaire_wp_entries = forms.IntegerField(disabled=True, required=False)
+    questionnaire_wp_answers = forms.IntegerField(disabled=True, required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.entries = []
+        self.selected_activity_step = None
+        self.selected_visitor_group = None
+        self.initial_defaults       = {}
+        if 'initial' in kwargs:
+            self.initial_defaults = kwargs['initial']
         prev_step_data = self.wizard_view.get_cleaned_data_for_step(self.wizard_view.steps.prev)
-        if 'activity_step' in prev_step_data:
+        if prev_step_data and 'visitor_group' in prev_step_data:
+            self.selected_visitor_group = prev_step_data['visitor_group']
+            self.fields['visitor_group'].initial = self.selected_visitor_group.name
+        if prev_step_data and 'activity_step' in prev_step_data:
             activity_step = prev_step_data['activity_step']
+            self.selected_activity_step = activity_step
             self.fields['activity_step'].initial = activity_step.name
             self.fields['stimulus'].initial      = activity_step.stimulus.name
             self.fields['stimulus_type'].initial = activity_step.stimulus.stimulus_type
             self.fields['questionnaire'].initial = activity_step.stimulus.questionnaire
             self.fields['questionnaire_wp_post'].initial = activity_step.stimulus.questionnaire_wp_post
             self.fields['questionnaire_wp_form_id'].initial = activity_step.stimulus.questionnaire_wp_form_id
+            ## Get the questionnaire entries...
+            if activity_step.stimulus.questionnaire_wp_form_id:
+                wp = WPStoreVAST()
+                entries = wp.wpforms_get_form_entries(activity_step.stimulus.questionnaire_wp_form_id, status=(''))
+                self.entries = entries
+                self.fields['questionnaire_wp_entries'].initial = len(entries)
+                if len(entries):
+                    self.fields['questionnaire_wp_answers'].initial = len(entries[0]['fields'])
+
+    def save(self, commit=True):
+        if not commit:
+            raise Exception("This form can only commit changes")
+        if not self.selected_activity_step:
+            raise Exception("This form requires an ActivityStep")
+        if not self.selected_visitor_group:
+            raise Exception("This form requires a Visitor Group")
+
+        ## Save VisitorGroup in the surveys RDF graph
+        rdf = RDFStoreVAST(identifier=GRAPH_ID_SURVEY_DATA)
+        rdf.save(type(self.selected_activity_step.stimulus).__name__, self.selected_activity_step.stimulus)
+        rdf.save(type(self.selected_visitor_group).__name__, self.selected_visitor_group)
+        ## Link the VisitorGroup to the Stimulus...
+        rdf.addStatement(self.selected_activity_step.stimulus, rdf.vast.vastGroup, self.selected_visitor_group)
+        # for triple in rdf.queryObject(rdf.getURI(self.selected_activity_step.stimulus)):
+        #     print(triple)
+
+        group_name = self.cleaned_data['visitor_group']
+        group_name = (group_name[:200] + '..') if len(group_name) > 200 else group_name
+
+        # print(self.cleaned_data)
+        product_type, created = ProductType.objects.get_or_create(name="Questionnaire")
+        event = self.selected_visitor_group.event
+        for entry in self.entries:
+            ## Create a visitor
+            defaults = {
+                'description':f"Imported from Form: {entry['form_id']} and Form Entry: {entry['entry_id']}",
+                'date_of_visit':str(dateutil.parser.parse(entry['date']+'Z').isoformat()),
+                'city':event.city, 'location':event.location,
+            }
+            defaults.update(self.initial_defaults)
+            visitor, created = Visitor.objects.update_or_create(defaults=defaults,
+                name=f"Participant of \"{group_name}\" | Form: {entry['form_id']} | Entry: {entry['entry_id']}",
+                activity=self.selected_activity_step.activity,
+                visitor_group=self.selected_visitor_group,
+            )
+            rdf.save(type(visitor).__name__, visitor)
+            print("Visitor:", rdf.getURI(visitor))
+            ## Create a Product...
+            defaults = {
+                'description':f"Imported from Form: {entry['form_id']} and Form Entry: {entry['entry_id']}",
+                'product_type': product_type,
+            }
+            defaults.update(self.initial_defaults)
+            visitor_name = (visitor.name[:230] + '..') if len(visitor.name) > 230 else visitor.name
+            product, created = Product.objects.update_or_create(defaults=defaults,
+                name=f"Product of {visitor_name}",
+                visitor=visitor, activity_step=self.selected_activity_step,
+            )
+            print("Product:", rdf.getURI(product))
+            ## Create the QuestionnaireEntry...
+            product_name = (product.name[:230] + '..') if len(product.name) > 230 else product.name
+            defaults = {
+                'name':f"Entry of {product_name}",
+                'description':f"Imported from Form: {entry['form_id']} and Form Entry: {entry['entry_id']}",
+                'wpforms_status':entry['status'],
+            }
+            defaults.update(self.initial_defaults)
+            qEntry, created = QuestionnaireEntry.objects.update_or_create(defaults=defaults,
+                product=product, wpforms_entry_id=entry['entry_id'], wpforms_form_id=entry['form_id'],
+            )
+            # Iterate over questionnaire fields...
+            for key,field in entry['fields'].items():
+                # Create the question...
+                defaults = {
+                    'name':f"[{entry['form_id']}:{field['id']}] {field['name']}",
+                    'description':f"Imported from Form: {entry['form_id']}",
+                }
+                defaults.update(self.initial_defaults)
+                question, created = QuestionnaireQuestion.objects.update_or_create(defaults=defaults,
+                    wpforms_form_id=entry['form_id'], question=field['name'],
+                )
+                rdf.save(type(question).__name__, question)
+                # Create the answer...
+                defaults = {
+                    'name':f"[{entry['form_id']}:{field['id']}:{entry['entry_id']}] {product_name}",
+                    'description':f"Imported from Form: {entry['form_id']} and Form Entry: {entry['entry_id']}",
+                    'answer_type':field['type'], 'answer_value':field['value'], 'answer_value_raw':field.get('value_raw'),
+                }
+                defaults.update(self.initial_defaults)
+                answer, created = QuestionnaireAnswer.objects.update_or_create(defaults=defaults,
+                    questionnaire_entry=qEntry, question=question,
+                )
+                rdf.save(type(answer).__name__, answer)
+                ## Link the Visitor to the Answer...
+                rdf.addStatement(visitor, rdf.vast.vastAnswer, answer)
+            break
+        print(rdf.getURI(self.selected_activity_step.stimulus))
+        del rdf
+
+    def headerMarkdown(self):
+        return """# Overview ({{ wizard.steps.step1 }}/{{ wizard.steps.count }})
+The following information has been collected. It will be used to create Visitors and Products for the selected Activity step.
+"""

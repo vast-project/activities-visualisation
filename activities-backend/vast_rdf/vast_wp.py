@@ -1,5 +1,6 @@
 ## Getting information from WordPress...
 import requests
+from requests.auth import HTTPBasicAuth
 from dotenv import dotenv_values
 import json
 import os
@@ -39,3 +40,15 @@ class WPStoreVAST:
             return posts
         return []
 
+    def wpforms_get_form_entries(self, form_id, status=('', 'abandoned', 'partial')):
+        if not form_id:
+            return None
+        endpoint_url = f"{self.config.config['WORDPRESS_URL']}/wp-json/wpforms/v1/responses/{form_id}"
+        auth = HTTPBasicAuth(self.config.config['WORDPRESS_WPFORMS_API_USERNAME'], self.config.config['WORDPRESS_WPFORMS_API_PASSWORD'])
+        response = requests.get(endpoint_url, auth=auth)
+        if response.ok:
+            entries = list(filter(lambda entry: entry['status'] in status, response.json()))
+            for entry in entries:
+                entry['fields'] = json.loads(entry['fields'])
+            return entries
+        return None

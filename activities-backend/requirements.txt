@@ -21,5 +21,6 @@ pillow
 qrcode
 rdflib
 python-dotenv
+python-dateutil
 requests
 markdown
