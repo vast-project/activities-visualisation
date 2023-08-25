@@ -60,6 +60,11 @@ class ActivityDigitisationWizardView(LoginRequiredMixin, NamedUrlSessionWizardVi
         prefix = super().get_prefix(request, *args, **kwargs)
         return prefix + self.url_name
 
+    def get_form_kwargs(self, step=None):
+        kwargs = super().get_form_kwargs(step)
+        kwargs.update({'wizard_view': self})
+        return kwargs
+
     # def get_form_instance(self, step):
     #     instance = self.instance_dict.get(step, None)
     #     return instance

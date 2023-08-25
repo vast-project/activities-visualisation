@@ -44,6 +44,10 @@ def formfield_for_dbfield(db_field, **kwargs):
 
 class CrispyForm(Form):
     def __init__(self, *args, **kwargs):
+        if 'wizard_view' in kwargs:
+            self.wizard_view = kwargs.pop('wizard_view')
+        else:
+            self.wizard_view = None
         super().__init__(*args, **kwargs)
         # self._form_has_been_saved = False
         self.helper = FormHelper(self)
@@ -155,7 +159,7 @@ class CrispyForm(Form):
         ]
         css = {"all": ("css/form_widgets.css", "admin/css/forms.css",)}
 
-class VASTForm(ModelForm, CrispyForm):
+class VASTForm(CrispyForm, ModelForm):
 
     def headerMarkdown(self):
         return "# Create a new %s ({{ wizard.steps.step1 }}/{{ wizard.steps.count }})" % getattr(self._meta.model, 'verbose_name', str(self._meta.model.__name__))
@@ -237,6 +241,10 @@ ActivityStepFormSet = inlineformset_factory(
 class ActivityForm(VASTForm):
     activity_steps = ActivityStepFormSet()
     def __init__(self, *args, **kwargs):
+        if 'wizard_view' in kwargs:
+            self.wizard_view = kwargs.pop('wizard_view')
+        else:
+            self.wizard_view = None
         formset_kwargs = copy.deepcopy(kwargs)
         # Get prefix
         prefix = kwargs.get('prefix')
@@ -720,3 +728,45 @@ class SelectExceptionForm(SelectModelForm):
     def save(commit=True):
         raise Exception("Test Exception")
 
+class ImportVisitorsSelectActivityStepForm(CrispyForm):
+    activity_step = forms.ModelChoiceField(queryset=None, required=True)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        queryset = ActivityStep.objects.filter(stimulus__stimulus_type__iexact='Questionnaire')
+        if 'initial' in kwargs and 'created_by' in kwargs['initial']:
+            user = kwargs['initial']['created_by']
+            if not user.is_superuser:
+                group_users = {user, }
+                for group in user.groups.all():
+                    group_users.update(User.objects.filter(groups__id=group.pk))
+                queryset = queryset.filter(created_by__in=group_users)
+        self.fields['activity_step'].queryset = queryset
+
+    def headerMarkdown(self):
+        return """# Import Visitors ({{ wizard.steps.step1 }}/{{ wizard.steps.count }})
+If you have used a **questionnaire** in a step of an Activity, you can generate
+one Visitor for each filled questionnaire, and a Product for all Visitor answers.
+
+Please select an Activity step, to retrieve the associated Questionnaire (from its Stimulus):
+"""
+
+class ImportVisitorsShowActivityStepForm(CrispyForm):
+    activity_step            = forms.CharField(disabled=True, required=True)
+    stimulus                 = forms.CharField(disabled=True, required=True)
+    stimulus_type            = forms.CharField(disabled=True, required=True)
+    questionnaire            = forms.CharField(disabled=True, required=False)
+    questionnaire_wp_post    = forms.CharField(disabled=True, required=False)
+    questionnaire_wp_form_id = forms.IntegerField(disabled=True, required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        prev_step_data = self.wizard_view.get_cleaned_data_for_step(self.wizard_view.steps.prev)
+        if 'activity_step' in prev_step_data:
+            activity_step = prev_step_data['activity_step']
+            self.fields['activity_step'].initial = activity_step.name
+            self.fields['stimulus'].initial      = activity_step.stimulus.name
+            self.fields['stimulus_type'].initial = activity_step.stimulus.stimulus_type
+            self.fields['questionnaire'].initial = activity_step.stimulus.questionnaire
+            self.fields['questionnaire_wp_post'].initial = activity_step.stimulus.questionnaire_wp_post
+            self.fields['questionnaire_wp_form_id'].initial = activity_step.stimulus.questionnaire_wp_form_id

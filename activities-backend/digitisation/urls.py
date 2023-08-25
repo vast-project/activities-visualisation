@@ -50,6 +50,20 @@ qrcode_wizard=ActivityDigitisationWizardView.as_view(
 )
 
 ##
+## Import Visitors from Questionnaires Wizard
+##
+import_questionnaire_visitors_wizard = ActivityDigitisationWizardView.as_view(
+    form_list = (
+        ('select_activity_step',    ImportVisitorsSelectActivityStepForm),
+        ('show_activity_step',      ImportVisitorsShowActivityStepForm),
+    ),
+    condition_dict = {
+    },
+    extra_context = { 'segment': 'import-questionnaire-visitors-wizard' },
+    url_name='import-questionnaire-visitors-wizard-step', done_step_name='finished'
+)
+
+##
 ## Visitor Wizard
 ##
 visitor_wizard = ActivityDigitisationWizardView.as_view(
@@ -116,26 +130,27 @@ exception_wizard = ActivityDigitisationWizardView.as_view(
     url_name='exception-wizard-step', done_step_name='finished'
 )
 
-
 ##
 ## URLs
 ##
 urlpatterns = [
-    path('dashboard/table/<str:model>',                     login_required(ActivityHTMxTableView.as_view()),    name='dashboard-table-model'),
-    re_path(r'^wizard/activity/(?P<step>.+)/$',             login_required(activity_wizard),                    name='activity-wizard-step'),
-    path('wizard/activity',                                 login_required(activity_wizard),                    name='activity-wizard'),
-    re_path(r'^wizard/event-visitorgroup/(?P<step>.+)/$',   login_required(event_visitorgroup_wizard),          name='event-visitorgroup-wizard-step'),
-    path('wizard/event-visitorgroup',                       login_required(event_visitorgroup_wizard),          name='event-visitorgroup-wizard'),
-    re_path(r'^wizard/qrcode-visitorgroup/(?P<step>.+)/$',  login_required(qrcode_wizard),                      name='qrcode-visitorgroup-wizard-step'),
-    path('wizard/qrcode-visitorgroup',                      login_required(qrcode_wizard),                      name='qrcode-visitorgroup-wizard'),
-    re_path(r'^wizard/visitor/(?P<step>.+)/$',              login_required(visitor_wizard),                     name='visitor-wizard-step'),
-    path('wizard/visitor',                                  login_required(visitor_wizard),                     name='visitor-wizard'),
-    re_path(r'^wizard/product/(?P<step>.+)/$',              login_required(product_wizard),                     name='product-wizard-step'),
-    path('wizard/product',                                  login_required(product_wizard),                     name='product-wizard'),
-    re_path(r'^wizard/statement/(?P<step>.+)/$',            login_required(statement_wizard),                   name='statement-wizard-step'),
-    path('wizard/statement',                                login_required(statement_wizard),                   name='statement-wizard'),
-    re_path(r'^wizard/productstatement/(?P<step>.+)/$',     login_required(productstatement_wizard),            name='productstatement-wizard-step'),
-    path('wizard/productstatement',                         login_required(productstatement_wizard),            name='productstatement-wizard'),
-    #re_path(r'^wizard/exception/(?P<step>.+)/$',           login_required(exception_wizard),                   name='exception-wizard-step'),
-    #path('wizard/exception',                               login_required(exception_wizard),                   name='exception-wizard'),
+    path('dashboard/table/<str:model>',                     login_required(ActivityHTMxTableView.as_view()),       name='dashboard-table-model'),
+    re_path(r'^wizard/activity/(?P<step>.+)/$',             login_required(activity_wizard),                       name='activity-wizard-step'),
+    path('wizard/activity',                                 login_required(activity_wizard),                       name='activity-wizard'),
+    re_path(r'^wizard/event-visitorgroup/(?P<step>.+)/$',   login_required(event_visitorgroup_wizard),             name='event-visitorgroup-wizard-step'),
+    path('wizard/event-visitorgroup',                       login_required(event_visitorgroup_wizard),             name='event-visitorgroup-wizard'),
+    re_path(r'^wizard/qrcode-visitorgroup/(?P<step>.+)/$',  login_required(qrcode_wizard),                         name='qrcode-visitorgroup-wizard-step'),
+    path('wizard/qrcode-visitorgroup',                      login_required(qrcode_wizard),                         name='qrcode-visitorgroup-wizard'),
+    re_path(r'^wizard/import-visitors/(?P<step>.+)/$',      login_required(import_questionnaire_visitors_wizard),  name='import-questionnaire-visitors-wizard-step'),
+    path('wizard/import-visitors',                          login_required(import_questionnaire_visitors_wizard),  name='import-questionnaire-visitors-wizard'),
+    re_path(r'^wizard/visitor/(?P<step>.+)/$',              login_required(visitor_wizard),                        name='visitor-wizard-step'),
+    path('wizard/visitor',                                  login_required(visitor_wizard),                        name='visitor-wizard'),
+    re_path(r'^wizard/product/(?P<step>.+)/$',              login_required(product_wizard),                        name='product-wizard-step'),
+    path('wizard/product',                                  login_required(product_wizard),                        name='product-wizard'),
+    re_path(r'^wizard/statement/(?P<step>.+)/$',            login_required(statement_wizard),                      name='statement-wizard-step'),
+    path('wizard/statement',                                login_required(statement_wizard),                      name='statement-wizard'),
+    re_path(r'^wizard/productstatement/(?P<step>.+)/$',     login_required(productstatement_wizard),               name='productstatement-wizard-step'),
+    path('wizard/productstatement',                         login_required(productstatement_wizard),               name='productstatement-wizard'),
+    #re_path(r'^wizard/exception/(?P<step>.+)/$',           login_required(exception_wizard),                      name='exception-wizard-step'),
+    #path('wizard/exception',                               login_required(exception_wizard),                      name='exception-wizard'),
 ]

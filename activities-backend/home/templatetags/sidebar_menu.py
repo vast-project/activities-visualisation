@@ -19,7 +19,7 @@ def sidebar_menu(*args, **kwargs):
                 {'title': 'Add Activity',           'url': 'activity-wizard'},
                 {'title': 'Add Event',              'url': 'event-visitorgroup-wizard'},
                 {'title': 'Add QR Code',            'url': 'qrcode-visitorgroup-wizard'},
-                {'title': 'Import Questionnaire Visitors',            'url': 'visitor-wizard'},
+                {'title': 'Import Visitors',        'url': 'import-questionnaire-visitors-wizard'},
                 {'title': 'Add Visitor',            'url': 'visitor-wizard'},
                 {'title': 'Add Product',            'url': 'product-wizard'},
                 {'title': 'Add Statements',         'url': 'statement-wizard'},
