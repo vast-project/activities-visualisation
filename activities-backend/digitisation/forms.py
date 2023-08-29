@@ -395,6 +395,11 @@ class ProductStatementsForm(CrispyForm):
     )
     statements = StatementFormSet()
     def __init__(self, *args, **kwargs):
+        if 'wizard_view' in kwargs:
+            self.wizard_view = kwargs.pop('wizard_view')
+        else:
+            self.wizard_view = None
+
         formset_kwargs = copy.deepcopy(kwargs)
         # Get prefix
         prefix = kwargs.get('prefix')
@@ -494,6 +499,10 @@ class ProductProductStatementsForm(CrispyForm):
     )
     statements = ProductStatementFormSet()
     def __init__(self, *args, **kwargs):
+        if 'wizard_view' in kwargs:
+            self.wizard_view = kwargs.pop('wizard_view')
+        else:
+            self.wizard_view = None
         formset_kwargs = copy.deepcopy(kwargs)
         # Get prefix
         prefix = kwargs.get('prefix')
