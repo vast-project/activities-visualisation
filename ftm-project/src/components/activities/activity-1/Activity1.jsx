@@ -1,14 +1,13 @@
-import { useState, useContext } from 'react'
+import {useContext, useState} from 'react'
 import styles from './activity1.module.css'
 import Form from '../../questionnere/before/Form/Form'
 import Button from './../../../ui/Button/Button'
-import { LangContext } from '../../../layout/Layout'
+import {LangContext} from '../../../layout/Layout'
 import Title from '../../../ui/Title/Title'
 import Paragraph from '../../../ui/Paragraph/Paragraph'
-import Characters, { CharactersContext } from './characters/Characters'
+import Characters, {CharactersContext} from './characters/Characters'
 import Functions from './functions/Functions'
-import Activity2 from '../activity-2/Activity2'
-import Congratulations from '../../congratulations/Congratulations'
+import WritingActivity from '../activity-2/WritingActivity.jsx'
 
 const text = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis ab sit repudiandae! Facilis libero molestias sint quaerat, vitae amet soluta, accusantium nostrum, placeat ullam eius."
 
@@ -22,12 +21,8 @@ const Activity1 = () => {
         return <Form />
     }
     if(next){
-        return <Congratulations />
+        return <WritingActivity />
     }
-
-    // if(next){
-    //   return <Activity2 />
-    // }
 
   return (
     <div>
