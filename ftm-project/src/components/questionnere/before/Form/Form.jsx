@@ -23,7 +23,7 @@ const Form = () => {
         <>
             <Title title={isEnglish ? englishTitle : greekTitle}/>
             <div className={styles.formContainer}>
-                <iframe src="https://platform.vast-project.eu/ftm-pre-assessment/"
+                <iframe className={styles.questionnaireFrame} src="https://platform.vast-project.eu/ftm-pre-assessment/"
                         title="Pre-assessment questionnaire"></iframe>
             </div>
 
