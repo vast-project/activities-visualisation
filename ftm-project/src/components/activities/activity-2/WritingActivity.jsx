@@ -14,10 +14,23 @@ const WritingActivity = () => {
     const [prev, setPrev] = useState(false)
     console.log(myCharacters);
 
+    const title = {
+        en: "Write a story",
+        gr: "Γράψε μια ιστορία"
+    }
 
     const textareaPlaceholder = {
         en: "Write a story...",
         gr: "Γράψε μια ιστορία..."
+    }
+
+    const prevBtnText = {
+        en: "PREVIOUS",
+        gr: "ΠΙΣΩ"
+    }
+    const nextBtnText = {
+        en: "NEXT",
+        gr: "ΕΠΟΜΕΝΟ"
     }
 
     if (prev) {
@@ -31,14 +44,16 @@ const WritingActivity = () => {
 
     return (
         <div className={styles.storyContainer}>
-            <Title title="Write a story"/>
+            <Title title={isEnglish ? title.en : title.gr}/>
 
             <textarea className={styles.storyInput}
-                      placeholder={isEnglish ? textareaPlaceholder.en : textareaPlaceholder.el}></textarea>
+                      placeholder={isEnglish ? textareaPlaceholder.en : textareaPlaceholder.gr}></textarea>
 
             <div className={styles.btnContainer}>
-                <button className={styles.btnBack} onClick={() => setPrev(true)}>ΠΙΣΩ</button>
-                <Button onClick={() => setNext(true)} text="ΕΠΟΜΕΝΟ" color="rgb(105, 160, 130)"/>
+                <button className={styles.btnBack}
+                        onClick={() => setPrev(true)}>{isEnglish ? prevBtnText.en : prevBtnText.gr}</button>
+                <Button onClick={() => setNext(true)} text={isEnglish ? nextBtnText.en : nextBtnText.gr}
+                        color="rgb(105, 160, 130)"/>
             </div>
         </div>
     )

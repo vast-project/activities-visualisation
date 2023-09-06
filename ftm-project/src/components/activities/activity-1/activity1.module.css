@@ -1,4 +1,4 @@
-.miniTitle{
+.miniTitle {
     color: #444;
     font-weight: 300;
     margin: 0;
@@ -6,15 +6,14 @@
     font-size: 1rem;
 }
 
-
-
-.btnContainer{
+.btnContainer {
     align-items: center;
     justify-content: center;
     display: flex;
     gap: .5rem;
 }
-.btnBack{
+
+.btnBack {
     padding: .75rem 3rem;
     min-width: 200px;
     background: #b4c5a5;

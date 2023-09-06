@@ -17,29 +17,40 @@ const Activity1 = () => {
     const [next, setNext] = useState(false)
     const [prev, setPrev] = useState(false)
 
-    if(prev){
-        return <Form />
+    const prevBtnText = {
+        en: "PREVIOUS",
+        gr: "ΠΙΣΩ"
     }
-    if(next){
-        return <WritingActivity />
+    const nextBtnText = {
+        en: "NEXT",
+        gr: "ΕΠΟΜΕΝΟ"
     }
 
-  return (
-    <div>
-        <Title title="Morphology of Fairy Tale" />
-        <h5 className={styles.miniTitle}>(inspired by Vladimir Propp)</h5>
+    if (prev) {
+        return <Form/>
+    }
+    if (next) {
+        return <WritingActivity/>
+    }
 
-        <Paragraph text={text} />
+    return (
+        <div>
+            <Title title="Morphology of Fairy Tale"/>
+            <h5 className={styles.miniTitle}>(inspired by Vladimir Propp)</h5>
 
-        <Characters />
-        <Functions />
+            <Paragraph text={text}/>
 
-        <div className={styles.btnContainer}>
-            <button className={styles.btnBack} onClick={() => setPrev(true)}>ΠΙΣΩ</button>
-            <Button onClick={() => setNext(true)} text="ΕΠΟΜΕΝΟ" color="rgb(105, 160, 130)" />
+            <Characters/>
+            <Functions/>
+
+            <div className={styles.btnContainer}>
+                <button className={styles.btnBack}
+                        onClick={() => setPrev(true)}>{isEnglish ? prevBtnText.en : prevBtnText.gr}</button>
+                <Button onClick={() => setNext(true)} text={isEnglish ? nextBtnText.en : nextBtnText.gr}
+                        color="rgb(105, 160, 130)"/>
+            </div>
         </div>
-    </div>
-  )
+    )
 }
 
 export default Activity1
