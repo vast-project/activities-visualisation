@@ -1,15 +1,26 @@
 import styles from './congratulations.module.css'
+import {useContext} from "react";
+import {LangContext} from "../../layout/Layout.jsx";
 
 const Congratulations = () => {
-  return (
-    <section>
-        <h1 className={styles.primaryHeadline}>Συγχαρητήρια</h1>
-        <h3 className={styles.secondaryHeadline}>Ευχαριστούμε που ολοκληρώσατε την δραστηριότητα «Οι Αξίες στα Παραμύθια».</h3>
+    const {isEnglish} = useContext(LangContext)
 
-        
-      
-    </section>
-  )
+    const headline = {
+        en: "Congratulations",
+        gr: "Συγχαρητήρια"
+    }
+
+    const secondaryHeadline = {
+        en: "Thank you for completing the activity “Values in Fairy Tales”.",
+        gr: "Ευχαριστούμε που ολοκληρώσατε την δραστηριότητα «Οι Αξίες στα Παραμύθια»."
+    }
+
+    return (
+        <section>
+            <h1 className={styles.primaryHeadline}>{isEnglish ? headline.en : headline.gr}</h1>
+            <h3 className={styles.secondaryHeadline}>{isEnglish ? secondaryHeadline.en : secondaryHeadline.gr}</h3>
+        </section>
+    )
 }
 
 export default Congratulations
