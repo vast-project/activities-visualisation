@@ -1,17 +1,17 @@
 import {useContext, useState} from 'react'
-import styles from './activity1.module.css'
-import Before from '../../questionnaire/before/Before.jsx'
-import Button from './../../../ui/Button/Button'
-import {LangContext} from '../../../layout/Layout'
-import Title from '../../../ui/Title/Title'
-import Paragraph from '../../../ui/Paragraph/Paragraph'
-import Characters, {CharactersContext} from './characters/Characters'
-import Functions from './functions/Functions'
-import WritingActivity from '../activity-2/WritingActivity.jsx'
+import styles from './cardsactivity.module.css'
+import Before from '../questionnaire/before/Before.jsx'
+import Button from '../../ui/Button/Button.jsx'
+import {LangContext} from '../../layout/Layout.jsx'
+import Title from '../../ui/Title/Title.jsx'
+import Paragraph from '../../ui/Paragraph/Paragraph.jsx'
+import Characters, {CharactersContext} from './characters/Characters.jsx'
+import Functions from './functions/Functions.jsx'
+import WritingActivity from '../activities/activity-2/WritingActivity.jsx'
 
 const text = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis ab sit repudiandae! Facilis libero molestias sint quaerat, vitae amet soluta, accusantium nostrum, placeat ullam eius."
 
-const Activity1 = () => {
+const CardsActivity = () => {
     const {isEnglish} = useContext(LangContext)
     const myCharacters = useContext(CharactersContext)
     const [next, setNext] = useState(false)
@@ -53,4 +53,4 @@ const Activity1 = () => {
     )
 }
 
-export default Activity1
+export default CardsActivity

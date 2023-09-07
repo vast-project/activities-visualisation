@@ -3,7 +3,7 @@ import {LangContext} from '../../../layout/Layout.jsx'
 import styles from './before.module.css'
 import Title from "../../../ui/Title/Title.jsx"
 import Button from '../../../ui/Button/Button.jsx'
-import Activity1 from '../../activities/activity-1/Activity1.jsx';
+import CardsActivity from '../../cards-activity/CardsActivity.jsx';
 import AnnotationActivity from "../../annotation-activity/AnnotationActivity.jsx";
 
 const Before = () => {
@@ -28,7 +28,7 @@ const Before = () => {
         return <AnnotationActivity/>
     }
     if (next) {
-        return <Activity1/>
+        return <CardsActivity/>
     }
 
     return (

@@ -1,10 +1,10 @@
 import {useContext, useState} from 'react'
 import styles from './writingactivity.module.css'
 import {LangContext} from '../../../layout/Layout'
-import {CharactersContext} from './../activity-1/characters/Characters'
+import {CharactersContext} from '../../cards-activity/characters/Characters'
 import Title from "../../../ui/Title/Title.jsx";
 import Button from "../../../ui/Button/Button.jsx";
-import Activity1 from "../activity-1/Activity1.jsx";
+import CardsActivity from "../../cards-activity/CardsActivity.jsx";
 import Congratulations from "../../congratulations/Congratulations.jsx";
 
 const WritingActivity = () => {
@@ -34,7 +34,7 @@ const WritingActivity = () => {
     }
 
     if (prev) {
-        return <Activity1/>
+        return <CardsActivity/>
     }
 
     if (next) {

@@ -1,13 +1,13 @@
 import { useState,createContext } from 'react'
 import styles from './characters.module.css'
 import {BsFillArrowDownCircleFill} from 'react-icons/bs'
-import img1 from './../../../../../public/characters/img1.png'
-import img2 from './../../../../../public/characters/img2.png'
-import img3 from './../../../../../public/characters/img3.png'
-import img4 from './../../../../../public/characters/img4.png'
-import img5 from './../../../../../public/characters/img5.png'
-import img6 from './../../../../../public/characters/img6.png'
-import img7 from './../../../../../public/characters/img7.png'
+import img1 from '../../../../public/characters/img1.png'
+import img2 from '../../../../public/characters/img2.png'
+import img3 from '../../../../public/characters/img3.png'
+import img4 from '../../../../public/characters/img4.png'
+import img5 from '../../../../public/characters/img5.png'
+import img6 from '../../../../public/characters/img6.png'
+import img7 from '../../../../public/characters/img7.png'
 
 const characters = [
   {id:1, src: img1, selected: false},
