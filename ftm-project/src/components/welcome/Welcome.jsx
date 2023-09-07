@@ -5,7 +5,7 @@ import Button from './../../ui/Button/Button'
 
 import {useContext, useState} from 'react'
 import {LangContext} from '../../layout/Layout'
-import Form from "../questionnaire/before/Form/Form.jsx";
+import Before from "../questionnaire/before/Before.jsx";
 
 const Welcome = () => {
     const {isEnglish} = useContext(LangContext);
@@ -34,7 +34,7 @@ const Welcome = () => {
     if (next) {
         return (
             <>
-                <Form/>
+                <Before/>
             </>
         )
     }

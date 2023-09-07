@@ -1,6 +1,6 @@
 import {useContext, useState} from 'react'
 import styles from './activity1.module.css'
-import Form from '../../questionnaire/before/Form/Form'
+import Before from '../../questionnaire/before/Before.jsx'
 import Button from './../../../ui/Button/Button'
 import {LangContext} from '../../../layout/Layout'
 import Title from '../../../ui/Title/Title'
@@ -27,7 +27,7 @@ const Activity1 = () => {
     }
 
     if (prev) {
-        return <Form/>
+        return <Before/>
     }
     if (next) {
         return <WritingActivity/>
