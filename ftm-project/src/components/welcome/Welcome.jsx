@@ -2,10 +2,10 @@ import Title from './../../ui/Title/Title'
 import SubTitle from './../../ui/SubTitle/SubTitle'
 import Paragraph from './../../ui/Paragraph/Paragraph'
 import Button from './../../ui/Button/Button'
-import Before from './../questionnere/before/Before'
 
 import {useContext, useState} from 'react'
 import {LangContext} from '../../layout/Layout'
+import Form from "../questionnaire/before/Form/Form.jsx";
 
 const Welcome = () => {
     const {isEnglish} = useContext(LangContext);
@@ -34,7 +34,7 @@ const Welcome = () => {
     if (next) {
         return (
             <>
-                <Before/>
+                <Form/>
             </>
         )
     }

@@ -1,6 +1,6 @@
 import {useContext, useState} from 'react'
 import styles from './activity1.module.css'
-import Form from '../../questionnere/before/Form/Form'
+import Form from '../../questionnaire/before/Form/Form'
 import Button from './../../../ui/Button/Button'
 import {LangContext} from '../../../layout/Layout'
 import Title from '../../../ui/Title/Title'
