@@ -8,30 +8,24 @@ import {useState, createContext} from 'react'
 export const LangContext = createContext();
 
 const Layout = ({children}) => {
-
     const [isEnglish, setIsEnglish] = useState(false)
-    console.log(isEnglish);
 
     return (
-    <section className={styles.layoutContainer}>
-        <div className={styles.flagContainer}>
-            <img onClick={() => setIsEnglish(false)} src={gr} alt="gr flag" />
-            <img onClick={() => setIsEnglish(true)} src={gb} alt="gb flag" />
-        </div>
+        <section className={styles.layoutContainer}>
+            <div className={styles.flagContainer}>
+                <img onClick={() => setIsEnglish(false)} src={gr} alt="gr flag"/>
+                <img onClick={() => setIsEnglish(true)} src={gb} alt="gb flag"/>
+            </div>
 
-        {/* <main className={styles.container}>
-            {children}
-        </main> */}
-        <LangContext.Provider value={{isEnglish, setIsEnglish}} className={styles.container}>
-            {children}
-        </LangContext.Provider>
-        
-        <div className={styles.logoContainer}>
-            <img src={logo} alt="logo" />
-        </div>
+            <LangContext.Provider value={{isEnglish, setIsEnglish}} className={styles.container}>
+                {children}
+            </LangContext.Provider>
 
-    </section>
+            <div className={styles.logoContainer}>
+                <img src={logo} alt="logo"/>
+            </div>
+        </section>
     )
-  }
-  
-  export default Layout
+}
+
+export default Layout
