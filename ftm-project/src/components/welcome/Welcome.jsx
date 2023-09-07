@@ -5,7 +5,7 @@ import Button from './../../ui/Button/Button'
 
 import {useContext, useState} from 'react'
 import {LangContext} from '../../layout/Layout'
-import Before from "../questionnaire/before/Before.jsx";
+import AnnotationActivity from "../annotation-activity/AnnotationActivity.jsx";
 
 const Welcome = () => {
     const {isEnglish} = useContext(LangContext);
@@ -34,7 +34,7 @@ const Welcome = () => {
     if (next) {
         return (
             <>
-                <Before/>
+                <AnnotationActivity/>
             </>
         )
     }

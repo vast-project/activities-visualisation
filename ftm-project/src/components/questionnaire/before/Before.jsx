@@ -4,17 +4,29 @@ import styles from './before.module.css'
 import Title from "../../../ui/Title/Title.jsx"
 import Button from '../../../ui/Button/Button.jsx'
 import Activity1 from '../../activities/activity-1/Activity1.jsx';
+import AnnotationActivity from "../../annotation-activity/AnnotationActivity.jsx";
 
 const Before = () => {
     const {isEnglish} = useContext(LangContext)
+    const [prev, setPrev] = useState(false)
     const [next, setNext] = useState(false)
 
     // Set the text for the component based on the language
     const englishTitle = "Values Questionnaire"
-    const englishButton = "NEXT"
     const greekTitle = "Ερωτηματολόγιο Αξιών"
-    const greekButton = "ΕΠΟΜΕΝΟ"
 
+    const prevBtnText = {
+        en: "PREVIOUS",
+        gr: "ΠΙΣΩ"
+    }
+    const nextBtnText = {
+        en: "NEXT",
+        gr: "ΕΠΟΜΕΝΟ"
+    }
+
+    if (prev) {
+        return <AnnotationActivity/>
+    }
     if (next) {
         return <Activity1/>
     }
@@ -27,8 +39,12 @@ const Before = () => {
                         title="Pre-assessment questionnaire"></iframe>
             </div>
 
-            <Button onClick={() => setNext(true)} text={isEnglish ? englishButton : greekButton}
-                    color="rgb(105, 160, 130)"/>
+            <div className={styles.btnContainer}>
+                <button className={styles.btnBack}
+                        onClick={() => setPrev(true)}>{isEnglish ? prevBtnText.en : prevBtnText.gr}</button>
+                <Button onClick={() => setNext(true)} text={isEnglish ? nextBtnText.en : nextBtnText.gr}
+                        color="rgb(105, 160, 130)"/>
+            </div>
         </>
     )
 }
