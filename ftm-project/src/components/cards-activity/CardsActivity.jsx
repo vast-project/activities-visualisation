@@ -7,7 +7,7 @@ import Title from '../../ui/Title/Title.jsx'
 import Paragraph from '../../ui/Paragraph/Paragraph.jsx'
 import Characters, {CharactersContext} from './characters/Characters.jsx'
 import Functions from './functions/Functions.jsx'
-import WritingActivity from '../activities/activity-2/WritingActivity.jsx'
+import WritingActivity from '../writing-activity/WritingActivity.jsx'
 
 const text = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis ab sit repudiandae! Facilis libero molestias sint quaerat, vitae amet soluta, accusantium nostrum, placeat ullam eius."
 
