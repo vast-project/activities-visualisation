@@ -141,3 +141,15 @@ class ProductStatementFilter(VASTObjectFilter):
 class StatementFilter(VASTObjectFilter):
     class Meta(VASTObjectFilter.Meta):
         model = Statement
+
+class QuestionnaireEntryFilter(VASTObjectFilter):
+    class Meta(VASTObjectFilter.Meta):
+        model = QuestionnaireEntry
+
+class QuestionnaireQuestionFilter(VASTObjectFilter):
+    class Meta(VASTObjectFilter.Meta):
+        model = QuestionnaireQuestion
+
+class QuestionnaireAnswerFilter(VASTObjectFilter):
+    class Meta(VASTObjectFilter.Meta):
+        model = QuestionnaireAnswer

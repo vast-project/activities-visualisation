@@ -508,7 +508,7 @@ class QuestionnaireEntry(VASTObject):
     wpforms_status       = models.CharField(max_length=32,  default='', null=True, blank=True)
 
     class Meta(VASTObject.Meta):
-        verbose_name_plural = 'Questionnaire Entries'
+        verbose_name_plural = 'Questionnaire entries'
         unique_together = [["product", "wpforms_form_id", "wpforms_entry_id"]]
 
 class QuestionnaireQuestion(VASTObject):

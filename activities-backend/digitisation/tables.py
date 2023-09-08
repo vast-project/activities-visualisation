@@ -103,3 +103,15 @@ class ProductStatementHTMxTable(HTMxTable):
 class StatementHTMxTable(HTMxTable):
     class Meta(HTMxTable.Meta):
         model = Statement
+
+class QuestionnaireEntryHTMxTable(HTMxTable):
+    class Meta(HTMxTable.Meta):
+        model = QuestionnaireEntry
+
+class QuestionnaireQuestionHTMxTable(HTMxTable):
+    class Meta(HTMxTable.Meta):
+        model = QuestionnaireQuestion
+
+class QuestionnaireAnswerHTMxTable(HTMxTable):
+    class Meta(HTMxTable.Meta):
+        model = QuestionnaireAnswer

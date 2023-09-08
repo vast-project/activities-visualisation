@@ -247,7 +247,7 @@ class PredicateViewSet(viewsets.ModelViewSet):
 
 class StatementViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows Context objects to be viewed or edited.
+    API endpoint that allows Statement objects to be viewed or edited.
     """
     queryset = Statement.objects.all()
     serializer_class = StatementSerializer
@@ -257,7 +257,7 @@ class StatementViewSet(viewsets.ModelViewSet):
 
 class ProductStatementViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows Context objects to be viewed or edited.
+    API endpoint that allows ProductStatement objects to be viewed or edited.
     """
     queryset = ProductStatement.objects.all()
     serializer_class = ProductStatementSerializer
@@ -267,7 +267,7 @@ class ProductStatementViewSet(viewsets.ModelViewSet):
 
 class QuestionnaireEntryViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows Context objects to be viewed or edited.
+    API endpoint that allows QuestionnaireEntry objects to be viewed or edited.
     """
     queryset = QuestionnaireEntry.objects.all()
     serializer_class = QuestionnaireEntrySerializer
@@ -275,9 +275,19 @@ class QuestionnaireEntryViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+class QuestionnaireQuestionViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows QuestionnaireQuestion objects to be viewed or edited.
+    """
+    queryset = QuestionnaireQuestion.objects.all()
+    serializer_class = QuestionnaireQuestionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
+    search_fields = ['name']
+
 class QuestionnaireAnswerViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows Context objects to be viewed or edited.
+    API endpoint that allows QuestionnaireAnswer objects to be viewed or edited.
     """
     queryset = QuestionnaireAnswer.objects.all()
     serializer_class = QuestionnaireAnswerSerializer
@@ -287,7 +297,7 @@ class QuestionnaireAnswerViewSet(viewsets.ModelViewSet):
 
 class DigitisationApplicationViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows Context objects to be viewed or edited.
+    API endpoint that allows DigitisationApplication objects to be viewed or edited.
     """
     queryset = DigitisationApplication.objects.all()
     serializer_class = DigitisationApplicationSerializer
@@ -298,7 +308,7 @@ class DigitisationApplicationViewSet(viewsets.ModelViewSet):
 
 class VisitorGroupQRCodeViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows Context objects to be viewed or edited.
+    API endpoint that allows VisitorGroupQRCode objects to be viewed or edited.
     """
     queryset = VisitorGroupQRCode.objects.all()
     serializer_class = VisitorGroupQRCodeSerializer

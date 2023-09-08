@@ -237,3 +237,8 @@ class QuestionnaireAnswerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = QuestionnaireAnswer
         fields = '__all__'
+
+class QuestionnaireQuestionSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = QuestionnaireQuestion
+        fields = '__all__'

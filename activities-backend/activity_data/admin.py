@@ -129,7 +129,7 @@ Stimulus.set_fields_verbose_names()
 
 for model in (Organisation, Class, Age,
               Activity, ActivityStep, Event, VisitorGroup, VisitorGroupQRCode,
-              Visitor, Product, Concept, QuestionnaireEntry, QuestionnaireAnswer):
+              Visitor, Product, Concept, QuestionnaireEntry, QuestionnaireQuestion, QuestionnaireAnswer):
     admin.site.register(model, FilterUserObjectsAdmin)
     model.set_fields_verbose_names()
 
