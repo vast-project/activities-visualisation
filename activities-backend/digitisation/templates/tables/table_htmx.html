@@ -4,13 +4,14 @@
 
 {% block main %}
     {# Search form #}
-    <form hx-get="{{table.url}}"
+    <form id="table-search-{{ table.id }}"
+	  hx-get="{{table.url}}"
           hx-target=".table-container-{{ table.id }}"
           hx-vals="javascript:{selectionData: Alpine.store('dashboardInteractiveFiltering').selected}"
           hx-swap="outerHTML"
           hx-indicator=".progress-{{ table.id }}"
           hx-include="#selected-{{ table.id }}"
-          class="form-inline">
+          class="form-inline collapse">
         {% crispy filter.form %}
     </form>
 
