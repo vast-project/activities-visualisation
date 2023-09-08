@@ -274,13 +274,23 @@ class Activity(VASTObject_NameUserGroupUnique):
     class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Activities'
 
+def Stimulus_remove_spaces_from_image_filename(filename):
+    filename_without_spaces = os.path.basename(filename)
+    filename_without_spaces = filename_without_spaces.replace(' ', '_')  # Replace spaces with underscores
+    return 'stimulus_images/' + filename_without_spaces
+
+def Stimulus_remove_spaces_from_filename(filename):
+    filename_without_spaces = os.path.basename(filename)
+    filename_without_spaces = filename_without_spaces.replace(' ', '_')  # Replace spaces with underscores
+    return 'stimulus_documents/' + filename_without_spaces
+
 class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
     stimulus_type            = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire'), ('Live Performance','Live Performance')], null=False, blank=False)
     uriref                   = models.URLField(max_length=512, default=None, null=True, blank=True)
-    image                    = models.ImageField(upload_to='stimulus_images/', default=None, null=True, blank=True)
+    image                    = models.ImageField(upload_to=Stimulus_remove_spaces_from_image_filename, default=None, null=True, blank=True)
     image_resource_id        = models.IntegerField(default=None, null=True, blank=True)
     image_uriref             = models.URLField(max_length=512, null=True, blank=True)
-    document                 = models.FileField(upload_to='stimulus_documents/', default=None, null=True, blank=True)
+    document                 = models.FileField(upload_to=Stimulus_remove_spaces_from_filename, default=None, null=True, blank=True)
     document_resource_id     = models.IntegerField(default=None, null=True, blank=True)
     document_uriref          = models.URLField(max_length=512, null=True, blank=True)
     text                     = models.TextField(default=None, null=True, blank=True)
@@ -413,14 +423,24 @@ class Visitor(VASTObject):
 class ProductType(VASTObject_NameUnique):
     pass
 
+def Product_remove_spaces_from_image_filename(filename):
+    filename_without_spaces = os.path.basename(filename)
+    filename_without_spaces = filename_without_spaces.replace(' ', '_')  # Replace spaces with underscores
+    return 'product_images/' + filename_without_spaces
+
+def Product_remove_spaces_from_filename(filename):
+    filename_without_spaces = os.path.basename(filename)
+    filename_without_spaces = filename_without_spaces.replace(' ', '_')  # Replace spaces with underscores
+    return 'product_documents/' + filename_without_spaces
+
 class Product(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
     product_type         = models.ForeignKey('ProductType',  on_delete=models.CASCADE, default=None, null=False, blank=False)
     visitor              = models.ForeignKey('Visitor',      on_delete=models.CASCADE, default=None, null=False, blank=False)
     activity_step        = models.ForeignKey('ActivityStep', on_delete=models.CASCADE, default=None, null=False, blank=False)
-    image                = models.ImageField(upload_to='product_images/', default=None, null=True, blank=True)
+    image                = models.ImageField(upload_to=Product_remove_spaces_from_image_filename, default=None, null=True, blank=True)
     image_resource_id    = models.IntegerField(default=None, null=True, blank=True)
     image_uriref         = models.URLField(max_length=512, null=True, blank=True)
-    document             = models.FileField(upload_to='product_documents/', default=None, null=True, blank=True)
+    document             = models.FileField(upload_to=Product_remove_spaces_from_filename, default=None, null=True, blank=True)
     document_resource_id = models.IntegerField(default=None, null=True, blank=True)
     document_uriref      = models.URLField(max_length=512, null=True, blank=True)
 
