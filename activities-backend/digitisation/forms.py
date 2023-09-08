@@ -396,11 +396,11 @@ class ProductStatementsForm(CrispyForm):
     )
     statements = StatementFormSet()
     def __init__(self, *args, **kwargs):
+        self.created_by = None
         if 'wizard_view' in kwargs:
             self.wizard_view = kwargs.pop('wizard_view')
         else:
             self.wizard_view = None
-        print(kwargs)
 
         formset_kwargs = copy.deepcopy(kwargs)
         # Get prefix
@@ -408,7 +408,8 @@ class ProductStatementsForm(CrispyForm):
         # Get number of forms
         data   = kwargs.get('data')
         if data:
-            self.created_by = kwargs.get('initial').get('created_by')
+            if kwargs.get('initial'):
+                self.created_by = kwargs['initial'].get('created_by')
             total_forms = int(data.get(f'{prefix}-TOTAL_FORMS')[0])
             # Set initial...
             for key,val in kwargs.get('initial').items():
@@ -441,14 +442,14 @@ class ProductStatementsForm(CrispyForm):
     def save(self, commit=True):
         #print("save:", commit)
         if commit:
-            instance = self.cleaned_data['product']
+            instance  = self.cleaned_data['product']
             instances = self.statements.save(False)
             for obj in instances:
                 obj.product = instance
                 obj.created_by = self.created_by
                 obj.save(commit)
         else:
-            instance = super().save(commit)
+            instance  = self.cleaned_data['product']
             instances = self.statements.save(commit)
         return instance, ( ('statements',), instances)
 
@@ -504,6 +505,7 @@ class ProductProductStatementsForm(CrispyForm):
     )
     statements = ProductStatementFormSet()
     def __init__(self, *args, **kwargs):
+        self.created_by = None
         if 'wizard_view' in kwargs:
             self.wizard_view = kwargs.pop('wizard_view')
         else:
@@ -514,6 +516,8 @@ class ProductProductStatementsForm(CrispyForm):
         # Get number of forms
         data   = kwargs.get('data')
         if data:
+            if kwargs.get('initial'):
+                self.created_by = kwargs['initial'].get('created_by')
             total_forms = int(data.get(f'{prefix}-TOTAL_FORMS')[0])
             # Set initial...
             for key in kwargs.get('initial').keys():
@@ -546,13 +550,14 @@ class ProductProductStatementsForm(CrispyForm):
     def save(self, commit=True):
         #print("save:", commit)
         if commit:
-            instance = super().save(commit)
+            instance  = self.cleaned_data['product']
             instances = self.statements.save(False)
             for obj in instances:
                 obj.subject = instance
+                obj.created_by = self.created_by
                 obj.save(commit)
         else:
-            instance = super().save(commit)
+            instance  = self.cleaned_data['product']
             instances = self.statements.save(commit)
         return instance, ( ('statements',), instances)
 
