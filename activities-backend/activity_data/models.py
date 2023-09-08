@@ -424,6 +424,13 @@ class Product(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
     document_resource_id = models.IntegerField(default=None, null=True, blank=True)
     document_uriref      = models.URLField(max_length=512, null=True, blank=True)
 
+    def save(self, *args, **kwargs):
+        logger.info(f"Product: save():", *args, **kwargs)
+        # We must generate a "unique" name
+        if not self.name:
+            self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
+        return super().save(*args, **kwargs)
+
 ## Statements...
 class ConceptType(VASTObject_NameUnique):
     @classmethod
