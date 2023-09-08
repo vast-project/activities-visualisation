@@ -63,10 +63,15 @@ class VASTDAMImage:
             if not os.path.exists(path):
                 ## Try to save the image in a temporary file...
                 path = self.image.path
-                logger.info(f"{self.__class__.__name__}: create_image_resource(): Saving Temp Image: {path}")
+                logger.info(f"{self.__class__.__name__}: create_image_resource(): Saving Temp Image: {path} ({self.image.name})")
                 # Open the image using PIL
-                img = Image.open(self.image)
-                img.save(path)
+                #img = Image.open(self.image)
+                #img.save(path)
+                # Save the file on disk...
+                self.image.save(self.image.name, self.image.file, save=False)
+                path = self.image.path
+                url  = self.image.url
+                logger.info(f"{self.__class__.__name__}: create_image_resource(): Saved Temp Image: {path} ({self.image.name})")
                 delete_tmp_image = True
             if os.path.exists(path):
                 dam = DAMStoreVAST()
@@ -274,12 +279,12 @@ class Activity(VASTObject_NameUserGroupUnique):
     class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Activities'
 
-def Stimulus_remove_spaces_from_image_filename(filename):
+def Stimulus_remove_spaces_from_image_filename(instance, filename):
     filename_without_spaces = os.path.basename(filename)
     filename_without_spaces = filename_without_spaces.replace(' ', '_')  # Replace spaces with underscores
     return 'stimulus_images/' + filename_without_spaces
 
-def Stimulus_remove_spaces_from_filename(filename):
+def Stimulus_remove_spaces_from_filename(instance, filename):
     filename_without_spaces = os.path.basename(filename)
     filename_without_spaces = filename_without_spaces.replace(' ', '_')  # Replace spaces with underscores
     return 'stimulus_documents/' + filename_without_spaces
@@ -423,12 +428,12 @@ class Visitor(VASTObject):
 class ProductType(VASTObject_NameUnique):
     pass
 
-def Product_remove_spaces_from_image_filename(filename):
+def Product_remove_spaces_from_image_filename(instance, filename):
     filename_without_spaces = os.path.basename(filename)
     filename_without_spaces = filename_without_spaces.replace(' ', '_')  # Replace spaces with underscores
     return 'product_images/' + filename_without_spaces
 
-def Product_remove_spaces_from_filename(filename):
+def Product_remove_spaces_from_filename(instance, filename):
     filename_without_spaces = os.path.basename(filename)
     filename_without_spaces = filename_without_spaces.replace(' ', '_')  # Replace spaces with underscores
     return 'product_documents/' + filename_without_spaces
