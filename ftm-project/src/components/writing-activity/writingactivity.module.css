@@ -60,3 +60,48 @@
 .logo {
     margin-top: 48px;
 }
+
+.cardsRow {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 25px;
+    max-width: 750px;
+    gap: 1rem;
+}
+
+.storyCards {
+    margin: auto;
+    border: 1px solid #2c2c2c;
+    border-radius: 10px;
+    padding: 5px 15px 15px;
+}
+
+.cardsTitle {
+    color: #2c2c2c;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    line-height: 3rem;
+}
+
+.cardsContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.imageContainer {
+    display: flex;
+    margin: auto;
+    transition: transform .3s;
+}
+
+.imageContainer:hover {
+    transform: scale(2.5);
+}
+
+.imageContainer > img {
+    width: 75px;
+}

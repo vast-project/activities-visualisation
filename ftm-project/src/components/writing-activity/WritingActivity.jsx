@@ -10,7 +10,6 @@ const WritingActivity = () => {
     const {isEnglish} = useContext(LangContext)
     const selectedCharacters = useContext(CharactersContext)
     const selectedFunctions = useContext(FunctionsContext)
-    console.log(selectedCharacters, selectedFunctions)
     const [next, setNext] = useState(false)
     const [prev, setPrev] = useState(false)
 
@@ -45,6 +44,37 @@ const WritingActivity = () => {
     return (
         <div className={styles.storyContainer}>
             <Title title={isEnglish ? title.en : title.gr}/>
+
+            <div className={styles.cardsRow}>
+                <div className={styles.storyCards}>
+                    <span className={styles.cardsTitle}>{isEnglish ? "Characters" : "Χαρακτήρες"}</span>
+                    <div className={styles.cardsContainer}>
+                        {
+                            selectedCharacters.map((character) => {
+                                return (
+                                    <div className={styles.imageContainer}>
+                                        <img src={character.src} alt="A character" width={50}/>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                </div>
+                <div className={styles.storyCards}>
+                    <span className={styles.cardsTitle}>{isEnglish ? "Functions" : "Συναρτήσεις"}</span>
+                    <div className={styles.cardsContainer}>
+                        {
+                            selectedFunctions.map((func) => {
+                                return (
+                                    <div className={styles.imageContainer}>
+                                        <img src={func.src} alt="A character"/>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                </div>
+            </div>
 
             <textarea className={styles.storyInput}
                       placeholder={isEnglish ? textareaPlaceholder.en : textareaPlaceholder.gr}></textarea>

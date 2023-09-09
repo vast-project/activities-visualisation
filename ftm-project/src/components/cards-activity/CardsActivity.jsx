@@ -23,11 +23,9 @@ const CardsActivity = () => {
     const [selectedFunctions, setSelectedFunctions] = useState([])
 
     let handleCharacters = (characters) => {
-        console.log("chars in parent", characters);
         setSelectedCharacters(characters)
     }
     let handleFunctions = (functions) => {
-        console.log("functions in parent", functions);
         setSelectedFunctions(functions)
     }
 
