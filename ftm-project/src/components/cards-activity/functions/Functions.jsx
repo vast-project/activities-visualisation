@@ -67,7 +67,7 @@ const functions = [
     {id: 31, src: img31, selected: false},
 ]
 
-const Functions = () => {
+const Functions = ({onChange}) => {
     const [allFunctions, setAllFunctions] = useState(functions);
     const [myFunctions, setMyFunctions] = useState([]);
 
@@ -80,13 +80,20 @@ const Functions = () => {
         // Add character to my characters
         const updatedMyFunctions = [...myFunctions, selectedFunction];
         setMyFunctions(updatedMyFunctions);
+
+        // Send the data to the parent
+        onChange(updatedMyFunctions)
     }
 
 
     //Remove a character
     const handleRemove = (func) => {
         setAllFunctions([...allFunctions, func])
-        setMyFunctions(myFunctions.filter((f) => f.id !== func.id))
+        let updatedMyFunctions = myFunctions.filter((f) => f.id !== func.id)
+        setMyFunctions(updatedMyFunctions)
+
+        // Send the data to the parent
+        onChange(updatedMyFunctions)
     }
 
 

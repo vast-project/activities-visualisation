@@ -1,18 +1,18 @@
 import {useContext, useState} from 'react'
 import styles from './writingactivity.module.css'
 import {LangContext} from '../../layout/Layout.jsx'
-import {CharactersContext} from '../cards-activity/characters/Characters.jsx'
 import Title from "../../ui/Title/Title.jsx";
 import Button from "../../ui/Button/Button.jsx";
-import CardsActivity from "../cards-activity/CardsActivity.jsx";
+import CardsActivity, {CharactersContext, FunctionsContext} from "../cards-activity/CardsActivity.jsx";
 import Congratulations from "../congratulations/Congratulations.jsx";
 
 const WritingActivity = () => {
     const {isEnglish} = useContext(LangContext)
-    const myCharacters = useContext(CharactersContext)
+    const selectedCharacters = useContext(CharactersContext)
+    const selectedFunctions = useContext(FunctionsContext)
+    console.log(selectedCharacters, selectedFunctions)
     const [next, setNext] = useState(false)
     const [prev, setPrev] = useState(false)
-    console.log(myCharacters);
 
     const title = {
         en: "Write a story",

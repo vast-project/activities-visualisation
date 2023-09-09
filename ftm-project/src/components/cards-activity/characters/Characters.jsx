@@ -19,9 +19,9 @@ const characters = [
     {id: 7, src: img7, selected: false},
 ]
 
-export const CharactersContext = createContext()
+const CharactersContext = createContext()
 
-const Characters = () => {
+const Characters = ({onChange}) => {
     const [allCharacters, setAllCharacters] = useState(characters)
     const [myCharacters, setMyCharacters] = useState([])
 
@@ -34,16 +34,23 @@ const Characters = () => {
         // Add character to my characters
         const updatedMyCharacters = [...myCharacters, selectedCharacter]
         setMyCharacters(updatedMyCharacters)
+
+        // Send the data to the parent
+        onChange(updatedMyCharacters)
     }
 
-    //Remove a character
+    // Remove a character
     const handleRemove = (character) => {
         setAllCharacters([...allCharacters, character])
-        setMyCharacters(myCharacters.filter((char) => char.id !== character.id))
+        let updatedMyCharacters = myCharacters.filter((char) => char.id !== character.id)
+        setMyCharacters(updatedMyCharacters)
+
+        // Send the data to the parent
+        onChange(updatedMyCharacters)
     }
 
     return (
-        <CharactersContext.Provider value={allCharacters}>
+        <CharactersContext.Provider value={myCharacters}>
             <h2 className={styles.charactersMainTitle}>Choose Your Character</h2>
 
             <h3 className={styles.charactersTitle}>Characters</h3>
