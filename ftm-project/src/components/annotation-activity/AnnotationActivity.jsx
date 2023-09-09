@@ -104,6 +104,8 @@ const AnnotationActivity = () => {
                             color: annotationColor,
                         })}
                     />
+
+                    <p>({isEnglish ? "The Frog Prince" : "Ο Βασιλιάς Βάτραχος"} - <a target="_blank" href="https://www.paidika-paramythia.gr/story/16/o-basilias-batrahos">https://www.paidika-paramythia.gr/story/16/o-basilias-batrahos</a>)</p>
                 </div>
             </div>
 
