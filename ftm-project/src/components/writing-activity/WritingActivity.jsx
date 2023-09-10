@@ -13,6 +13,26 @@ const WritingActivity = () => {
     const [next, setNext] = useState(false)
     const [prev, setPrev] = useState(false)
 
+    const numValues = 25; // number of total values that exist
+    const valuesToChoose = 3;
+
+    // Choose random values
+    const values = [];
+    for (let i = 0; i < valuesToChoose; i++) {
+        let value = Math.floor(Math.random() * numValues) + 1;
+        // Avoid duplicate values
+        while (values.includes(value)) {
+            value = Math.floor(Math.random() * numValues) + 1;
+        }
+        values.push(value);
+    }
+
+    // Get the image source paths for the value cards to display in the page
+    const valuesSrc = [];
+    for (let i = 0; i < values.length; i++) {
+        valuesSrc.push(`../../../../public/values/${values[i]}.png`);
+    }
+
     const title = {
         en: "Write a story",
         gr: "Γράψε μια ιστορία"
@@ -68,6 +88,23 @@ const WritingActivity = () => {
                                 return (
                                     <div className={styles.imageContainer}>
                                         <img src={func.src} alt="A character"/>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div className={styles.cardsRow}>
+                <div className={styles.storyCards} style={{width: "75%"}}>
+                    <span className={styles.cardsTitle}>{isEnglish ? "Values" : "Αξίες"}</span>
+                    <div className={styles.cardsContainer}>
+                        {
+                            valuesSrc.map((src) => {
+                                return (
+                                    <div className={styles.imageContainer}>
+                                        <img src={src} alt="A value"/>
                                     </div>
                                 )
                             })
