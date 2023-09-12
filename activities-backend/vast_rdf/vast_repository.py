@@ -536,8 +536,8 @@ class RDFStoreVAST:
             case _:
                 robj.product_type = URIRef(getattr(NAMESPACE_VAST, "vast" + obj.product_type.name.title().replace(" ", "")))
 
-        robj.visitor       = self.getURIRef(self.vast.vastVisitor, obj.visitor)
-        robj.activity_step = self.getURIRef(self.vast.vastActivityStep, obj.activity_step)
+        robj.visitor       = self.getURIRef(self.classNameToRDFType(obj.visitor), obj.visitor)
+        robj.activity_step = self.getURIRef(self.classNameToRDFType(obj.activity_step), obj.activity_step)
         if obj.image_resource_id:        robj.image_resource_id = Literal(obj.image_resource_id, datatype=XSD.integer)
         if obj.image_uriref:             robj.image_uriref = URIRef(obj.image_uriref)
         if obj.document_resource_id:     robj.document_resource_id = Literal(obj.document_resource_id, datatype=XSD.integer)
