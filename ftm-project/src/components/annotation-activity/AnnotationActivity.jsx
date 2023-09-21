@@ -6,7 +6,7 @@ import Paragraph from '../../ui/Paragraph/Paragraph.jsx'
 import styles from './annotationactivity.module.css'
 import Welcome from "../welcome/Welcome.jsx";
 import Before from "../questionnaire/before/Before.jsx";
-import {TokenAnnotator} from "react-text-annotate";
+import {TextAnnotator} from "react-text-annotate";
 import {CirclePicker} from "react-color";
 
 
@@ -90,12 +90,12 @@ const AnnotationActivity = () => {
 
             <div className={styles.annotatorRow}>
                 <div className={styles.annotatorContainer}>
-                    <TokenAnnotator
+                    <TextAnnotator
                         style={{
                             maxWidth: 610,
                             lineHeight: 1.3,
                         }}
-                        tokens={(isEnglish ? annotationText.en : annotationText.gr).split(' ')}
+                        content={(isEnglish ? annotationText.en : annotationText.gr)}
                         value={annotations}
                         onChange={value => setAnnotations(value)}
                         getSpan={span => ({
