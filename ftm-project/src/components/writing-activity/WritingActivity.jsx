@@ -8,31 +8,38 @@ import Congratulations from "../congratulations/Congratulations.jsx";
 import {AnnotationsContext} from "../annotation-activity/AnnotationActivity.jsx";
 
 const WritingActivity = () => {
-    const annotations = useContext(AnnotationsContext)
     const {isEnglish} = useContext(LangContext)
+    const annotations = useContext(AnnotationsContext)
     const selectedCharacters = useContext(CharactersContext)
     const selectedFunctions = useContext(FunctionsContext)
     const [next, setNext] = useState(false)
     const [prev, setPrev] = useState(false)
+    const [storyText, setStoryText] = useState("")
+    const [selectedValues, setSelectedValues] = useState([])
 
     const numValues = 25; // number of total values that exist
     const valuesToChoose = 3;
 
     // Choose random values
-    const values = [];
-    for (let i = 0; i < valuesToChoose; i++) {
-        let value = Math.floor(Math.random() * numValues) + 1;
-        // Avoid duplicate values
-        while (values.includes(value)) {
-            value = Math.floor(Math.random() * numValues) + 1;
+    if (selectedValues.length === 0) {
+        console.log("Choosing " + valuesToChoose + " random values...");
+        const values = [];
+        for (let i = 0; i < valuesToChoose; i++) {
+            let value = Math.floor(Math.random() * numValues) + 1;
+            // Avoid duplicate values
+            while (values.includes(value)) {
+                value = Math.floor(Math.random() * numValues) + 1;
+            }
+            values.push(value);
         }
-        values.push(value);
+
+        setSelectedValues(values);
     }
 
     // Get the image source paths for the value cards to display in the page
     const valuesSrc = [];
-    for (let i = 0; i < values.length; i++) {
-        valuesSrc.push(`../../../../public/values/${values[i]}.png`);
+    for (let i = 0; i < selectedValues.length; i++) {
+        valuesSrc.push(`../../../../public/values/${selectedValues[i]}.png`);
     }
 
     const title = {
@@ -54,12 +61,42 @@ const WritingActivity = () => {
         gr: "ΕΠΟΜΕΝΟ"
     }
 
+    /**
+     * Event handler for the story text area
+     * @param event
+     */
+    const handleStoryChange = event => {
+        setStoryText(event.target.value);
+    };
+
     if (prev) {
         return <CardsActivity/>
     }
 
     if (next) {
         console.log("Annotations:", annotations);
+
+        // Create statements for saving
+        const statements = [];
+
+        // Add annotations to the statements
+        annotations.forEach((annotation) => {
+            const statement = {
+                subject: annotation["text"],
+                predicate: "includes_value",
+                object: annotation["tag"],
+            };
+
+            statements.push(statement);
+        })
+
+        // todo: Add story statements
+        const story = storyText;
+        console.log("Story text:", storyText);
+
+        // Get language
+        const language = isEnglish ? "en" : "el";
+
         // todo: Save the data to the database
         return <Congratulations/>
     }
@@ -117,7 +154,9 @@ const WritingActivity = () => {
             </div>
 
             <textarea className={styles.storyInput}
-                      placeholder={isEnglish ? textareaPlaceholder.en : textareaPlaceholder.gr}></textarea>
+                      placeholder={isEnglish ? textareaPlaceholder.en : textareaPlaceholder.gr}
+                      value={storyText}
+                      onChange={handleStoryChange}></textarea>
 
             <div className={styles.btnContainer}>
                 <button className={styles.btnBack}
