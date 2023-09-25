@@ -5,8 +5,10 @@ import Title from "../../ui/Title/Title.jsx";
 import Button from "../../ui/Button/Button.jsx";
 import CardsActivity, {CharactersContext, FunctionsContext} from "../cards-activity/CardsActivity.jsx";
 import Congratulations from "../congratulations/Congratulations.jsx";
+import {AnnotationsContext} from "../annotation-activity/AnnotationActivity.jsx";
 
 const WritingActivity = () => {
+    const annotations = useContext(AnnotationsContext)
     const {isEnglish} = useContext(LangContext)
     const selectedCharacters = useContext(CharactersContext)
     const selectedFunctions = useContext(FunctionsContext)
@@ -57,6 +59,7 @@ const WritingActivity = () => {
     }
 
     if (next) {
+        console.log("Annotations:", annotations);
         // todo: Save the data to the database
         return <Congratulations/>
     }

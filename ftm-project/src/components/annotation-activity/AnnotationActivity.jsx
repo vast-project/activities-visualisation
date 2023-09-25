@@ -1,4 +1,4 @@
-import {useContext, useState} from 'react'
+import {createContext, useContext, useState} from 'react'
 import Button from '../../ui/Button/Button.jsx'
 import {LangContext} from '../../layout/Layout.jsx'
 import Title from '../../ui/Title/Title.jsx'
@@ -9,6 +9,7 @@ import Before from "../questionnaire/before/Before.jsx";
 import {TextAnnotator} from "react-text-annotate";
 import {CirclePicker} from "react-color";
 
+export const AnnotationsContext = createContext([])
 
 const AnnotationActivity = () => {
     const {isEnglish} = useContext(LangContext)
@@ -58,7 +59,11 @@ const AnnotationActivity = () => {
         return <Welcome/>
     }
     if (next) {
-        return <Before/>
+        return (
+            <AnnotationsContext.Provider value={annotations}>
+                <Before/>
+            </AnnotationsContext.Provider>
+        )
     }
 
     return (
@@ -105,7 +110,9 @@ const AnnotationActivity = () => {
                         })}
                     />
 
-                    <p>({isEnglish ? "The Frog Prince" : "Ο Βασιλιάς Βάτραχος"} - <a target="_blank" href="https://www.paidika-paramythia.gr/story/16/o-basilias-batrahos">https://www.paidika-paramythia.gr/story/16/o-basilias-batrahos</a>)</p>
+                    <p>({isEnglish ? "The Frog Prince" : "Ο Βασιλιάς Βάτραχος"} - <a target="_blank"
+                                                                                     href="https://www.paidika-paramythia.gr/story/16/o-basilias-batrahos">https://www.paidika-paramythia.gr/story/16/o-basilias-batrahos</a>)
+                    </p>
                 </div>
             </div>
 
