@@ -10,13 +10,14 @@ from django.contrib.auth.models import User, Group
 from django.db import models
 from django.utils.html import mark_safe
 from django.urls import reverse
+from django.utils.html import format_html
 #from django.utils.translation import gettext as _
 from location_field.models.plain import PlainLocationField
 import os
 import re
 
 ## RDF Graph...
-from vast_rdf.vast_repository import RDFStoreVAST, NAMESPACE_VAST, RDF, GRAPH_ID_SURVEY_DATA
+from vast_rdf.vast_repository import RDFVAST, RDFStoreVAST, NAMESPACE_VAST, RDF, GRAPH_ID_SURVEY_DATA
 ## For saving images in DAM...
 from vast_rdf.vast_dam import DAMStoreVAST
 from PIL import Image
@@ -230,6 +231,16 @@ class VASTObject(AutoUpdateTimeFields):
             self.name_md5 = hashlib.md5(self.name.encode('utf-8')).hexdigest()
         return super().save(*args, **kwargs)
 
+    def repository_URI(self):
+        if self.name_md5:
+            rdf = RDFVAST()
+            uri = rdf.getURI(self)
+            del rdf
+            url = urllib.parse.quote_plus(uri)
+            return format_html('<a href="https://graph.vast-project.eu/resource?uri={url}&role=all" target="_blank">{uri}</a>', uri=uri, url=url)
+        return ""
+
+
 class VASTObject_NameUnique(VASTObject):
     name              = models.CharField(max_length=255, default=None, unique=True, null=False, blank=False)
     class Meta(VASTObject.Meta):
@@ -290,7 +301,7 @@ def Stimulus_remove_spaces_from_filename(instance, filename):
     return 'stimulus_documents/' + filename_without_spaces
 
 class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
-    stimulus_type            = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire'), ('Live Performance','Live Performance')], null=False, blank=False)
+    stimulus_type            = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire'), ('Live Performance','Live Performance'), ('Senses','Senses')], null=False, blank=False)
     uriref                   = models.URLField(max_length=512, default=None, null=True, blank=True)
     image                    = models.ImageField(upload_to=Stimulus_remove_spaces_from_image_filename, default=None, null=True, blank=True)
     image_resource_id        = models.IntegerField(default=None, null=True, blank=True)

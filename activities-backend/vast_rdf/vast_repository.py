@@ -217,57 +217,9 @@ class RDFStoreConfig:
             **os.environ,          # override loaded values with environment variables
         }
 
-class RDFStoreVAST:
-
-    def __init__(self, config=None, identifier=GRAPH_ID_DIGITISATION_TOOLS, store=None):
-        self.default_config(config)
-        # logger.debug(f"RDFStoreVAST(): config: {self.config.config}")
-        self.default_store(store)
-        self.g = Graph(store=self.store, identifier=identifier)
+class RDFVAST:
+    def __init__(self):
         self.vast = NAMESPACE_VAST
-        self.g.bind("vast", self.vast)
-
-        #self.owner = RDFStoreObject(T=self.vast.vastGraphObjectOwner,
-        #                            id=VAST_GRAPH_OWNER)
-        #self.owner.add(self.g)
-        self.commit()
-
-    def default_config(self, config):
-        if not config:
-            config = RDFStoreConfig()
-        self.config = config
-
-    def default_store(self, store):
-        if not store and self.config:
-            store = SPARQLUpdateStore(query_endpoint=self.config.config["GRAPHDB_QUERY_ENDPOINT"],
-                                      update_endpoint=self.config.config["GRAPHDB_UPDATE_ENDPOINT"],
-                                      auth=(self.config.config["GRAPHDB_AUTH_USER"],
-                                            self.config.config["GRAPHDB_AUTH_PASS"]),
-                                      autocommit=False,
-                                      context_aware=True,
-                                      postAsEncoded=False
-                                     )
-            # Default is 'GET'. We want to send 'POST' requests in this instance.
-            store.method = 'POST'
-        self.store = store
-
-    def commit(self):
-        if self.store:
-            self.store.commit()
-
-    def querySPARQL(self, *args, **kwargs):
-        return self.g.query(*args, **kwargs)
-
-    def queryObject(self, id):
-        if not self.store:
-            return []
-        return self.g.triples( (id, None, None),  )
-
-    def removeObject(self, id):
-        for triple in self.queryObject(id):
-            # logger.info(f"RDFStoreVAST(): removeObject(): Removing: {triple}")
-            self.g.remove(triple)
-        self.commit()
 
     def classNameToRDFType(self, obj, class_name=None):
         if not class_name:
@@ -321,6 +273,63 @@ class RDFStoreVAST:
                 T = None
         return T
 
+    def getURI(self, obj):
+        T = self.classNameToRDFType(obj)
+        return URIRef(f"{T}/{obj.name_md5}")
+
+class RDFStoreVAST(RDFVAST):
+
+    def __init__(self, config=None, identifier=GRAPH_ID_DIGITISATION_TOOLS, store=None):
+        super().__init__()
+        self.default_config(config)
+        # logger.debug(f"RDFStoreVAST(): config: {self.config.config}")
+        self.default_store(store)
+        self.g = Graph(store=self.store, identifier=identifier)
+        self.vast = NAMESPACE_VAST
+        self.g.bind("vast", self.vast)
+
+        #self.owner = RDFStoreObject(T=self.vast.vastGraphObjectOwner,
+        #                            id=VAST_GRAPH_OWNER)
+        #self.owner.add(self.g)
+        self.commit()
+
+    def default_config(self, config):
+        if not config:
+            config = RDFStoreConfig()
+        self.config = config
+
+    def default_store(self, store):
+        if not store and self.config:
+            store = SPARQLUpdateStore(query_endpoint=self.config.config["GRAPHDB_QUERY_ENDPOINT"],
+                                      update_endpoint=self.config.config["GRAPHDB_UPDATE_ENDPOINT"],
+                                      auth=(self.config.config["GRAPHDB_AUTH_USER"],
+                                            self.config.config["GRAPHDB_AUTH_PASS"]),
+                                      autocommit=False,
+                                      context_aware=True,
+                                      postAsEncoded=False
+                                     )
+            # Default is 'GET'. We want to send 'POST' requests in this instance.
+            store.method = 'POST'
+        self.store = store
+
+    def commit(self):
+        if self.store:
+            self.store.commit()
+
+    def querySPARQL(self, *args, **kwargs):
+        return self.g.query(*args, **kwargs)
+
+    def queryObject(self, id):
+        if not self.store:
+            return []
+        return self.g.triples( (id, None, None),  )
+
+    def removeObject(self, id):
+        for triple in self.queryObject(id):
+            # logger.info(f"RDFStoreVAST(): removeObject(): Removing: {triple}")
+            self.g.remove(triple)
+        self.commit()
+
     def delete(self, class_name, obj):
         logger.info(f"RDFStoreVAST(): delete(): class: {class_name}, obj: {obj}")
         T = self.classNameToRDFType(obj, class_name)
@@ -338,10 +347,6 @@ class RDFStoreVAST:
             result = method(obj)
             self.commit()
         return result
-
-    def getURI(self, obj):
-        T = self.classNameToRDFType(obj)
-        return URIRef(f"{T}/{obj.name_md5}")
 
     def addStatement(self, s, p, o):
         sID = self.getURI(s)
@@ -440,6 +445,10 @@ class RDFStoreVAST:
                 robj.stimulus_type = URIRef(NAMESPACE_VAST.vastTool)
             case "Questionnaire":
                 robj.stimulus_type = URIRef(NAMESPACE_VAST.vastQuestionnaire)
+            case 'Live Performance':
+                robj.stimulus_type = URIRef(NAMESPACE_VAST.vastLivePerformace)
+            case 'Senses':
+                robj.stimulus_type = URIRef(NAMESPACE_VAST.vastSenses)
         if obj.uriref:                   robj.uriref = URIRef(obj.uriref)
         if obj.image_resource_id:        robj.image_resource_id = Literal(obj.image_resource_id, datatype=XSD.integer)
         if obj.image_uriref:             robj.image_uriref = URIRef(obj.image_uriref)

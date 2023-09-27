@@ -12,7 +12,7 @@ class ReadonlyFieldsAdmin(admin.ModelAdmin):
         fields = ()
         if obj:
             fields = ["created_by"]
-            for f in ("qr_code", "uriref", "image_resource_id", "image_uriref", "image_preview", "document_resource_id", "document_uriref", "questionnaire_wp_form_id"):
+            for f in ("qr_code", "uriref", "image_resource_id", "image_uriref", "image_preview", "document_resource_id", "document_uriref", "questionnaire_wp_form_id", "repository_URI"):
                 if getattr(obj, f, False):
                     fields.append(f)
 
