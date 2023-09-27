@@ -10,13 +10,13 @@ import img6 from '../../../../public/characters/img6.png'
 import img7 from '../../../../public/characters/img7.png'
 
 const characters = [
-    {id: 1, src: img1, selected: false},
-    {id: 2, src: img2, selected: false},
-    {id: 3, src: img3, selected: false},
-    {id: 4, src: img4, selected: false},
-    {id: 5, src: img5, selected: false},
-    {id: 6, src: img6, selected: false},
-    {id: 7, src: img7, selected: false},
+    {id: 1, src: img1, selected: false, name: "hero"},
+    {id: 2, src: img2, selected: false, name: "helper"},
+    {id: 3, src: img3, selected: false, name: "sender"},
+    {id: 4, src: img4, selected: false, name: "princess-reward"},
+    {id: 5, src: img5, selected: false, name: "adversary"},
+    {id: 6, src: img6, selected: false, name: "donor"},
+    {id: 7, src: img7, selected: false, name: "fake-hero"},
 ]
 
 const CharactersContext = createContext()

@@ -20,6 +20,34 @@ const WritingActivity = () => {
     const numValues = 25; // number of total values that exist
     const valuesToChoose = 3;
 
+    const valueNames = {
+        1: "democracy",
+        2: "dialogue",
+        3: "equality",
+        4: "freedom",
+        5: "dignity",
+        6: "human rights",
+        7: "justice",
+        8: "peace",
+        9: "progress",
+        10: "logic",
+        11: "cooperation",
+        12: "curiosity",
+        13: "empathy",
+        14: "generosity",
+        15: "sincerity",
+        16: "integrity",
+        17: "kindness",
+        18: "love",
+        19: "loyalty",
+        20: "piety",
+        21: "purity",
+        22: "respect",
+        23: "reward",
+        24: "solidarity",
+        25: "tolerance",
+    }
+
     // Choose random values
     if (selectedValues.length === 0) {
         console.log("Choosing " + valuesToChoose + " random values...");
