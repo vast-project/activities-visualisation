@@ -97,13 +97,7 @@ const WritingActivity = () => {
         setStoryText(event.target.value);
     };
 
-    if (prev) {
-        return <CardsActivity/>
-    }
-
-    if (next) {
-        console.log("Annotations:", annotations);
-
+    const handleNextBtn = event => {
         // Create statements for saving
         const statements = [];
 
@@ -118,14 +112,55 @@ const WritingActivity = () => {
             statements.push(statement);
         })
 
-        // todo: Add story statements
-        const story = storyText;
-        console.log("Story text:", storyText);
+        // Create story statements array
+        const storyStatements = [];
 
-        // Get language
-        const language = isEnglish ? "en" : "el";
+        // Add story statements for values
+        selectedValues.forEach((value) => {
+            storyStatements.push({
+                // subject will be the story
+                predicate: "includes_value",
+                object: valueNames[value]
+            })
+        })
 
-        // todo: Save the data to the database
+        // Add story statements for characters
+        selectedCharacters.forEach((character) => {
+            storyStatements.push({
+                // subject will be the story
+                predicate: "includes_character",
+                object: character.name
+            })
+        })
+
+        // Add story statements for functions
+        selectedFunctions.forEach((storyFunction) => {
+            storyStatements.push({
+                // subject will be the story
+                predicate: "includes_function",
+                object: storyFunction.name
+            })
+        })
+
+        // Create object with all the data for the backend
+        const dataForBackend = {
+            statements: statements,
+            story: storyText,
+            storyStatements: storyStatements,
+            language: isEnglish ? "en" : "el",
+        };
+        console.log("Data for backend:", dataForBackend);
+
+        // todo: Make call to API
+
+        setNext(true);
+    }
+
+    if (prev) {
+        return <CardsActivity/>
+    }
+
+    if (next) {
         return <Congratulations/>
     }
 
@@ -189,7 +224,7 @@ const WritingActivity = () => {
             <div className={styles.btnContainer}>
                 <button className={styles.btnBack}
                         onClick={() => setPrev(true)}>{isEnglish ? prevBtnText.en : prevBtnText.gr}</button>
-                <Button onClick={() => setNext(true)} text={isEnglish ? nextBtnText.en : nextBtnText.gr}
+                <Button onClick={handleNextBtn} text={isEnglish ? nextBtnText.en : nextBtnText.gr}
                         color="rgb(105, 160, 130)"/>
             </div>
         </div>
