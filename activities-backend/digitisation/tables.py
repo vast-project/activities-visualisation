@@ -37,6 +37,9 @@ class HTMxTable(tables.Table):
     name = tables.Column(linkify=True, attrs={
         'a': {'target': 'blank_'}
     })
+    graphdb = tables.URLColumn(verbose_name="@", orderable=False, text=lambda record: record.get_repository_url(attrs={
+        'target': 'blank_', 'class': 'graphdb_link_table'
+    }))
     def __init__(self, selected_rows=None, selection_data=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.id  = self._meta.model.__name__
@@ -59,7 +62,7 @@ class HTMxTable(tables.Table):
 
     class Meta:
         template_name = "tables/bootstrap_htmx.html"
-        fields   = ('selected', 'name', 'created_by')
+        fields   = ('selected', 'name', 'graphdb', 'created_by')
         sequence = ('selected', '...')
         attrs = {
             'class': 'table table-sm table-hover',

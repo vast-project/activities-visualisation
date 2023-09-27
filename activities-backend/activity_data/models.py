@@ -231,13 +231,25 @@ class VASTObject(AutoUpdateTimeFields):
             self.name_md5 = hashlib.md5(self.name.encode('utf-8')).hexdigest()
         return super().save(*args, **kwargs)
 
-    def repository_URI(self):
+    def get_repository_uri(self, role='all'):
         if self.name_md5:
             rdf = RDFVAST()
             uri = rdf.getURI(self)
             del rdf
+            return uri
+        return ""
+
+    def get_repository_url(self, role='all', attrs={
+            'target': 'blank_', 'class': 'graphdb_link'
+        }):
+        if self.name_md5:
+            uri = self.get_repository_uri(role)
             url = urllib.parse.quote_plus(uri)
-            return format_html('<a href="https://graph.vast-project.eu/resource?uri={url}&role=all" target="_blank">{uri}</a>', uri=uri, url=url)
+            html_attrs = ""
+            if attrs:
+                for key in attrs:
+                    html_attrs += ' ' + str(key) + '=' + str(attrs[key]) + ''
+            return format_html('<a href="https://graph.vast-project.eu/resource?uri={url}&role={role}"{html_attrs}>{uri}</a>', uri=uri, url=url, role=role, html_attrs=html_attrs)
         return ""
 
 

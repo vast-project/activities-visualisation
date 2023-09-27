@@ -68,8 +68,8 @@
     <div @click="page_by = {{table.page.previous_page_number}}"
          class="page-link" aria-label="Previous">
         <!--<span aria-hidden="true">&laquo;</span>-->
-	<i class="fa fa-angle-left"></i>
-	<span class="sr-only">{% trans 'Previous' %}</span>
+        <i class="fa fa-angle-left"></i>
+        <span class="sr-only">{% trans 'Previous' %}</span>
     </div>
 </li>
 {% endblock pagination.previous %}
@@ -87,9 +87,9 @@
 {% block pagination.next %}
 <li class="next page-item user-select" role="button">
     <div @click="page_by = {{table.page.next_page_number}}" class="page-link" aria-label="Next">
-	<i class="fa fa-angle-right"></i>
+        <i class="fa fa-angle-right"></i>
         <span class="sr-only">{% trans Next%} </span>
-	<!--<span aria-hidden="true">&raquo;</span>  -->
+        <!--<span aria-hidden="true">&raquo;</span>  -->
     </div></li>
 {% endblock pagination.next %}
 

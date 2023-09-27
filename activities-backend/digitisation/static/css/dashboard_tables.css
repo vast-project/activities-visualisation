@@ -10,20 +10,41 @@
 }
 
 .table-container table td:nth-child(1) {
-    width: 3%;
+    width: 1em;
+    input {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
 }
 
 .table-container table td:nth-child(2) {
-    width: 50%;
+    max-width: calc(70% - 2em);
+    a {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    word-wrap: break-word;
+    }
 }
 
 .table-container table td:nth-child(3) {
+    width: 1em;
+    img,a {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+}
+
+.table-container table td:nth-child(4) {
     width: 30%;
 }
 
 /* Checkboxes... */
 input[type=checkbox] {
-	background-color: #D3D3D3 !important;
+    background-color: #D3D3D3 !important;
 }
 
 /* Table Pagination */
@@ -186,4 +207,16 @@ input[type=checkbox] {
         left: 107%;
         right: -8%;
     }
+}
+
+/*
+ * GraphDB links...
+ */
+.graphdb_link_table {
+    background:url(/static/img/graphdb-logo-sq.vertical.svg) 0 0 no-repeat;
+    display:block;
+    text-indent:-99999em;
+    height:1.5em; /* your image height */
+    width:1.5em; /* your image width */
+    overflow:hidden;
 }

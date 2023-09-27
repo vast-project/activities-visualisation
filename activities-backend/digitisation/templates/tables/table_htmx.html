@@ -5,7 +5,7 @@
 {% block main %}
     {# Search form #}
     <form id="table-search-{{ table.id }}"
-	  hx-get="{{table.url}}"
+          hx-get="{{table.url}}"
           hx-target=".table-container-{{ table.id }}"
           hx-vals="javascript:{selectionData: Alpine.store('dashboardInteractiveFiltering').selected}"
           hx-swap="outerHTML"
