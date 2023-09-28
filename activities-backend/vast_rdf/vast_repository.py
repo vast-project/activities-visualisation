@@ -338,14 +338,15 @@ class RDFStoreVAST(RDFVAST):
             self.removeObject(robj.id)
             self.commit()
 
-    def save(self, class_name, obj):
+    def save(self, class_name, obj, commit=True):
         logger.info(f"RDFStoreVAST(): save(): class: {class_name}, obj: {obj}")
         method = getattr(self, class_name, None)
         logger.info(f"RDFStoreVAST(): save(): method: {method}")
         result = None
         if method:
             result = method(obj)
-            self.commit()
+            if commit:
+                self.commit()
         return result
 
     def addStatement(self, s, p, o):

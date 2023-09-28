@@ -56,7 +56,8 @@ class Command(BaseCommand):
                     # Call the save method for each object in the model
                     for obj in model.objects.all():
                         #obj.save()
-                        rdf.save(type(obj).__name__, obj)
+                        rdf.save(type(obj).__name__, obj, commit=False)
+                    rdf.commit()
                     self.stdout.write(self.style.SUCCESS(f'Saved objects for model: {model.__name__}'))
                 except Exception as e:
                     self.stderr.write(self.style.ERROR(f'Error saving objects for model {model.__name__}: {e}'))
