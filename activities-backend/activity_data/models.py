@@ -13,6 +13,8 @@ from django.urls import reverse
 from django.utils.html import format_html
 #from django.utils.translation import gettext as _
 from location_field.models.plain import PlainLocationField
+#import secrets
+import uuid
 import os
 import re
 
@@ -228,7 +230,8 @@ class VASTObject(AutoUpdateTimeFields):
 
     def save(self, *args, **kwargs):
         if self.name and not self.name_md5:
-            self.name_md5 = hashlib.md5(self.name.encode('utf-8')).hexdigest()
+            #self.name_md5 = hashlib.md5(self.name.encode('utf-8')).hexdigest()
+            self.name_md5 = uuid.uuid4().hex
         return super().save(*args, **kwargs)
 
     def get_repository_uri(self, role='all'):
@@ -470,7 +473,8 @@ class Product(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
     image_uriref         = models.URLField(max_length=512, null=True, blank=True)
     document             = models.FileField(upload_to=Product_remove_spaces_from_filename, default=None, null=True, blank=True)
     document_resource_id = models.IntegerField(default=None, null=True, blank=True)
-    document_uriref      = models.URLField(max_length=512, null=True, blank=True)
+    document_uriref      = models.URLField(max_length=512,   null=True, blank=True)
+    text                 = models.TextField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         logger.info(f"Product: save():", *args, **kwargs)
