@@ -7,6 +7,28 @@ import CardsActivity, {CharactersContext, FunctionsContext} from "../cards-activ
 import Congratulations from "../congratulations/Congratulations.jsx";
 import {AnnotationsContext} from "../annotation-activity/AnnotationActivity.jsx";
 
+const backendUrl = "https://activities-backend.vast-project.eu";
+// const backendUrl = "http://localhost:8000";
+
+const saveData = async function (data) {
+    // Send the POST request
+    return fetch(backendUrl + '/api/ftm/save-statements', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error(`Error! Status: ${response.status}`);
+        }
+        console.log("Data saved successfully");
+    }).catch(error => {
+        console.error("Error:", error);
+    });
+}
+
+
 const WritingActivity = () => {
     const {isEnglish} = useContext(LangContext)
     const annotations = useContext(AnnotationsContext)
@@ -151,9 +173,10 @@ const WritingActivity = () => {
         };
         console.log("Data for backend:", dataForBackend);
 
-        // todo: Make call to API
-
-        setNext(true);
+        // Make call to API
+        saveData(dataForBackend).then(() => {
+            setNext(true);
+        });
     }
 
     if (prev) {
