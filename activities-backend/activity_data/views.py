@@ -70,6 +70,17 @@ def save_statements(request):
 
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
+def save_ftm_statements(request):
+    # Get user to create the objects as
+    creator_user = User.objects.get(username='admin')
+    if creator_user is None:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    return Response(status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+@permission_classes((permissions.AllowAny,))
 def save_visitor(request):
     # Find user by the username in the POST body, and set it as the user of the request
     creator_user = User.objects.get(username=request.data['creator_username'])
