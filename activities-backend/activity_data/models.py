@@ -5,6 +5,7 @@ import html
 
 import qrcode
 from django.core.files import File
+from django.core.files.base import ContentFile
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.db import models
@@ -481,6 +482,17 @@ class Product(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
         # We must generate a "unique" name
         if not self.name:
             self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
+        # Ensure we have name_md5...
+        if self.name and not self.name_md5:
+            #self.name_md5 = hashlib.md5(self.name.encode('utf-8')).hexdigest()
+            self.name_md5 = uuid.uuid4().hex
+        # Save the text as a file...
+        if self.text and not self.document:
+            # Create a file with the contents of the TextField
+            content = self.text.encode('utf-8')
+            file_name = f"{self.name_md5}.txt"
+            # Save the file to the FileField
+            self.document.save(file_name, ContentFile(content), save=False)
         return super().save(*args, **kwargs)
 
 ## Statements...
