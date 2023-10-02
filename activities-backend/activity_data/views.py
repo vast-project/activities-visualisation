@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from backend.serializers import VisitorSerializer
-from .models import Age, ProductType, Visitor, ActivityStep, Product, Concept, Statement, Predicate
+from .models import Age, Context, Event, Organisation, Stimulus, Activity, ProductType, Visitor, ActivityStep, Product, Concept, Statement, Predicate
 from .models import Education
 from .models import Gender
 from .models import Language
@@ -71,12 +71,93 @@ def save_statements(request):
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
 def save_ftm_statements(request):
+    error = Response(status=status.HTTP_400_BAD_REQUEST)
+
     # Get user to create the objects as
     creator_user = User.objects.get(username='admin')
     if creator_user is None:
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return error
 
-    return Response(status=status.HTTP_201_CREATED)
+    # Get request data
+    data = request.data
+    
+    # Find product type "Annotation"
+    product_type = ProductType.objects.filter(name="Annotation").first()
+    
+    # Find or create the activity
+    activity, _ = Activity.objects.get_or_create(name="FTM Annotation", created_by=creator_user)
+    
+    # Get language from request, and find the stimulus text from the DB (it should be created already)
+    language = data["language"]
+    frog_price_stimulus = Stimulus.objects.filter(name=f"The Frog Price ({language})").first()
+    no_stimulus = Stimulus.objects.filter(name="No stimulus").first()
+    if frog_price_stimulus is None or no_stimulus is None:
+        return error
+    
+    # Find or create the activity steps
+    annotation_activity_step, _ = ActivityStep.objects.get_or_create(name="FTM Pre-questionnaire Annotation",
+                                                                     activity=activity, 
+                                                                     stimulus=frog_price_stimulus,
+                                                                     created_by=creator_user)
+    story_writing_step, _ = ActivityStep.objects.get_or_create(name="FTM Story Writing",
+                                                                     activity=activity, 
+                                                                     stimulus=no_stimulus,
+                                                                     created_by=creator_user)
+    
+    # Get NCSR-D host organisation
+    host_organisation = Organisation.objects.filter(name="NCSR-D").first()
+    
+    # Get Generic Context
+    generic_context = Context.objects.filter(name="Generic Context").first()
+    
+    # Find or create the Event
+    event, _ = Event.objects.get_or_create(name="FTM App",
+                                           activity=activity,
+                                           context=generic_context,
+                                           host_organisation=host_organisation,
+                                           created_by=creator_user)
+    
+    # Find or create the Visitor Group
+    visitor_group, _ = VisitorGroup.objects.get_or_create(name="FTM App User Group",
+                                                          event=event,
+                                                          created_by=creator_user)
+    
+    # Find or create the Visitor
+    visitor, _ = Visitor.objects.get_or_create(name="FTM App Visitor",
+                                               activity=activity,
+                                               visitor_group=visitor_group,
+                                               created_by=creator_user)
+    
+    # Find product types
+    document_product_type = ProductType.objects.filter(name="Document").first()
+    annotation_product_type = ProductType.objects.filter(name="Annotation").first()
+    if document_product_type is None or annotation_product_type is None:
+        return error
+    
+    # Find or create products for annotation & story statements
+    # annotation_product, _ = Product.objects.get_or_create(name="FTM App Annotation",
+    #                                                       product_type=annotation_product_type,
+    #                                                       activity_step=annotation_activity_step,
+    #                                                       visitor=visitor,
+    #                                                       created_by=creator_user)
+    # writing_product, _ = Product.objects.get_or_create(name="FTM App Story Writing",
+    #                                                    product_type=document_product_type,
+    #                                                    activity_step=story_writing_step,
+    #                                                    visitor=visitor,
+    #                                                    created_by=creator_user)
+    
+    # Save statements
+    #for statement in data["statements"]:
+        # todo: Save the statement
+    #    pass
+    
+    # todo: Save story
+    
+    # todo: Save story statements
+
+    return Response({
+        },
+        status=status.HTTP_201_CREATED)
 
 
 @api_view(['POST'])
