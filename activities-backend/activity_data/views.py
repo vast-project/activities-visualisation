@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from datetime import datetime
 
 from backend.serializers import VisitorSerializer
-from .models import Age, Context, Event, Organisation, Stimulus, Activity, ProductType, Visitor, ActivityStep, Product, Concept, Statement, Predicate
+from .models import Age, Context, ConceptType, Event, Organisation, Stimulus, Activity, ProductType, Visitor, ActivityStep, Product, Concept, Statement, Predicate
 from .models import Education
 from .models import Gender
 from .models import Language
@@ -146,7 +146,7 @@ def save_ftm_statements(request):
     #     # Annotation product not found, create it
     #     annotation_product = Product.objects.create(**annotation_product_params)
     
-    # Create product for story statements
+    # Create product for story statements (it includes the story)
     current_timestamp = datetime.now().strftime("%Y.%m.%d-%H.%M.%S")
     writing_product_name = f"FTM App Story {current_timestamp}"
     story_text = data["story"]
@@ -163,15 +163,38 @@ def save_ftm_statements(request):
     # for statement in data["statements"]:
     #     pass
     
-    # todo: Save story
-    
-    # todo: Save story statements
+    # Save story statements
+    for statement in data["storyStatements"]:
+        # Create concept
+        concept = get_concept(statement["object"], "Non-expert Keyword", creator_user)
+        
+        # todo: Get predicate
+        break
 
     return Response({
         },
         status=status.HTTP_201_CREATED)
 
-# def get_concept()
+def get_concept(name: str, concept_type_name: str, created_by: User) -> Concept | None:
+    """
+    Find or create a concept with the given name and type.
+
+    Args:
+        name (str): The concept name/value
+        concept_type_name (str): The type of the concept. Should be available in the DB (won't be created).
+        created_by (User): The user to create the concept as.
+
+    Returns:
+        Concept: The created concept
+    """
+    # Find concept type
+    concept_type = ConceptType.objects.filter(name=concept_type_name).first()
+    if not concept_type:
+        return None
+    concept, _ = Concept.objects.get_or_create(name=f"FTM_{name}",
+                                               concept_type=concept_type,
+                                               created_by=created_by)
+    return concept
 
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
