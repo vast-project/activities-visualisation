@@ -4,6 +4,8 @@ from rest_framework import status, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
+from datetime import datetime
+
 from backend.serializers import VisitorSerializer
 from .models import Age, Context, Event, Organisation, Stimulus, Activity, ProductType, Visitor, ActivityStep, Product, Concept, Statement, Predicate
 from .models import Education
@@ -132,34 +134,34 @@ def save_ftm_statements(request):
         return error
     
     # Find or create product for annotation statements
-    annotation_product_params = {
-        "name": "FTM App Annotation",
-        "product_type": annotation_product_type,
-        "activity_step": annotation_activity_step,
-        "visitor": visitor,
-        "created_by": creator_user,
-    }
-    annotation_product = Product.objects.filter(**annotation_product_params).first()
-    if not annotation_product:
-        # Annotation product not found, create it
-        annotation_product = Product.objects.create(**annotation_product_params)
+    # annotation_product_params = {
+    #     "name": "FTM App Annotation",
+    #     "product_type": annotation_product_type,
+    #     "activity_step": annotation_activity_step,
+    #     "visitor": visitor,
+    #     "created_by": creator_user,
+    # }
+    # annotation_product = Product.objects.filter(**annotation_product_params).first()
+    # if not annotation_product:
+    #     # Annotation product not found, create it
+    #     annotation_product = Product.objects.create(**annotation_product_params)
     
-    # Find or create product for story statements
-    writing_product_params = {
-        "name": "FTM App Story Writing",
-        "product_type": document_product_type,
-        "activity_step": story_writing_step,
-        "visitor": visitor,
-        "created_by": creator_user,
-    }
-    writing_product = Product.objects.filter(**writing_product_params).first()
-    if not writing_product:
-        writing_product = Product.objects.create(**writing_product_params)
+    # Create product for story statements
+    current_timestamp = datetime.now().strftime("%Y.%m.%d-%H.%M.%S")
+    writing_product_name = f"FTM App Story {current_timestamp}"
+    story_text = data["story"]
+    if not story_text:
+        return error
+    writing_product = Product.objects.create(name=writing_product_name,
+                                             product_type=document_product_type,
+                                             activity_step=story_writing_step,
+                                             visitor=visitor,
+                                             text=story_text,
+                                             created_by=creator_user)
     
     # Save statements
-    #for statement in data["statements"]:
-        # todo: Save the statement
-    #    pass
+    # for statement in data["statements"]:
+    #     pass
     
     # todo: Save story
     
@@ -169,6 +171,7 @@ def save_ftm_statements(request):
         },
         status=status.HTTP_201_CREATED)
 
+# def get_concept()
 
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
