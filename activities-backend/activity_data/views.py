@@ -168,12 +168,36 @@ def save_ftm_statements(request):
         # Create concept
         concept = get_concept(statement["object"], "Non-expert Keyword", creator_user)
         
-        # todo: Get predicate
-        break
+        # Get predicate
+        predicate = get_predicate(statement["predicate"], creator_user)
+        print(predicate)
 
     return Response({
         },
         status=status.HTTP_201_CREATED)
+
+
+def get_predicate(name: str, created_by: User) -> Predicate:
+    """
+    Find or create a predicate. If a predicate with the given name exists, even if created by a
+    different user, it will not be created again.
+
+    Args:
+        name (str): The predicate name
+        created_by (User): The user to create the predicate as, if needed
+
+    Returns:
+        Predicate: The predicate
+    """
+    # Try to find predicate with this name
+    predicate = Predicate.objects.filter(name=name).first()
+    
+    if not predicate:
+        # Create the predicate
+        predicate = Predicate.objects.create(name=name,
+                                             created_by=created_by)
+    return predicate
+
 
 def get_concept(name: str, concept_type_name: str, created_by: User) -> Concept | None:
     """
