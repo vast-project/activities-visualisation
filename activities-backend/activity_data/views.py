@@ -164,13 +164,23 @@ def save_ftm_statements(request):
     #     pass
     
     # Save story statements
+    story_subject = get_concept("Story", "Concept", creator_user)
     for statement in data["storyStatements"]:
         # Create concept
-        concept = get_concept(statement["object"], "Non-expert Keyword", creator_user)
+        object_name = statement["object"]
+        concept = get_concept(object_name, "Non-expert Keyword", creator_user)
         
         # Get predicate
-        predicate = get_predicate(statement["predicate"], creator_user)
-        print(predicate)
+        predicate_name = statement["predicate"]
+        predicate = get_predicate(predicate_name, creator_user)
+        
+        # Save statement with story_subject, predicate & concept as object.
+        Statement.objects.create(name=f"FTM_Story_{current_timestamp}.{predicate_name}.{object_name}",
+                                 product=writing_product,
+                                 subject=story_subject,
+                                 predicate=predicate,
+                                 object=concept,
+                                 created_by=creator_user)
 
     return Response({
         },
