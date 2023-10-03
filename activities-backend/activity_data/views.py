@@ -81,9 +81,6 @@ def save_ftm_statements(request):
     # Get request data
     data = request.data
     
-    # Find product type "Annotation"
-    product_type = ProductType.objects.filter(name="Annotation").first()
-    
     # Find or create the activity
     activity, _ = Activity.objects.get_or_create(name="FTM Annotation", created_by=creator_user)
     
@@ -134,17 +131,30 @@ def save_ftm_statements(request):
     if document_product_type is None or annotation_product_type is None:
         return error
     
-    # Find or create products for annotation & story statements
-    # annotation_product, _ = Product.objects.get_or_create(name="FTM App Annotation",
-    #                                                       product_type=annotation_product_type,
-    #                                                       activity_step=annotation_activity_step,
-    #                                                       visitor=visitor,
-    #                                                       created_by=creator_user)
-    # writing_product, _ = Product.objects.get_or_create(name="FTM App Story Writing",
-    #                                                    product_type=document_product_type,
-    #                                                    activity_step=story_writing_step,
-    #                                                    visitor=visitor,
-    #                                                    created_by=creator_user)
+    # Find or create product for annotation statements
+    annotation_product_params = {
+        "name": "FTM App Annotation",
+        "product_type": annotation_product_type,
+        "activity_step": annotation_activity_step,
+        "visitor": visitor,
+        "created_by": creator_user,
+    }
+    annotation_product = Product.objects.filter(**annotation_product_params).first()
+    if not annotation_product:
+        # Annotation product not found, create it
+        annotation_product = Product.objects.create(**annotation_product_params)
+    
+    # Find or create product for story statements
+    writing_product_params = {
+        "name": "FTM App Story Writing",
+        "product_type": document_product_type,
+        "activity_step": story_writing_step,
+        "visitor": visitor,
+        "created_by": creator_user,
+    }
+    writing_product = Product.objects.filter(**writing_product_params).first()
+    if not writing_product:
+        writing_product = Product.objects.create(**writing_product_params)
     
     # Save statements
     #for statement in data["statements"]:

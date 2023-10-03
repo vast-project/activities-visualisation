@@ -471,14 +471,14 @@ class Product(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
     activity_step        = models.ForeignKey('ActivityStep', on_delete=models.CASCADE, default=None, null=False, blank=False)
     image                = models.ImageField(upload_to=Product_remove_spaces_from_image_filename, default=None, null=True, blank=True)
     image_resource_id    = models.IntegerField(default=None, null=True, blank=True)
-    image_uriref         = models.URLField(max_length=512, null=True, blank=True)
+    image_uriref         = models.URLField(max_length=512,   null=True, blank=True)
     document             = models.FileField(upload_to=Product_remove_spaces_from_filename, default=None, null=True, blank=True)
     document_resource_id = models.IntegerField(default=None, null=True, blank=True)
     document_uriref      = models.URLField(max_length=512,   null=True, blank=True)
     text                 = models.TextField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        logger.info(f"Product: save():", *args, **kwargs)
+        logger.info(f"Product: save():", *args, kwargs)
         # We must generate a "unique" name
         if not self.name:
             self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
