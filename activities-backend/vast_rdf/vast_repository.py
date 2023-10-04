@@ -100,6 +100,16 @@ class RDFStoreObject:
     object:                URIRef  = None
     predicate:             URIRef  = None
 
+    # ProductAnnotation
+    value:                 URIRef  = None
+    span_type:             Literal = None
+    start:                 Literal = None
+    end:                   Literal = None
+    x:                     Literal = None
+    y:                     Literal = None
+    width:                 Literal = None
+    height:                Literal = None
+
     # Questionnaires
     wpforms_form_id:       Literal = None
     question:              Literal = None
@@ -199,6 +209,16 @@ class RDFStoreObject:
         if (self.object):               graph.add((self.id, RDF.object, self.object))
         if (self.predicate):            graph.add((self.id, RDF.predicate, self.predicate))
 
+        # ProductAnnotation
+        if (self.value):                graph.add((self.id, NAMESPACE_VAST.vastKeyword, self.value))
+        if (self.span_type):            graph.add((self.id, NAMESPACE_VAST.vastSegmentType, self.span_type))
+        if (self.start):                graph.add((self.id, NAMESPACE_VAST.vastSegmentStart, self.start))
+        if (self.end):                  graph.add((self.id, NAMESPACE_VAST.vastSegmentEnd, self.end))
+        if (self.x):                    graph.add((self.id, NAMESPACE_VAST.vastSegmentX, self.x))
+        if (self.y):                    graph.add((self.id, NAMESPACE_VAST.vastSegmentY, self.y))
+        if (self.width):                graph.add((self.id, NAMESPACE_VAST.vastSegmentWidth, self.width))
+        if (self.height):               graph.add((self.id, NAMESPACE_VAST.vastSegmentHeight, self.height))
+
         # Questionnaires
         if (self.wpforms_form_id):      graph.add((self.id, NAMESPACE_VAST.vastWPFormID,          self.wpforms_form_id))
         if (self.question):             graph.add((self.id, NAMESPACE_VAST.vastQuestion,          self.question))
@@ -263,6 +283,8 @@ class RDFVAST:
                 T = self.vast.vastPredicate
             case "Statement" | "ProductStatement":
                 T = self.vast.vastStatement
+            case "ProductAnnotation":
+                T = self.vast.vastSingleSegmentAnnotation
             case 'QuestionnaireEntry':
                 T = None
             case 'QuestionnaireQuestion':
@@ -400,6 +422,11 @@ class RDFStoreVAST(RDFVAST):
             if getattr(obj, 'name', None):
                 return Literal(obj.name, lang=lang)
             return Literal(str(obj), lang=lang)
+        return None
+
+    def getIntegerLiteral(self, obj):
+        if obj:
+            return Literal(int(obj), datatype=XSD.integer)
         return None
 
     def Language(self, obj):
@@ -573,6 +600,20 @@ class RDFStoreVAST(RDFVAST):
         robj.subject    = self.getURIRef(self.vast.vastProduct,   obj.subject)
         robj.predicate  = self.getURIRef(self.vast.vastPredicate, obj.predicate)
         robj.object     = self.getURIRef(self.vast.vastConcept,   obj.object)
+        robj.add(self.g)
+
+    def ProductAnnotation(self, obj): # RDF Checked
+        robj = self.createVASTObject(obj, self.classNameToRDFType(obj))
+        robj.product    = self.getURIRef(self.vast.vastProduct, obj.product)
+        robj.value      = self.getURIRef(self.vast.vastConcept, obj.value)
+        robj.comment    = self.getLiteral(obj.text)
+        robj.span_type  = self.getLiteral(obj.span_type)
+        robj.start      = self.getIntegerLiteral(obj.start)
+        robj.end        = self.getIntegerLiteral(obj.end)
+        robj.x          = self.getIntegerLiteral(obj.x)
+        robj.y          = self.getIntegerLiteral(obj.y)
+        robj.width      = self.getIntegerLiteral(obj.width)
+        robj.height     = self.getIntegerLiteral(obj.height)
         robj.add(self.g)
 
     # Questionnaire entries are converted to class references in QuestionnaireAnswer

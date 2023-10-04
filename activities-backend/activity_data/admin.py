@@ -52,6 +52,26 @@ class ReadonlyFieldsAdmin(admin.ModelAdmin):
         initial['created_by'] = request.user.pk
         return initial
 
+    # Make sure delete() is called on deleted objects!
+    def delete_queryset(self, request, queryset):
+        # Perform custom delete logic here
+        for obj in queryset:
+            obj.delete()
+        self.message_user(request, f"{queryset.count()} objects were deleted.")
+
+    # Define a custom action to store all objects in the RDF store...
+    def custom_store_action(self, request, queryset):
+        rdf = RDFStoreVAST()
+        for obj in queryset:
+            rdf.save(type(obj).__name__, obj, commit=False)
+        rdf.commit()
+        del rdf
+        self.message_user(request, f"{queryset.count()} objects were saved in the RDF store.")
+    custom_store_action.short_description = "Save selected objects (in the RDF store)"
+
+    # Override the default delete action to use the custom action
+    actions = [custom_store_action]
+
     class Media:
         css = {
              'all': ('css/admin_form_widgets.css',)
