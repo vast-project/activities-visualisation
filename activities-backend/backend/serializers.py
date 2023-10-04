@@ -228,6 +228,11 @@ class ProductStatementSerializer(serializers.HyperlinkedModelSerializer):
         model = ProductStatement
         fields = '__all__'
 
+class ProductAnnotationSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ProductAnnotation
+        fields = '__all__'
+
 class QuestionnaireEntrySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = QuestionnaireEntry

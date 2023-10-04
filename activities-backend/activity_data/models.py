@@ -540,6 +540,18 @@ class ProductStatement(VASTObject_NameUserGroupUnique):
             self.name = ".".join([self.subject.name, self.subject.name, self.predicate.name, self.object.name])
         return super().save(*args, **kwargs)
 
+class ProductAnnotation(VASTObject_NameUserGroupUnique):
+    product              = models.ForeignKey('Product',   on_delete=models.CASCADE, default=None, null=False, blank=False)
+    value                = models.ForeignKey('Concept',   on_delete=models.CASCADE, default=None, null=False, blank=False)
+    text                 = models.TextField(null=True, blank=True)
+    span_type            = models.CharField(max_length=32, choices=[('text','Text')], null=False, blank=False)
+    start                = models.IntegerField(default=None, null=True, blank=True)
+    end                  = models.IntegerField(default=None, null=True, blank=True)
+    x                    = models.IntegerField(default=None, null=True, blank=True)
+    y                    = models.IntegerField(default=None, null=True, blank=True)
+    width                = models.IntegerField(default=None, null=True, blank=True)
+    height               = models.IntegerField(default=None, null=True, blank=True)
+
 class QuestionnaireEntry(VASTObject):
     product              = models.ForeignKey('Product',   on_delete=models.CASCADE, default=None, null=False, blank=False)
     wpforms_entry_id     = models.IntegerField(default=None, null=True, blank=True)

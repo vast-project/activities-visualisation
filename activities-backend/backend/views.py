@@ -265,6 +265,16 @@ class ProductStatementViewSet(viewsets.ModelViewSet):
     filterset_fields = '__all__'
     search_fields = ['name']
 
+class ProductAnnotationViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows ProductAnnotation objects to be viewed or edited.
+    """
+    queryset = ProductAnnotation.objects.all()
+    serializer_class = ProductAnnotationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
+    search_fields = ['name']
+
 class QuestionnaireEntryViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows QuestionnaireEntry objects to be viewed or edited.

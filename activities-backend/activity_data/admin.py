@@ -105,6 +105,20 @@ class AutoCompleteSubjectObjectAdmin(FilterUserObjectsAdmin):
 
         return queryset, use_distinct
 
+class AutoCompleteValueAdmin(FilterUserObjectsAdmin):
+    def get_autocomplete_fields(self, request):
+        fields = super().get_autocomplete_fields(request)
+        return fields + ("value", )
+
+    # Define a custom function to filter the autocomplete queryset
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super().get_search_results(request, queryset, search_term)
+
+        # Custom filtering logic (for example, search in Author's name)
+        queryset |= self.model.objects.filter(Q(value__name__icontains=search_term))
+
+        return queryset, use_distinct
+
 @admin.register(Stimulus)
 class StimulusAdmin(FilterUserObjectsAdmin):
     # def formfield_for_choice_field(self, db_field, request, **kwargs):
@@ -147,3 +161,8 @@ for model in (Statement, ):
 for model in (ProductStatement, ):
     admin.site.register(model, AutoCompleteObjectAdmin)
     model.set_fields_verbose_names()
+
+for model in (ProductAnnotation, ):
+    admin.site.register(model, AutoCompleteValueAdmin)
+    model.set_fields_verbose_names()
+
