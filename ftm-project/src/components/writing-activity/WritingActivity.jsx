@@ -126,9 +126,10 @@ const WritingActivity = () => {
         // Add annotations to the statements
         annotations.forEach((annotation) => {
             const statement = {
-                subject: annotation["text"],
-                predicate: "includes_value",
-                object: annotation["tag"],
+                segment: annotation["text"],
+                value: annotation["tag"],
+                start: annotation["start"],
+                end: annotation["end"],
             };
 
             statements.push(statement);
@@ -166,7 +167,7 @@ const WritingActivity = () => {
 
         // Create object with all the data for the backend
         const dataForBackend = {
-            statements: statements,
+            annotations: statements,
             story: storyText,
             storyStatements: storyStatements,
             language: isEnglish ? "en" : "el",
