@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from datetime import datetime
 
 from backend.serializers import VisitorSerializer
-from .models import Age, Context, ConceptType, Event, Organisation, Stimulus, Activity, ProductType, Visitor, ActivityStep, Product, Concept, Statement, Predicate
+from .models import Age, Context, ProductStatement, ConceptType, Event, Organisation, Stimulus, Activity, ProductType, Visitor, ActivityStep, Product, Concept, Statement, Predicate
 from .models import Education
 from .models import Gender
 from .models import Language
@@ -76,7 +76,7 @@ def save_ftm_statements(request):
     error = Response(status=status.HTTP_400_BAD_REQUEST)
 
     # Get user to create the objects as
-    creator_user = User.objects.get(username='digitization_ftm')
+    creator_user = User.objects.get(username='digitisation_ftm')
     if creator_user is None:
         return error
 
@@ -164,7 +164,6 @@ def save_ftm_statements(request):
     #     pass
     
     # Save story statements
-    story_subject = get_concept("Story", "Concept", creator_user)
     for statement in data["storyStatements"]:
         # Create concept
         object_name = statement["object"]
@@ -175,12 +174,11 @@ def save_ftm_statements(request):
         predicate = get_predicate(predicate_name, creator_user)
         
         # Save statement with story_subject, predicate & concept as object.
-        Statement.objects.create(name=f"FTM_Story_{current_timestamp}.{predicate_name}.{object_name}",
-                                 product=writing_product,
-                                 subject=story_subject,
-                                 predicate=predicate,
-                                 object=concept,
-                                 created_by=creator_user)
+        ProductStatement.objects.create(name=f"Story_{current_timestamp}.{predicate_name}.{object_name}",
+                                        subject=writing_product,
+                                        predicate=predicate,
+                                        object=concept,
+                                        created_by=creator_user)
 
     return Response({
         },
@@ -225,9 +223,13 @@ def get_concept(name: str, concept_type_name: str, created_by: User) -> Concept 
     concept_type = ConceptType.objects.filter(name=concept_type_name).first()
     if not concept_type:
         return None
-    concept, _ = Concept.objects.get_or_create(name=f"FTM_{name}",
-                                               concept_type=concept_type,
-                                               created_by=created_by)
+        
+    # Try to find the concept, otherwise create it
+    concept = Concept.objects.filter(name=name, concept_type=concept_type).first()
+    if not concept:
+        concept = Concept.objects.create(name=name,
+                                         concept_type=concept_type,
+                                         created_by=created_by)
     return concept
 
 @api_view(['POST'])
