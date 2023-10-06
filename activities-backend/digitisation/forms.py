@@ -1,5 +1,5 @@
 from django.core.files.storage import FileSystemStorage
-from django.forms import Form, ModelForm, DateTimeInput, SplitDateTimeWidget
+from django.forms import Form, ModelForm, DateTimeInput, SplitDateTimeWidget, BaseInlineFormSet
 from django.forms.models import inlineformset_factory, modelformset_factory
 from django import forms
 from django.contrib.admin.widgets import AdminSplitDateTime, RelatedFieldWidgetWrapper
@@ -198,6 +198,21 @@ class VASTForm(CrispyForm, ModelForm):
     #     css = {"all": ("admin/css/forms.css",)}
 
 class ActivityStepForm(VASTForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'initial' in kwargs and 'created_by' in kwargs['initial']:
+            user = kwargs['initial']['created_by']
+        else:
+            user = None
+        if user:
+            queryset = Stimulus.objects.all()
+            if not user.is_superuser:
+                group_users = {user, }
+                for group in user.groups.all():
+                    group_users.update(User.objects.filter(groups__id=group.pk))
+                queryset = queryset.filter(created_by__in=group_users)
+            self.fields['stimulus'].queryset = queryset
+
     class Meta(VASTForm.Meta):
         model = ActivityStep
 
@@ -237,6 +252,7 @@ ActivityStepFormSet = inlineformset_factory(
     extra=0,            # number of extra empty forms to display
     min_num=1,          # number of minimum filled forms
     can_delete=False,   # show a checkbox in each form to delete the row
+    # formset=BaseInlineFormSet,
     # formfield_callback = formfield_for_dbfield,
     # widgets = {
     #     "created_by": forms.HiddenInput(),
