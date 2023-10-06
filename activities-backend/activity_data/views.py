@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from datetime import datetime
 
 from backend.serializers import VisitorSerializer
-from .models import Age, Context, ProductStatement, ConceptType, Event, Organisation, Stimulus, Activity, ProductType, Visitor, ActivityStep, Product, Concept, Statement, Predicate
+from .models import Age, Context, ProductAnnotation, ProductStatement, ConceptType, Event, Organisation, Stimulus, Activity, ProductType, Visitor, ActivityStep, Product, Concept, Statement, Predicate
 from .models import Education
 from .models import Gender
 from .models import Language
@@ -129,22 +129,8 @@ def save_ftm_statements(request):
     
     # Find product types
     document_product_type = ProductType.objects.filter(name="Document").first()
-    annotation_product_type = ProductType.objects.filter(name="Annotation").first()
-    if document_product_type is None or annotation_product_type is None:
+    if document_product_type is None:
         return error
-    
-    # Find or create product for annotation statements
-    # annotation_product_params = {
-    #     "name": "FTM App Annotation",
-    #     "product_type": annotation_product_type,
-    #     "activity_step": annotation_activity_step,
-    #     "visitor": visitor,
-    #     "created_by": creator_user,
-    # }
-    # annotation_product = Product.objects.filter(**annotation_product_params).first()
-    # if not annotation_product:
-    #     # Annotation product not found, create it
-    #     annotation_product = Product.objects.create(**annotation_product_params)
     
     # Create product for story statements (it includes the story)
     current_timestamp = datetime.now().strftime("%Y.%m.%d-%H.%M.%S")
@@ -159,11 +145,8 @@ def save_ftm_statements(request):
                                              text=story_text,
                                              created_by=creator_user)
     
-    # Save statements
-    # for statement in data["statements"]:
-    #     pass
-    
     # Save story statements
+    statements_count = 0
     for statement in data["storyStatements"]:
         # Create concept
         object_name = statement["object"]
@@ -174,13 +157,41 @@ def save_ftm_statements(request):
         predicate = get_predicate(predicate_name, creator_user)
         
         # Save statement with story_subject, predicate & concept as object.
-        ProductStatement.objects.create(name=f"Story_{current_timestamp}.{predicate_name}.{object_name}",
-                                        subject=writing_product,
-                                        predicate=predicate,
-                                        object=concept,
-                                        created_by=creator_user)
+        ps = ProductStatement.objects.create(name=f"Story_{current_timestamp}.{predicate_name}.{object_name}",
+                                             subject=writing_product,
+                                             predicate=predicate,
+                                             object=concept,
+                                             created_by=creator_user)
+        if ps:
+            statements_count += 1
+        
+    # Find the frog price story product
+    product_name = f"The Frog Prince Story ({language})"
+    annotation_product = Product.objects.filter(name=product_name).first()
+    if not annotation_product:
+        return error
+    
+    annotations_count = 0
+    for annotation in data["annotations"]:
+        annotation_segment = annotation["segment"]
+        annotation_start = annotation["start"]
+        annotation_end = annotation["end"]
+        annotation_value = annotation["value"]
+        concept = get_concept(annotation_value, "Non-expert Keyword", creator_user)
+        annotation_name = f"Frog Prince_{current_timestamp}_{annotation_start}-{annotation_end}_{annotation_value}"
+        pa = ProductAnnotation.objects.create(name=annotation_name,
+                                              product=annotation_product,
+                                              value=concept,
+                                              text=annotation_segment,
+                                              start=annotation_start,
+                                              end=annotation_end,
+                                              created_by=creator_user)
+        if pa:
+            annotations_count += 1
 
     return Response({
+            "new_annotations": annotations_count,
+            "new_story_statements": statements_count,
         },
         status=status.HTTP_201_CREATED)
 
