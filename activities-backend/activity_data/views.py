@@ -76,7 +76,7 @@ def save_ftm_statements(request):
     error = Response(status=status.HTTP_400_BAD_REQUEST)
 
     # Get user to create the objects as
-    creator_user = User.objects.get(username='admin')
+    creator_user = User.objects.get(username='digitization_ftm')
     if creator_user is None:
         return error
 
