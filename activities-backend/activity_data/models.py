@@ -317,7 +317,7 @@ def Stimulus_remove_spaces_from_filename(instance, filename):
     return 'stimulus_documents/' + filename_without_spaces
 
 class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
-    stimulus_type            = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Tool','Tool'), ('Questionnaire','Questionnaire'), ('Live Performance','Live Performance'), ('Senses','Senses')], null=False, blank=False)
+    stimulus_type            = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Game','Game'),('Presentation','Presentation'),('Tool','Tool'),('Questionnaire','Questionnaire'),('Live Performance','Live Performance'), ('Senses','Senses')], null=False, blank=False)
     uriref                   = models.URLField(max_length=512, default=None, null=True, blank=True)
     image                    = models.ImageField(upload_to=Stimulus_remove_spaces_from_image_filename, default=None, null=True, blank=True)
     image_resource_id        = models.IntegerField(default=None, null=True, blank=True)
@@ -478,7 +478,7 @@ class Product(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
     text                 = models.TextField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
-        logger.info(f"Product: save():", *args, kwargs)
+        logger.info(f"Product: save(): {args}, {kwargs}")
         # We must generate a "unique" name
         if not self.name:
             self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
