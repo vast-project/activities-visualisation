@@ -11,15 +11,29 @@ function Welcome() {
     const {isEnglish, setIsEnglish} = useContext(LangContext)
     const [start, setStart] = useState(false);
     const [userId, setUserId] = useState('');
+    const [showWarning, setShowWarning] = useState(false);
 
     const useridRef = useRef(null);
-
     if (start) {
         return (
             <IdContext.Provider value={userId}>
                 <Instructions/>
             </IdContext.Provider>
         )
+    }
+
+    /**
+     * Go to the next page if the user ID is set, or show warning otherwise.
+     * @param e The click event
+     */
+    const handleSubmit = (e) => {
+        // Prevent default to avoid page reload on form submission
+        e.preventDefault();
+        if (userId !== '') {
+            setStart(true);
+        } else {
+            setShowWarning(true);
+        }
     }
 
     const englishText = "The VAST values workshop includes two actions. In the first activity you are asked to indicate the values that you think are conveyed by a passage from the play by the writer Karel Capek (1890-1938) “Rossum's Universal Robots” (1920). Instructions on how to locate the values are given on the next page. Then, during the second activity you are asked to rank the values you identified in the text according to their importance in your life. Have fun!";
@@ -37,8 +51,9 @@ function Welcome() {
                     <input ref={useridRef} name="userid" value={userId} onChange={(e) => setUserId(e.target.value)}
                            className={styles.input} type="text"/>
                 </div>
-                <Button type="submit" onClick={() => setStart(!start)} color="#5C47C2"
-                        title={isEnglish ? 'START' : "ΕΝΑΡΞΗ"}/>
+                {showWarning &&
+                    <p className={styles.warning}>{isEnglish ? 'Please enter a user ID' : 'Παρακαλώ εισάγετε έναν κωδικό χρήστη'}</p>}
+                <Button type="submit" onClick={handleSubmit} color="#5C47C2" title={isEnglish ? 'START' : "ΕΝΑΡΞΗ"}/>
             </form>
         </div>
     )

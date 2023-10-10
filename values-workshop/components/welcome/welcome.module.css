@@ -51,3 +51,10 @@
     width: 180px;
     padding: 8px 32px;
 }
+
+.warning {
+    color: #FF0000;
+    font-size: 13px;
+    margin-top: 4px;
+    margin-bottom: 15px;
+}
