@@ -1,4 +1,4 @@
-.container{
+.container {
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -6,16 +6,16 @@
     margin: 0 auto;
 }
 
-.text{
+.text {
     font-size: 16px;
     color: rgb(71, 71, 71);
     letter-spacing: .5px;
     line-height: 1.25;
     margin-bottom: 40px;
-    
+
 }
 
-.selectedText{
+.selectedText {
     font-size: 18px;
     margin-bottom: 24px;
     font-weight: 600;
@@ -24,7 +24,7 @@
     color: #555;
 }
 
-.valueContainer{
+.valueContainer {
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -33,30 +33,43 @@
     width: min(100%, 500px);
     background-color: #fdfaff;
     margin: 32px 0;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.valueTitle{
+.valueTitle {
     color: #333;
     font-size: 24px;
 }
 
-.commentsList{
+.commentsList {
     display: flex;
     flex-direction: column;
     gap: 12px;
     margin-bottom: 40px;
 }
 
-.commentsItem{
+.commentsItem {
     list-style-type: none;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     border-bottom: .5px solid #dddddd;
     padding: 8px 0;
 }
 
-.commentsValue{
+.commentsItemColumn {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.commentsItemColumn:last-child {
+    align-items: flex-end;
+}
+
+.commentsValue {
     font-size: 20px;
     color: #333;
     text-transform: capitalize;
@@ -64,27 +77,33 @@
     padding: 4px 0;
 }
 
-.commentsText{
+.commentsText {
     font-size: 12px;
     color: #a698eb;
     font-style: oblique;
 }
 
-.tooltip{
+.commentsDelete {
+    font-size: 12px;
+    color: #eb9898;
+    cursor: pointer;
+}
+
+.tooltip {
     display: flex;
     flex-direction: column;
-    width:min(100%, 500px);
+    width: min(100%, 500px);
     height: 175px;
     border: 1px solid rgb(66, 0, 128);
     border-radius: 5px;
     padding: 16px;
     justify-content: space-around;
     background: #fff;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
     margin-bottom: 24px;
 }
 
-.tooltipTextarea{
+.tooltipTextarea {
     border: 1px solid rgb(66, 0, 128);
     height: 75px;
     border-radius: 3px;
@@ -94,16 +113,17 @@
     font-weight: 700;
     padding: 12px;
 }
-.tooltipTextarea:focus{
+
+.tooltipTextarea:focus {
     outline: 1px solid rgb(119, 14, 218);
 }
 
-.btnContainer{
+.btnContainer {
     display: flex;
     gap: 24px;
 }
 
-.tooltipBtn{
+.tooltipBtn {
     border: 1px solid #5C47C2;
     color: #fff;
     background: #5C47C2;
@@ -114,7 +134,8 @@
     flex-grow: 1;
     flex-basis: 40%
 }
-.tooltipCancelBtn{
+
+.tooltipCancelBtn {
     border: none;
     color: #333;
     border: 1px solid #333;
@@ -127,19 +148,19 @@
     flex-basis: 40%
 }
 
-.alertText{
-    font-size:20px;
-    border-radius: 5px;    
+.alertText {
+    font-size: 20px;
+    border-radius: 5px;
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: #fff;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
     padding: 24px 48px;
 }
 
-.leftArrow{
+.leftArrow {
     font-size: 32px;
     margin-bottom: 24px;
     color: #4c37b4;

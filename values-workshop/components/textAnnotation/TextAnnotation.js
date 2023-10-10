@@ -161,8 +161,13 @@ function TextAnnotations() {
                     <ul className={styles.commentsList}>
                         {comments.map((commentObj, index) => (
                             <li className={styles.commentsItem} key={index}>
-                                <div className={styles.commentsValue}>{commentObj.comment}</div>
-                                <div className={styles.commentsText}>"{commentObj.text}"</div>
+                                <div className={styles.commentsItemColumn}>
+                                    <div className={styles.commentsValue}>{commentObj.comment}</div>
+                                    <div className={styles.commentsText}>"{commentObj.text}"</div>
+                                </div>
+                                <div className={styles.commentsItemColumn}>
+                                    <span className={styles.commentsDelete}>🗑️</span>
+                                </div>
                             </li>
                         ))}
                     </ul>
