@@ -1,13 +1,13 @@
 import styles from './third.module.css'
 import {FaArrowDown} from 'react-icons/fa'
-import { BsArrowLeftCircleFill } from 'react-icons/bs'
-import { useState,useEffect,useContext } from 'react';
+import {BsArrowLeftCircleFill} from 'react-icons/bs'
+import {useContext, useEffect, useState} from 'react';
 import Button from '@component/ui/button/Button';
 import Congratulations from '../congratulations/Congratulations';
 import TextAnnotations from '../textAnnotation/TextAnnotation';
-import { LangContext } from "../layout/Layout";
+import {LangContext} from "../layout/Layout";
 
-function Second({selectedWordsArray,selectedValuesFromFirst,selectedValuesFromSecond}) {
+function Second({selectedWordsArray, selectedValuesFromFirst, selectedValuesFromSecond}) {
     const {isEnglish, setIsEnglish} = useContext(LangContext)
     const [next, setNext] = useState(false);
     const [previous, setPrevious] = useState(false);
@@ -18,56 +18,60 @@ function Second({selectedWordsArray,selectedValuesFromFirst,selectedValuesFromSe
 
     useEffect(() => {
         const updatedArray = selectedWordsArray.map((obj, index) => {
-          return {
-            ...obj,
-            id: index
-          };
+            return {
+                ...obj,
+                id: index
+            };
         });
         setNewArr(updatedArray);
-      }, []);
+    }, []);
 
 
-    const handleSelect = (value) =>{
-        if(count < 5){
-            const updatedValue = {...value, selected:true};
+    const handleSelect = (value) => {
+        if (count < 5) {
+            const updatedValue = {...value, selected: true};
             const updatedFirstArray = newArr.filter((obj) => obj.id !== value.id);
             const updatedSecondArray = [...selectedValues, updatedValue];
 
             setNewArr(updatedFirstArray);
             setSelectedValues(updatedSecondArray);
-            setCount( prev => setCount(prev + 1));
+            setCount(prev => setCount(prev + 1));
         }
     }
 
     const handleRemove = (value) => {
-        setNewArr([value,...newArr ]);
+        setNewArr([value, ...newArr]);
         const updatedArray = selectedValues.filter((obj) => obj.id !== value.id);
         setSelectedValues(updatedArray);
-        setCount( prev => setCount(prev - 1));
+        setCount(prev => setCount(prev - 1));
     }
 
-    if(next){
-        return <Congratulations selectedValuesFromThird={selectedValues} selectedValuesFromFirst={selectedValuesFromFirst} selectedValuesFromSecond={selectedValuesFromSecond} />
+    if (next) {
+        return <Congratulations annotations={selectedWordsArray}
+                                selectedValuesFromThird={selectedValues}
+                                selectedValuesFromFirst={selectedValuesFromFirst}
+                                selectedValuesFromSecond={selectedValuesFromSecond}/>
     }
-    if(previous){
-        return <TextAnnotations />
+    if (previous) {
+        return <TextAnnotations/>
     }
 
     return (
         <div className={styles.container}>
-            <BsArrowLeftCircleFill onClick={() => setPrevious(true)} className={styles.leftArrow} />
+            <BsArrowLeftCircleFill onClick={() => setPrevious(true)} className={styles.leftArrow}/>
             <h1 className={styles.primaryHeadline}>{isEnglish ? 'Low Level' : 'Χαμηλό επίπεδο'}</h1>
             <h3 className={styles.tertiaryHeadline}>{isEnglish ? 'Pick 5 Values' : 'Επίλεξε 5 Αξίες'}</h3>
             <div className={styles.valuesContainer}>
                 {newArr.map((value, index) => {
                     return (
-                        <div onClick={() => handleSelect(value)} key={index} className={styles.valueContainer}>{value.comment}</div>
+                        <div onClick={() => handleSelect(value)} key={index}
+                             className={styles.valueContainer}>{value.comment}</div>
                     )
                 })}
             </div>
 
             <div className={styles.iconContainer}>
-                <FaArrowDown className={styles.icon} />
+                <FaArrowDown className={styles.icon}/>
             </div>
 
             <div className={styles.valuesPlaceholder}>
@@ -75,16 +79,17 @@ function Second({selectedWordsArray,selectedValuesFromFirst,selectedValuesFromSe
                 <div className={styles.valuePlaceholder}>
                     {selectedValues.map((value, index) => {
                         return (
-                            <div onClick={() => handleRemove(value)} key={index} className={styles.placeHolder}>{value.comment}</div>
+                            <div onClick={() => handleRemove(value)} key={index}
+                                 className={styles.placeHolder}>{value.comment}</div>
                         )
                     })}
                 </div>
             </div>
 
-            <Button onClick={() => setNext(!next)} color="#E5446D" title={isEnglish ? 'Next' : "Επομενο"} />
-        
+            <Button onClick={() => setNext(!next)} color="#E5446D" title={isEnglish ? 'Next' : "Επομενο"}/>
+
         </div>
-        
+
     )
 }
 
