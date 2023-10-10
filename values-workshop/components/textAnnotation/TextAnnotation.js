@@ -138,6 +138,16 @@ function TextAnnotations() {
     };
 
     /**
+     * Delete the annotation with the given index
+     * @param index The index of the annotation to delete
+     */
+    const deleteAnnotation = (index) => {
+        const newComments = [...comments];
+        newComments.splice(index, 1);
+        setComments(newComments);
+    }
+
+    /**
      * Handle changes in the text area of the tooltip (where the user writes the value)
      * @param e
      */
@@ -166,7 +176,8 @@ function TextAnnotations() {
                                     <div className={styles.commentsText}>"{commentObj.text}"</div>
                                 </div>
                                 <div className={styles.commentsItemColumn}>
-                                    <span className={styles.commentsDelete}>🗑️</span>
+                                    <span onClick={() => deleteAnnotation(index)}
+                                          className={styles.commentsDelete}>🗑️</span>
                                 </div>
                             </li>
                         ))}
