@@ -124,6 +124,14 @@ class VisitorFilter(VASTObjectFilter):
     class Meta(VASTObjectFilter.Meta):
         model = Visitor
 
+class VirtualVisitorFilter(VASTObjectFilter):
+    filter_if_selected = {
+        'Activity': 'activity__in',
+        'VisitorGroup': 'visitor_group__in',
+    }
+    class Meta(VASTObjectFilter.Meta):
+        model = VirtualVisitor
+
 class ProductFilter(VASTObjectFilter):
     filter_if_selected = {
         'Visitor': 'visitor__in',

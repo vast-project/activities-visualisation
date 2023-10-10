@@ -33,7 +33,7 @@ def formfield_for_dbfield(db_field, **kwargs):
 
     formfield = db_field.formfield(**kwargs)
     # ForeignKey or ManyToManyFields
-    if isinstance(db_field, (models.ForeignKey, models.ManyToManyField)):
+    if isinstance(db_field, (models.ForeignKey, models.ManyToManyField)) and formfield:
         wrapper_kwargs = {
             'can_add_related':    True,
             'can_change_related': True,
@@ -368,6 +368,15 @@ class VisitorGroupQRCodeForm(VASTForm):
 class VisitorForm(VASTForm):
     class Meta(VASTForm.Meta):
         model = Visitor
+        exclude = ('visitor_type', 'visitors_number', 'visitors')
+
+class VirtualVisitorForm(VASTForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['visitor_type'].initial = 'group'
+
+    class Meta(VASTForm.Meta):
+        model = VirtualVisitor
 
 class ProductForm(VASTForm):
     class Meta(VASTForm.Meta):
@@ -732,6 +741,22 @@ In this step, please decide if you are going to re-use an existing {self.verbose
 
     def headerTableMarkdown(self):
         return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Visitors', self.modelName())}**)"
+
+class SelectVirtualVisitorForm(SelectModelForm):
+    class Meta:
+        model = VirtualVisitor
+
+    def headerMarkdown(self):
+        return f"""
+# {self.verbose_name} Model ({{{{ wizard.steps.step1 }}}}/{{{{ wizard.steps.count }}}})
+The **{self.verbose_name}** represents a **virtual** visitor that has participated in an activity event, and has produced a set of products (one or more products for each activity step).
+
+In this step, please decide if you are going to re-use an existing {self.verbose_name}, or create a new {self.verbose_name}.
+"""
+
+    def headerTableMarkdown(self):
+        return f"\n\nExisting {self.verbose_name_plural} are shown in the following table: (**{self.getAdminURL('Admin Virtual Visitors', self.modelName())}**)"
+
 
 class SelectProductForm(SelectModelForm):
     class Meta:

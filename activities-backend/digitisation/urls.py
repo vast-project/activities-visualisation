@@ -79,6 +79,21 @@ visitor_wizard = ActivityDigitisationWizardView.as_view(
 )
 
 ##
+## VirtualVisitor Wizard
+##
+virtualvisitor_wizard = ActivityDigitisationWizardView.as_view(
+    form_list = (
+        ('ask_virtualvisitor', SelectVirtualVisitorForm),
+        ('add_virtualvisitor', VirtualVisitorForm),
+    ),
+    condition_dict = {
+        'add_virtualvisitor':  lambda wizard: SelectVirtualVisitorForm.addNew(wizard, 'ask_virtualvisitor'),
+    },
+    extra_context = { 'segment': 'virtualvisitor-wizard' },
+    url_name='virtualvisitor-wizard-step', done_step_name='finished'
+)
+
+##
 ## Product Wizard
 ##
 product_wizard = ActivityDigitisationWizardView.as_view(
@@ -143,6 +158,8 @@ urlpatterns = [
     path('wizard/qrcode-visitorgroup',                      login_required(qrcode_wizard),                         name='qrcode-visitorgroup-wizard'),
     re_path(r'^wizard/import-visitors/(?P<step>.+)/$',      login_required(import_questionnaire_visitors_wizard),  name='import-questionnaire-visitors-wizard-step'),
     path('wizard/import-visitors',                          login_required(import_questionnaire_visitors_wizard),  name='import-questionnaire-visitors-wizard'),
+    re_path(r'^wizard/virtualvisitor/(?P<step>.+)/$',       login_required(virtualvisitor_wizard),                 name='virtualvisitor-wizard-step'),
+    path('wizard/virtualvisitor',                           login_required(virtualvisitor_wizard),                 name='virtualvisitor-wizard'),
     re_path(r'^wizard/visitor/(?P<step>.+)/$',              login_required(visitor_wizard),                        name='visitor-wizard-step'),
     path('wizard/visitor',                                  login_required(visitor_wizard),                        name='visitor-wizard'),
     re_path(r'^wizard/product/(?P<step>.+)/$',              login_required(product_wizard),                        name='product-wizard-step'),

@@ -12,6 +12,11 @@ from django.db import models
 from django.utils.html import mark_safe
 from django.urls import reverse
 from django.utils.html import format_html
+
+# For generic relations...
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
+
 #from django.utils.translation import gettext as _
 from location_field.models.plain import PlainLocationField
 #import secrets
@@ -434,7 +439,11 @@ class VisitorGroup(VASTObject_NameUserGroupUnique):
     mother_language      = models.ForeignKey('Language',     on_delete=models.CASCADE, default=None, null=True,  blank=True, related_name='visitor_group_language')
     visitor_organisation = models.ForeignKey('Organisation', on_delete=models.CASCADE, default=None, null=True,  blank=True)
 
+class VisitorManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(visitor_type='real')
 class Visitor(VASTObject):
+    objects              = VisitorManager()
     userid               = models.CharField(max_length=255,  default=None, null=True, blank=True)
     age                  = models.ForeignKey('Age',          on_delete=models.CASCADE, default=None, null=True, blank=True)
     gender               = models.ForeignKey('Gender',       on_delete=models.CASCADE, default=None, null=True, blank=True)
@@ -447,9 +456,21 @@ class Visitor(VASTObject):
 
     activity             = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None, null=False, blank=False)
     visitor_group        = models.ForeignKey('VisitorGroup', on_delete=models.CASCADE, default=None, null=False, blank=False)
+    # VirtualVisitor fields...
+    visitor_type         = models.CharField(max_length=32, choices=[('real','Real'), ('group','Group'), ('individuals','Unknown Individuals')], default='real', null=False, blank=False)
+    visitors_number      = models.IntegerField(default=1, null=True, blank=True)
+    visitors             = models.ManyToManyField('self', default=None, blank=True)
 
     class Meta(VASTObject.Meta):
         unique_together = [["activity", "visitor_group", "name"]]
+
+class VirtualVisitorManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().exclude(visitor_type='real')
+class VirtualVisitor(Visitor):
+    objects = VirtualVisitorManager()
+    class Meta(Visitor.Meta):
+        proxy = True
 
 ## Products...
 class ProductType(VASTObject_NameUnique):
@@ -468,6 +489,13 @@ def Product_remove_spaces_from_filename(instance, filename):
 class Product(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
     product_type         = models.ForeignKey('ProductType',  on_delete=models.CASCADE, default=None, null=False, blank=False)
     visitor              = models.ForeignKey('Visitor',      on_delete=models.CASCADE, default=None, null=False, blank=False)
+    # Generic Relation
+    # visitor_content_type = models.ForeignKey(ContentType,    on_delete=models.CASCADE, default=None, null=True, blank=True, limit_choices_to={
+    #  'model__in': ('visitor', 'virtualvisitor',)})
+    # visitor_content_type = models.ForeignKey(ContentType,    on_delete=models.CASCADE, default=None, null=True, blank=True, \
+    #         limit_choices_to=models.Q(app_label='activity_data', model='visitor') | models.Q(app_label='activity_data', model='virtualvisitor'))
+    # visitor_object_id    = models.PositiveIntegerField(default=None, null=True, blank=True)
+    # visitor              = GenericForeignKey('visitor_content_type', 'visitor_object_id')
     activity_step        = models.ForeignKey('ActivityStep', on_delete=models.CASCADE, default=None, null=False, blank=False)
     image                = models.ImageField(upload_to=Product_remove_spaces_from_image_filename, default=None, null=True, blank=True)
     image_resource_id    = models.IntegerField(default=None, null=True, blank=True)
@@ -477,11 +505,34 @@ class Product(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
     document_uriref      = models.URLField(max_length=512,   null=True, blank=True)
     text                 = models.TextField(null=True, blank=True)
 
+    def make_name_unique(self, desired_name):
+        try:
+            # Check if an object with the desired name already exists
+            existing_object = Product.objects.get(name=desired_name, created_by=self.created_by)
+            
+            # If it exists, generate a unique prefix and add it to the name
+            i = 1
+            while True:
+                new_name = f"{desired_name}_{i}"
+                try:
+                    # Check if an object with the new name exists
+                    Product.objects.get(name=new_name)
+                    i += 1
+                except ObjectDoesNotExist:
+                    # The new name is unique, so return it
+                    return new_name
+        except ObjectDoesNotExist:
+            # The desired name is unique, so return it directly
+            return desired_name
+
     def save(self, *args, **kwargs):
         logger.info(f"Product: save(): {args}, {kwargs}")
         # We must generate a "unique" name
         if not self.name:
             self.name = ".".join([self.product_type.name, str(self.visitor.id), self.activity_step.name])
+            if self.visitor and self.visitor.visitor_type == 'individuals':
+                # This type of visitor, can have multiple products...
+                self.name = self.make_name_unique(self.name)
         # Ensure we have name_md5...
         if self.name and not self.name_md5:
             #self.name_md5 = hashlib.md5(self.name.encode('utf-8')).hexdigest()

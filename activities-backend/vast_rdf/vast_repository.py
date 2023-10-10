@@ -89,6 +89,11 @@ class RDFStoreObject:
     group:                 URIRef  = None
     #school:                Literal = None
 
+    # VirtualVisitor
+    visitor_type:          URIRef  = None
+    visitors_number:       Literal = None
+    visitors:             [URIRef] = None
+
     # Product
     product_type:          URIRef  = None
     visitor:               URIRef  = None
@@ -196,6 +201,13 @@ class RDFStoreObject:
                                         graph.add((self.group, NAMESPACE_VAST.vastParticipant, self.id))
         #if (self.school):               graph.add((self.id, NAMESPACE_VAST.vastShool, self.school))
 
+        # VirtualVisitor
+        if (self.visitor_type):         graph.add((self.id, RDF.type, self.visitor_type))
+        if (self.visitors_number):      graph.add((self.id, NAMESPACE_VAST.vastParticipantNumber, self.visitors_number))
+        if (self.visitors):
+            for v in self.visitors:
+                graph.add((self.id, NAMESPACE_VAST.vastParticipant, v))
+
         # Product
         if (self.product_type):         graph.add((self.id, RDF.type, self.product_type))
         if (self.visitor):
@@ -271,7 +283,7 @@ class RDFVAST:
                 T = self.vast.vastNationality
             case "VisitorGroup":
                 T = self.vast.vastGroup
-            case "Visitor":
+            case "Visitor" | "VirtualVisitor":
                 T = self.vast.vastNonExpert
             case "ProductType":
                 T = None
@@ -469,6 +481,10 @@ class RDFStoreVAST(RDFVAST):
                 robj.stimulus_type = URIRef(NAMESPACE_VAST.vastAudio)
             case "Video":
                 robj.stimulus_type = URIRef(NAMESPACE_VAST.vastVideo)
+            case "Game":
+                robj.stimulus_type = URIRef(NAMESPACE_VAST.vastGame)
+            case "Presentation":
+                robj.stimulus_type = URIRef(NAMESPACE_VAST.vastPresentation)
             case "Tool":
                 robj.stimulus_type = URIRef(NAMESPACE_VAST.vastTool)
             case "Questionnaire":
@@ -534,7 +550,7 @@ class RDFStoreVAST(RDFVAST):
         robj.add(self.g)
 
     def Visitor(self, obj): # RDF Checked
-        robj = self.createVASTObject(obj, self.vast.vastNonExpert)
+        robj = self.createVASTObject(obj, self.classNameToRDFType(obj))
         robj.userid             = self.getLiteral(obj.userid)
         robj.age                = self.getURIRef(self.vast.vastAge, obj.age)
         robj.gender             = self.getURIRef(self.vast.vastGender, obj.gender)
@@ -547,7 +563,21 @@ class RDFStoreVAST(RDFVAST):
         robj.city               = self.getLiteral(obj.city)
         robj.location           = self.getLiteral(obj.location)
         #robj.school             = self.getLiteral(obj.school)
+        # VirtualVisitor fields...
+        match obj.visitor_type:
+            case "group":       robj.visitor_type = URIRef(NAMESPACE_VAST.vastVirtualVisitorGroup)
+            case "individuals": robj.visitor_type = URIRef(NAMESPACE_VAST.vastVirtualVisitorIndividuals)
+            case _:             robj.visitor_type =None
+        robj.visitors_number    = self.getIntegerLiteral(obj.visitors_number)
+        if obj.visitors:
+            robj.visitors = []
+            for v in obj.visitors:
+                robj.visitors.append(self.getURIRef(self.classNameToRDFType(v), v))
         robj.add(self.g)
+        return robj
+
+    def VirtualVisitor(self, obj): # RDF Checked
+        robj = self.Visitor(obj)
 
     # Product types are converted to class references in Product
     def ProductType(self, obj):

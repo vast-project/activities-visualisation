@@ -4,6 +4,7 @@ from django import forms
 from django.db import models
 from django.db.models import Q
 from .models import *
+from itertools import chain
 
 class ReadonlyFieldsAdmin(admin.ModelAdmin):
     ordering = ["name"]
@@ -161,9 +162,31 @@ class StimulusAdmin(FilterUserObjectsAdmin):
        js = ["js/models/stimulus.js"]
 Stimulus.set_fields_verbose_names()
 
+## Expose two interfaces to Visitor: Visitor & VirtualVisitor
+@admin.register(Visitor)
+class VisitorAdmin(FilterUserObjectsAdmin):
+    exclude = ('visitor_type', 'visitors_number', 'visitors')
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.filter(visitor_type='real')
+Visitor.set_fields_verbose_names()
+class VirtualVisitorAdminForm(forms.ModelForm):
+    class Meta:
+        model = VirtualVisitor
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['visitor_type'].initial = 'group'
+@admin.register(VirtualVisitor)
+class VirtualVisitorAdmin(FilterUserObjectsAdmin):
+    form = VirtualVisitorAdminForm
+VirtualVisitor.set_fields_verbose_names()
+
 for model in (Organisation, Class, Age,
               Activity, ActivityStep, Event, VisitorGroup, VisitorGroupQRCode,
-              Visitor, Product, Concept, QuestionnaireEntry, QuestionnaireQuestion, QuestionnaireAnswer):
+              Product, Concept,
+              QuestionnaireEntry, QuestionnaireQuestion, QuestionnaireAnswer):
     admin.site.register(model, FilterUserObjectsAdmin)
     model.set_fields_verbose_names()
 

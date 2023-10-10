@@ -16,17 +16,18 @@
   </div>
   <div class="row my-4">
   {% include "includes/dashboard-model-table.html" with model='Visitor' %}
+  {% include "includes/dashboard-model-table.html" with model='VirtualVisitor' %}
+  </div>
+  <div class="row my-4">
   {% include "includes/dashboard-model-table.html" with model='Product' %}
-  </div>
-  <div class="row my-4">
   {% include "includes/dashboard-model-table.html" with model='ProductStatement' %}
+  </div>
+  <div class="row my-4">
   {% include "includes/dashboard-model-table.html" with model='Statement' %}
-  </div>
-  <div class="row my-4">
   {% include "includes/dashboard-model-table.html" with model='QuestionnaireQuestion' %}
-  {% include "includes/dashboard-model-table.html" with model='QuestionnaireAnswer' %}
   </div>
   <div class="row my-4">
+  {% include "includes/dashboard-model-table.html" with model='QuestionnaireAnswer' %}
   {% include "includes/dashboard-model-table.html" with model='QuestionnaireEntry' %}
   </div>
   {% endif %}

@@ -95,6 +95,10 @@ class VisitorHTMxTable(HTMxTable):
     class Meta(HTMxTable.Meta):
         model = Visitor
 
+class VirtualVisitorHTMxTable(HTMxTable):
+    class Meta(HTMxTable.Meta):
+        model = VirtualVisitor
+
 class ProductHTMxTable(HTMxTable):
     class Meta(HTMxTable.Meta):
         model = Product
