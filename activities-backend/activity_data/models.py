@@ -6,6 +6,7 @@ import html
 import qrcode
 from django.core.files import File
 from django.core.files.base import ContentFile
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.db import models
