@@ -1,4 +1,4 @@
-import {useState, useRef, createContext, useContext} from "react";
+import {createContext, useContext, useState} from "react";
 import Button from "@component/ui/button/Button";
 import First from "../first/First";
 import styles from './textAnnotation.module.css'
@@ -18,7 +18,6 @@ function TextAnnotations() {
     const [endPos, setEndPos] = useState(-1);
     const [tooltipComment, setTooltipComment] = useState("");
     const [comments, setComments] = useState([]);
-    const [alert, setAlert] = useState(false);
     const [selectText, setSelectText] = useState("");
 
     const text =
@@ -135,12 +134,13 @@ function TextAnnotations() {
             const commentObj = {text: selection.toString(), value: tooltipComment};
             // setComments([...comments, commentObj]);
             setTooltipComment("");
-        } else {
-            setAlert(true)
-            setTimeout(() => setAlert(false), 3000);
         }
     };
 
+    /**
+     * Handle changes in the text area of the tooltip (where the user writes the value)
+     * @param e
+     */
     const handleTooltipChange = (e) => {
         setTooltipComment(e.target.value);
     };
@@ -186,8 +186,6 @@ function TextAnnotations() {
     return (
         <div className={styles.container}>
             <BsArrowLeftCircleFill onClick={() => setPrevious(true)} className={styles.leftArrow}/>
-            {alert ?
-                <p className={styles.alertText}>{isEnglish ? 'Please fill in the fields correctly.' : 'Παρακαλώ συμπληρώστε σωστά τα πεδία.'}</p> : ""}
             <h2>{isEnglish ? 'Text' : 'Κειμενο'}</h2>
             <div className={styles.text} onClick={handleTextClick}>{text}</div>
             {renderSelectedText()}
@@ -200,8 +198,6 @@ function TextAnnotations() {
                         if (!selectText || !tooltipComment) {
                             setTooltipComment("");
                             setSelectText("");
-                            setAlert(true)
-                            setTimeout(() => setAlert(false), 3000)
                             return;
                         }
                         const commentObj = {text: selectText, comment: tooltipComment};
