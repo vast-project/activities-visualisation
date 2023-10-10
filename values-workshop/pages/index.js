@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Annotation Project</title>
+        <title>Values Workshop</title>
         <meta name="description" content="Annotation Project" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
