@@ -4,19 +4,62 @@ import {IdContext} from '../welcome/Welcome'
 import {LangContext} from "../layout/Layout";
 import {DotLoader} from "react-spinners";
 
+const backendUrl = "https://activities-backend.vast-project.eu";
+
+const saveData = async function (data) {
+    // Send the POST request
+    return fetch(backendUrl + '/api/save-values-workshop-data', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+    }).then(response => {
+        if (!response.ok) {
+            throw new Error(`Error! Status: ${response.status}`);
+        }
+        console.log("Data saved successfully");
+    }).catch(error => {
+        console.error("Error:", error);
+    });
+}
+
+function selectedValueToAnnotation(selectedValue) {
+    return {
+        segment: selectedValue.text,
+        value: selectedValue.comment,
+    }
+}
 
 function Congratulations({annotations, selectedValuesFromFirst, selectedValuesFromSecond, selectedValuesFromThird}) {
     const {isEnglish, setIsEnglish} = useContext(LangContext)
     const userId = useContext(IdContext);
     const [saving, setSaving] = useState(true);
 
-    console.log("User ID", userId)
-    console.log("Annotations", annotations)
-    console.log("1st values", selectedValuesFromFirst)
-    console.log("2nd values", selectedValuesFromSecond)
-    console.log("3rd values", selectedValuesFromThird)
+    const data = {
+        userId: userId,
+        annotations: annotations,
+        valueLevels: [
+            {
+                level: 1,
+                values: selectedValuesFromFirst.map(v => selectedValueToAnnotation(v))
+            }, {
+                level: 2,
+                values: selectedValuesFromSecond.map(v => selectedValueToAnnotation(v))
+            }, {
+                level: 3,
+                values: selectedValuesFromThird.map(v => selectedValueToAnnotation(v))
+            },
+        ]
+    }
 
-    // todo: Save the data to the api, and then set saving to false!
+    if (saving) {
+        console.log("Saving data: ", data);
+        saveData(data).then(() => {
+            setSaving(false);
+        })
+    }
+
 
     return (
         <div className={styles.container}>
