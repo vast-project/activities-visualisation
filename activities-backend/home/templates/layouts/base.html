@@ -1,4 +1,4 @@
-{% load i18n static admin_soft %}
+{% load i18n static admin_soft matomo_tags %}
 {% get_current_language as LANGUAGE_CODE %}
 {% get_current_language_bidi as LANGUAGE_BIDI %}
 {% get_direction as direction %}
@@ -53,6 +53,8 @@
 
 
 </head>
+
+{% tracking_code %}
 
 <body class="g-sidenav-show bg-gray-100" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 

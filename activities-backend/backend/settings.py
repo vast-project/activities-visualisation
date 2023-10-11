@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'matomo',
     'admin_soft.apps.AdminSoftDashboardConfig',
     'qrcode',
     'rest_framework',
@@ -89,6 +90,9 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_cleanup.apps.CleanupConfig', # This must be always at the end!
 ]
+
+MATOMO_SITE_ID=1
+MATOMO_URL='https://matomo.vast-project.eu/'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
