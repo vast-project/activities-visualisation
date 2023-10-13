@@ -220,3 +220,10 @@ input[type=checkbox] {
     width:1.5em; /* your image width */
     overflow:hidden;
 }
+
+@media (min-width: 1200px) {
+  .sidenav.fixed-start ~ .main-content {
+    margin-left: 17.125rem;
+    width: calc(100% - 18rem);
+  }
+}
