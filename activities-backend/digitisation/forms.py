@@ -55,6 +55,11 @@ class CrispyForm(Form):
         else:
             self.wizard_view = None
         super().__init__(*args, **kwargs)
+        if 'initial' in kwargs and 'created_by' in kwargs['initial']:
+            self.user = kwargs['initial']['created_by']
+        else:
+            self.user = None
+
         # self._form_has_been_saved = False
         self.helper = FormHelper(self)
         self.helper.form_class        = 'form-horizontal'
@@ -71,6 +76,14 @@ class CrispyForm(Form):
         if header:
             self.helper.layout.insert(0, HTML(markdown(header)))
         self.adjustLayout()
+
+    def filter_user_objects(self, model, user=None):
+        queryset = model.objects.all()
+        if not user:
+            user = self.user
+        if user and (not user.is_superuser):
+            queryset = queryset.filter(created_by__in=model.get_group_users(user))
+        return queryset
 
     def classInline(self):
         self.helper.template = f'{TEMPLATE_PACK}/table_inline_formset.html'
@@ -167,8 +180,23 @@ class CrispyForm(Form):
 
 class VASTForm(CrispyForm, ModelForm):
 
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     if 'initial' in kwargs and 'created_by' in kwargs['initial']:
+    #         self.user = kwargs['initial']['created_by']
+    #     else:
+    #         self.user = None
+
     def headerMarkdown(self):
         return "# Create a new %s ({{ wizard.steps.step1 }}/{{ wizard.steps.count }})" % getattr(self._meta.model, 'verbose_name', str(self._meta.model.__name__))
+
+    def filter_user_objects(self, model, user=None):
+        queryset = model.objects.all()
+        if not user:
+            user = self.user
+        if user and (not user.is_superuser):
+            queryset = queryset.filter(created_by__in=model.get_group_users(user))
+        return queryset
 
     class Meta:
         exclude = ('uuid', 'created', 'updated', 'name_md5', '_id', 'id', 'qr_code', 'uriref', 'image_uriref')
@@ -200,18 +228,19 @@ class VASTForm(CrispyForm, ModelForm):
 class ActivityStepForm(VASTForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if 'initial' in kwargs and 'created_by' in kwargs['initial']:
-            user = kwargs['initial']['created_by']
-        else:
-            user = None
-        if user:
-            queryset = Stimulus.objects.all()
-            if not user.is_superuser:
-                group_users = {user, }
-                for group in user.groups.all():
-                    group_users.update(User.objects.filter(groups__id=group.pk))
-                queryset = queryset.filter(created_by__in=group_users)
-            self.fields['stimulus'].queryset = queryset
+        # if 'initial' in kwargs and 'created_by' in kwargs['initial']:
+        #     user = kwargs['initial']['created_by']
+        # else:
+        #     user = None
+        if self.user:
+            # queryset = Stimulus.objects.all()
+            # if not user.is_superuser:
+            #     group_users = {user, }
+            #     for group in user.groups.all():
+            #         group_users.update(User.objects.filter(groups__id=group.pk))
+            #     queryset = queryset.filter(created_by__in=group_users)
+            # self.fields['stimulus'].queryset = queryset
+            self.fields['stimulus'].queryset = self.filter_user_objects(Stimulus)
 
     class Meta(VASTForm.Meta):
         model = ActivityStep
@@ -354,10 +383,25 @@ The name must be unique. (Fields marked with * are required.)
         )
 
 class EventForm(VASTForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.user:
+            self.fields['activity'].queryset          = self.filter_user_objects(Activity)
+            self.fields['context'].queryset           = self.filter_user_objects(Context)
+            self.fields['host_organisation'].queryset = self.filter_user_objects(Organisation)
+            self.fields['education'].queryset         = self.filter_user_objects(Education)
+
     class Meta(VASTForm.Meta):
         model = Event
 
 class VisitorGroupForm(VASTForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.user:
+            self.fields['event'].queryset                = self.filter_user_objects(Event)
+            self.fields['education'].queryset            = self.filter_user_objects(Education)
+            self.fields['visitor_organisation'].queryset = self.filter_user_objects(Organisation)
+
     class Meta(VASTForm.Meta):
         model = VisitorGroup
 
@@ -366,6 +410,13 @@ class VisitorGroupQRCodeForm(VASTForm):
         model = VisitorGroupQRCode
 
 class VisitorForm(VASTForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.user:
+            self.fields['education'].queryset     = self.filter_user_objects(Education)
+            self.fields['activity'].queryset      = self.filter_user_objects(Activity)
+            self.fields['visitor_group'].queryset = self.filter_user_objects(VisitorGroup)
+
     class Meta(VASTForm.Meta):
         model = Visitor
         exclude = ('visitor_type', 'visitors_number', 'visitors')
@@ -374,11 +425,22 @@ class VirtualVisitorForm(VASTForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['visitor_type'].initial = 'group'
+        if self.user:
+            self.fields['education'].queryset     = self.filter_user_objects(Education)
+            self.fields['activity'].queryset      = self.filter_user_objects(Activity)
+            self.fields['visitor_group'].queryset = self.filter_user_objects(VisitorGroup)
+
 
     class Meta(VASTForm.Meta):
         model = VirtualVisitor
 
 class ProductForm(VASTForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.user:
+            self.fields['visitor'].queryset       = self.filter_user_objects(Visitor)
+            self.fields['activity_step'].queryset = self.filter_user_objects(ActivityStep)
+
     class Meta(VASTForm.Meta):
         model = Product
         exclude = ('uuid', 'created', 'updated', 'name_md5', '_id', 'id', 'qr_code', 'uriref',
@@ -450,6 +512,8 @@ class ProductStatementsForm(CrispyForm):
         #formset_kwargs.pop('instance')
         self.statements = StatementFormSet(*args, **formset_kwargs)
         super().__init__(*args, **kwargs)
+        if self.user:
+            self.fields['product'].queryset       = self.filter_user_objects(Product)
 
     def full_clean(self):
         super().full_clean()
@@ -558,6 +622,8 @@ class ProductProductStatementsForm(CrispyForm):
         #formset_kwargs.pop('instance')
         self.statements = ProductStatementFormSet(*args, **formset_kwargs)
         super().__init__(*args, **kwargs)
+        if self.user:
+            self.fields['product'].queryset       = self.filter_user_objects(Product)
 
     def full_clean(self):
         super().full_clean()
@@ -653,7 +719,8 @@ class SelectModelForm(CrispyForm):
         return not cls.addNew(wizard, step)
 
     def headerTableObjects(self):
-        return self._meta.model.objects.all()
+        # return self._meta.model.objects.all()
+        return self.filter_user_objects(self._meta.model)
 
     def modelAppName(self):
         return self._meta.model._meta.app_label

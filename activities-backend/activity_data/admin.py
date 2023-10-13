@@ -81,22 +81,28 @@ class ReadonlyFieldsAdmin(admin.ModelAdmin):
 class FilterUserObjectsAdmin(ReadonlyFieldsAdmin):
 
     def get_queryset(self, request):
+        qs = super().get_queryset(request)
         if request.user.is_superuser:
-            return super().get_queryset(request)
+            return qs
+        # group_users = {request.user, }
+        # for group in request.user.groups.all():
+        #     group_users.update(User.objects.filter(groups__id=group.pk))
+        group_users = self.model.get_group_users(request.user)
+        return qs.filter(created_by__in=group_users)
 
         # For Django < 1.6, override queryset instead of get_queryset
         # alldata = super(OrganisationTypeAdmin, self).get_queryset(request)
-        alldata = super().get_queryset(request)
-        requsergroups = request.user.groups.all()
-        qslist = []
-        for group in requsergroups:
-            users = User.objects.filter(groups__name=group)
-            for user in users:
-                userdata=alldata.filter(created_by=user)
-                for dat in userdata:
-                    qslist.append(dat.id)
-        qslist = list(dict.fromkeys(qslist))
-        return alldata.filter(pk__in=qslist)
+        # alldata = super().get_queryset(request)
+        # requsergroups = request.user.groups.all()
+        # qslist = []
+        # for group in requsergroups:
+        #     users = User.objects.filter(groups__name=group)
+        #     for user in users:
+        #         userdata=alldata.filter(created_by=user)
+        #         for dat in userdata:
+        #             qslist.append(dat.id)
+        # qslist = list(dict.fromkeys(qslist))
+        # return alldata.filter(pk__in=qslist)
 
 class AutoCompleteObjectAdmin(FilterUserObjectsAdmin):
     def get_autocomplete_fields(self, request):
@@ -166,9 +172,9 @@ Stimulus.set_fields_verbose_names()
 @admin.register(Visitor)
 class VisitorAdmin(FilterUserObjectsAdmin):
     exclude = ('visitor_type', 'visitors_number', 'visitors')
-    def get_queryset(self, request):
-        queryset = super().get_queryset(request)
-        return queryset.filter(visitor_type='real')
+    #def get_queryset(self, request):
+    #    queryset = super().get_queryset(request)
+    #    return queryset.filter(visitor_type='real')
 Visitor.set_fields_verbose_names()
 class VirtualVisitorAdminForm(forms.ModelForm):
     class Meta:

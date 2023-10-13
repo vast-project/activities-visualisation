@@ -209,6 +209,13 @@ class AutoUpdateTimeFields(models.Model):
     def get_absolute_url(self, action='change'):
         return reverse(f'admin:activity_data_{self._meta.model._meta.model_name}_{action}', args=[self.pk])
 
+    @classmethod
+    def get_group_users(cls, user):
+        group_users = {user, }
+        for group in user.groups.all():
+            group_users.update(User.objects.filter(groups__id=group.pk))
+        return group_users
+
 class VASTObject(AutoUpdateTimeFields):
     uuid              = models.UUIDField(default = uuid.uuid4, editable = False)
     name              = models.CharField(max_length=255, default=None)
@@ -444,7 +451,7 @@ class VisitorManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(visitor_type='real')
 class Visitor(VASTObject):
-    objects              = VisitorManager()
+    #objects              = VisitorManager()
     userid               = models.CharField(max_length=255,  default=None, null=True, blank=True)
     age                  = models.ForeignKey('Age',          on_delete=models.CASCADE, default=None, null=True, blank=True)
     gender               = models.ForeignKey('Gender',       on_delete=models.CASCADE, default=None, null=True, blank=True)
