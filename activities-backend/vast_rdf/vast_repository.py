@@ -571,8 +571,8 @@ class RDFStoreVAST(RDFVAST):
         robj.visitors_number    = self.getIntegerLiteral(obj.visitors_number)
         if obj.visitors:
             robj.visitors = []
-            #for v in obj.visitors:
-            #    robj.visitors.append(self.getURIRef(self.classNameToRDFType(v), v))
+            for v in obj.visitors.all():
+                robj.visitors.append(self.getURIRef(self.classNameToRDFType(v), v))
         robj.add(self.g)
         return robj
 
