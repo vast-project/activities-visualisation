@@ -17,6 +17,43 @@ from .models import VisitorGroup
 
 @api_view(['POST'])
 @permission_classes((permissions.AllowAny,))
+def save_values_workshop(request):
+    data = request.data
+    saved_items: int = 0
+    error_response = Response({"error": "Error saving data"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+    # Find user to use as created_by
+    creator_user = User.objects.get(username="values_workshop")
+    if not creator_user:
+        return error_response
+    
+    # Find activity, to use when creating the visitor
+    values_activity = Activity.objects.get(name="Values Workshop", created_by=creator_user)
+    if not values_activity:
+        return error_response
+    
+    # Find visitor group, to use when creating the visitor
+    visitor_group = VisitorGroup.objects.get(name="Values Workshop Users", created_by=creator_user)
+    if not visitor_group:
+        return error_response
+    
+    # Create the visitor
+    visitor_name = data["userId"]
+    current_timestamp = datetime.now().strftime("%Y.%m.%d-%H.%M.%S")
+    visitor = Visitor.objects.create(name=f"ValuesWorkshop_{current_timestamp}_{visitor_name}",
+                                     created_by=creator_user,
+                                     date_of_visit=datetime.now(),
+                                     activity=values_activity,
+                                     visitor_group=visitor_group,
+                                     userid=visitor_name)
+    
+    # Find activity step, to use in creating the product
+    
+    return Response({"saved_items": saved_items}, status=status.HTTP_201_CREATED)
+
+
+@api_view(['POST'])
+@permission_classes((permissions.AllowAny,))
 def save_statements(request):
     saved_statements: int = 0
     data = request.data
