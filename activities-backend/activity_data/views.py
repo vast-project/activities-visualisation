@@ -75,8 +75,34 @@ def save_values_workshop(request):
                                          value=value_concept,
                                          text=annotation["text"],
                                          created_by=creator_user)
-        saved_items += 1        
+        saved_items += 1
     
+    # Save value levels as statements
+    is_level_predicate = get_predicate(name="is_level", created_by=creator_user)
+    value_levels: list = data["valueLevels"]
+    
+    for value_level in value_levels:
+        # Get value level number (should be 1, 2, or 3) & the list of values in the level
+        level: int = value_level["level"]
+        values_in_level: list = value_level["values"]
+        
+        # Get value level concept for the object of the statements
+        level_concept = get_concept(name=f"value_level_{level}", concept_type_name="Non-expert Keyword", created_by=creator_user)
+        
+        for value in values_in_level:
+            # Get subject concept
+            value_name = value["value"]
+            subject_concept = get_concept(name=value_name, concept_type_name="Non-expert Keyword", created_by=creator_user)
+            
+            # Create statement
+            Statement.objects.create(name=f"VW_{current_timestamp}_{visitor_name}_lvl{level}_{value_name}",
+                                     product=product,
+                                     subject=subject_concept,
+                                     predicate=is_level_predicate,
+                                     object=level_concept,
+                                     created_by=creator_user)
+            
+            saved_items += 1
     
     return Response({"saved_items": saved_items}, status=status.HTTP_201_CREATED)
 
