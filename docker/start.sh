@@ -14,7 +14,7 @@ else
     export DOCKER_COMPOSE=docker-compose
 fi
 
-${DOCKER_COMPOSE} --project-name activity-visualisation-imss-mindmap \
+${DOCKER_COMPOSE} --project-name digitisation-activities \
                   -f docker-compose.yml \
                   up --build --force-recreate -d
 exit 0
