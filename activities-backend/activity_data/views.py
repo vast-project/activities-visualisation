@@ -47,7 +47,19 @@ def save_values_workshop(request):
                                      visitor_group=visitor_group,
                                      userid=visitor_name)
     
-    # Find activity step, to use in creating the product
+    # Find activity step and the "annotation" product type, to use in creating the product
+    activity_step = ActivityStep.objects.get(name="Values Workshop Annotation", created_by=creator_user)
+    annotation_prod_type = ProductType.objects.get(name="Annotation")
+    if not annotation_prod_type or not activity_step:
+        return error_response
+    
+    # Create the product
+    product = Product.objects.create(name=f"ValuesWorkshop_{current_timestamp}_{visitor_name}",
+                                     created_by=creator_user,
+                                     product_type=annotation_prod_type,
+                                     visitor=visitor,
+                                     activity_step=activity_step)
+    
     
     return Response({"saved_items": saved_items}, status=status.HTTP_201_CREATED)
 
