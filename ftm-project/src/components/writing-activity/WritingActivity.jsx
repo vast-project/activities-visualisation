@@ -7,6 +7,35 @@ import CardsActivity, {CharactersContext, FunctionsContext} from "../cards-activ
 import Congratulations from "../congratulations/Congratulations.jsx";
 import {AnnotationsContext} from "../annotation-activity/AnnotationActivity.jsx";
 
+import img1 from '../../../public/values/1.png'
+import img2 from '../../../public/values/2.png'
+import img3 from '../../../public/values/3.png'
+import img4 from '../../../public/values/4.png'
+import img5 from '../../../public/values/5.png'
+import img6 from '../../../public/values/6.png'
+import img7 from '../../../public/values/7.png'
+import img8 from '../../../public/values/8.png'
+import img9 from '../../../public/values/9.png'
+import img10 from '../../../public/values/10.png'
+import img11 from '../../../public/values/11.png'
+import img12 from '../../../public/values/12.png'
+import img13 from '../../../public/values/13.png'
+import img14 from '../../../public/values/14.png'
+import img15 from '../../../public/values/15.png'
+import img16 from '../../../public/values/16.png'
+import img17 from '../../../public/values/17.png'
+import img18 from '../../../public/values/18.png'
+import img19 from '../../../public/values/19.png'
+import img20 from '../../../public/values/20.png'
+import img21 from '../../../public/values/21.png'
+import img22 from '../../../public/values/22.png'
+import img23 from '../../../public/values/23.png'
+import img24 from '../../../public/values/24.png'
+import img25 from '../../../public/values/25.png'
+
+const valueSrcs = [img1, img2, img3, img4, img5, img6, img7, img8, img9, img10, img11, img12, img13, img14,
+    img15, img16, img17, img18, img19, img20, img21, img22, img23, img24, img25];
+
 const backendUrl = "https://activities-backend.vast-project.eu";
 // const backendUrl = "http://localhost:8000";
 
@@ -89,7 +118,7 @@ const WritingActivity = () => {
     // Get the image source paths for the value cards to display in the page
     const valuesSrc = [];
     for (let i = 0; i < selectedValues.length; i++) {
-        valuesSrc.push(`../../../../public/values/${selectedValues[i]}.png`);
+        valuesSrc.push(valueSrcs[selectedValues[i]]);
     }
 
     const title = {
