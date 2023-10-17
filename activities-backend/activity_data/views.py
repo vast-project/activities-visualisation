@@ -60,6 +60,23 @@ def save_values_workshop(request):
                                      visitor=visitor,
                                      activity_step=activity_step)
     
+    # Save product annotations
+    annotations = data["annotations"]
+    for annotation in annotations:
+        # Get the value as a concept
+        value_name = annotation["comment"]
+        value_concept = get_concept(name=value_name, concept_type_name="Non-expert Keyword", created_by=creator_user)
+
+        # Create the product annotation
+        annotation_name = f"VW_{current_timestamp}_{visitor_name}_{saved_items + 1}"
+        ProductAnnotation.objects.create(name=annotation_name,
+                                         span_type="text",
+                                         product=product,
+                                         value=value_concept,
+                                         text=annotation["text"],
+                                         created_by=creator_user)
+        saved_items += 1        
+    
     
     return Response({"saved_items": saved_items}, status=status.HTTP_201_CREATED)
 
@@ -234,6 +251,7 @@ def save_ftm_statements(request):
                                               text=annotation_segment,
                                               start=annotation_start,
                                               end=annotation_end,
+                                              span_type="text",
                                               created_by=creator_user)
         if pa:
             annotations_count += 1
