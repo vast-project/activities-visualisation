@@ -143,14 +143,35 @@ class ProductFilter(VASTObjectFilter):
         model = Product
 
 class ProductStatementFilter(VASTObjectFilter):
+    filter_if_selected = {
+        'Visitor': 'subject__visitor__in',
+        'ActivityStep': 'subject__activity_step__in',
+        'Activity': 'subject__visitor__activity__in',
+        'VisitorGroup': 'subject__visitor__visitor_group__in',
+        'Product': 'subject__in',
+    }
     class Meta(VASTObjectFilter.Meta):
         model = ProductStatement
 
 class StatementFilter(VASTObjectFilter):
+    filter_if_selected = {
+        'Visitor': 'product__visitor__in',
+        'ActivityStep': 'product__activity_step__in',
+        'Activity': 'product__visitor__activity__in',
+        'VisitorGroup': 'product__visitor__visitor_group__in',
+        'Product': 'product__in',
+    }
     class Meta(VASTObjectFilter.Meta):
         model = Statement
 
 class QuestionnaireEntryFilter(VASTObjectFilter):
+    filter_if_selected = {
+        'Visitor': 'product__visitor__in',
+        'ActivityStep': 'product__activity_step__in',
+        'Activity': 'product__visitor__activity__in',
+        'VisitorGroup': 'product__visitor__visitor_group__in',
+        'Product': 'product__in',
+    }
     class Meta(VASTObjectFilter.Meta):
         model = QuestionnaireEntry
 
@@ -159,5 +180,9 @@ class QuestionnaireQuestionFilter(VASTObjectFilter):
         model = QuestionnaireQuestion
 
 class QuestionnaireAnswerFilter(VASTObjectFilter):
+    filter_if_selected = {
+        'QuestionnaireEntry': 'questionnaire_entry__in',
+        'QuestionnaireQuestion': 'question__in',
+    }
     class Meta(VASTObjectFilter.Meta):
         model = QuestionnaireAnswer
