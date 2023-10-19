@@ -1,11 +1,11 @@
 {% load view %}
 
 <div class="col-lg-6 col-md-6 mb-md-0 mb-4 d-flex align-items-stretch">
-  <div class="card flex-fill">
+  <div class="card flex-fill" x-data="{total_rows: 0, paginated_rows: 0, model: '{{model}}'}">
     <div class="card-header pb-0">
       <div class="row">
         <div class="col-lg-10 col-9">
-          <h6>{{model}}</h6>
+          <h6 x-text="'{{model}} (' + paginated_rows + '/' + total_rows + ')'">{{model}} </h6>
           <!--
           <p class="text-sm mb-0">
             <i class="fa fa-check text-info" aria-hidden="true"></i>

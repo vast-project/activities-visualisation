@@ -7,7 +7,18 @@
 {% block table-wrapper %}
 <div id="table-container-{{ table.id }}" class="table-container table-responsive table-container-{{ table.id }}">
     {% block table %}
+      <!--
+      <script>
+        Alpine.component('child-component-{{ table.id }}', () => ({
+          $init() {
+            // Directly change the parent value when the child component is initialized
+            this.$parent.paginated_rows = {{ table.paginated_rows | length }};
+            this.$parent.total_rows = {{ table.rows | length }};
+          }
+        }));
+      </script>-->
       <table {% render_attrs table.attrs class="table" %}
+             x-init="paginated_rows = {{ table.paginated_rows | length }}; total_rows = {{ table.rows | length }};"
              x-data="{
   checkboxes: [{% for row in table.paginated_rows %}{ isChecked: false }{% if not forloop.last %},{% endif %}{% endfor %}],
   toggleAll({ currentTarget }) {
