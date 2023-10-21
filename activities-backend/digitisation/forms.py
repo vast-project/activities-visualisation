@@ -23,6 +23,9 @@ import re
 import copy
 import os
 
+import logging
+logger = logging.getLogger('Wizard')
+
 def formfield_for_dbfield(db_field, **kwargs):
     match db_field.name:
         case "date" | "date_from" | "date_to" | "date_of_visit":
@@ -964,70 +967,73 @@ class ImportVisitorsShowActivityStepForm(CrispyForm):
         product_type, created = ProductType.objects.get_or_create(name="Questionnaire")
         event = self.selected_visitor_group.event
         for entry in self.entries:
-            ## Create a visitor
-            defaults = {
-                'description':f"Imported from Form: {entry['form_id']} and Form Entry: {entry['entry_id']}",
-                'date_of_visit':str(dateutil.parser.parse(entry['date']+'Z').isoformat()),
-                'city':event.city, 'location':event.location,
-            }
-            defaults.update(self.initial_defaults)
-            visitor, created = Visitor.objects.update_or_create(defaults=defaults,
-                name=f"Participant of \"{group_name}\" | Form: {entry['form_id']} | Entry: {entry['entry_id']}",
-                activity=self.selected_activity_step.activity,
-                visitor_group=self.selected_visitor_group,
-            )
-            rdf.save(type(visitor).__name__, visitor)
-            print("Visitor:", rdf.getURI(visitor))
-            ## Create a Product...
-            defaults = {
-                'description':f"Imported from Form: {entry['form_id']} and Form Entry: {entry['entry_id']}",
-                'product_type': product_type,
-            }
-            defaults.update(self.initial_defaults)
-            visitor_name = (visitor.name[:230] + '..') if len(visitor.name) > 230 else visitor.name
-            product, created = Product.objects.update_or_create(defaults=defaults,
-                name=f"Product of {visitor_name}",
-                visitor=visitor, activity_step=self.selected_activity_step,
-            )
-            print("Product:", rdf.getURI(product))
-            ## Create the QuestionnaireEntry...
-            product_name = (product.name[:230] + '..') if len(product.name) > 230 else product.name
-            defaults = {
-                'name':f"Entry of {product_name}",
-                'description':f"Imported from Form: {entry['form_id']} and Form Entry: {entry['entry_id']}",
-                'wpforms_status':entry['status'],
-            }
-            defaults.update(self.initial_defaults)
-            qEntry, created = QuestionnaireEntry.objects.update_or_create(defaults=defaults,
-                product=product, wpforms_entry_id=entry['entry_id'], wpforms_form_id=entry['form_id'],
-            )
-            # Iterate over questionnaire fields...
-            for key,field in entry['fields'].items():
-                # Create the question...
+            try:
+                ## Create a visitor
                 defaults = {
-                    'name':f"[{entry['form_id']}:{field['id']}] {field['name']}",
-                    'description':f"Imported from Form: {entry['form_id']}",
-                }
-                defaults.update(self.initial_defaults)
-                question, created = QuestionnaireQuestion.objects.update_or_create(defaults=defaults,
-                    wpforms_form_id=entry['form_id'], question=field['name'],
-                )
-                rdf.save(type(question).__name__, question)
-                # Create the answer...
-                defaults = {
-                    'name':f"[{entry['form_id']}:{field['id']}:{entry['entry_id']}] {product_name}",
                     'description':f"Imported from Form: {entry['form_id']} and Form Entry: {entry['entry_id']}",
-                    'answer_type':field['type'], 'answer_value':field['value'], 'answer_value_raw':field.get('value_raw'),
+                    'date_of_visit':str(dateutil.parser.parse(entry['date']+'Z').isoformat()),
+                    'city':event.city, 'location':event.location,
                 }
                 defaults.update(self.initial_defaults)
-                answer, created = QuestionnaireAnswer.objects.update_or_create(defaults=defaults,
-                    questionnaire_entry=qEntry, question=question,
+                visitor, created = Visitor.objects.update_or_create(defaults=defaults,
+                    name=f"Participant of \"{group_name}\" | Form: {entry['form_id']} | Entry: {entry['entry_id']}",
+                    activity=self.selected_activity_step.activity,
+                    visitor_group=self.selected_visitor_group,
                 )
-                rdf.save(type(answer).__name__, answer)
-                ## Link the Visitor to the Answer...
-                rdf.addStatement(visitor, rdf.vast.vastAnswer, answer)
-            #break
-        print(rdf.getURI(self.selected_activity_step.stimulus))
+                rdf.save(type(visitor).__name__, visitor)
+                logger.info("ImportVisitorsShowActivityStepForm(): save(): Visitor: %s", rdf.getURI(visitor))
+                ## Create a Product...
+                defaults = {
+                    'description':f"Imported from Form: {entry['form_id']} and Form Entry: {entry['entry_id']}",
+                    'product_type': product_type,
+                }
+                defaults.update(self.initial_defaults)
+                visitor_name = (visitor.name[:230] + '..') if len(visitor.name) > 230 else visitor.name
+                product, created = Product.objects.update_or_create(defaults=defaults,
+                    name=f"Product of {visitor_name}",
+                    visitor=visitor, activity_step=self.selected_activity_step,
+                )
+                logger.info("ImportVisitorsShowActivityStepForm(): save(): Product: %s", rdf.getURI(product))
+                ## Create the QuestionnaireEntry...
+                product_name = (product.name[:230] + '..') if len(product.name) > 230 else product.name
+                defaults = {
+                    'name':f"Entry of {product_name}",
+                    'description':f"Imported from Form: {entry['form_id']} and Form Entry: {entry['entry_id']}",
+                    'wpforms_status':entry['status'],
+                }
+                defaults.update(self.initial_defaults)
+                qEntry, created = QuestionnaireEntry.objects.update_or_create(defaults=defaults,
+                    product=product, wpforms_entry_id=entry['entry_id'], wpforms_form_id=entry['form_id'],
+                )
+                # Iterate over questionnaire fields...
+                for key,field in entry['fields'].items():
+                    # Create the question...
+                    defaults = {
+                        'name':f"[{entry['form_id']}:{field['id']}] {field['name']}",
+                        'description':f"Imported from Form: {entry['form_id']}",
+                    }
+                    defaults.update(self.initial_defaults)
+                    question, created = QuestionnaireQuestion.objects.update_or_create(defaults=defaults,
+                        wpforms_form_id=entry['form_id'], question=field['name'],
+                    )
+                    rdf.save(type(question).__name__, question)
+                    # Create the answer...
+                    defaults = {
+                        'name':f"[{entry['form_id']}:{field['id']}:{entry['entry_id']}] {product_name}",
+                        'description':f"Imported from Form: {entry['form_id']} and Form Entry: {entry['entry_id']}",
+                        'answer_type':field['type'], 'answer_value':field['value'], 'answer_value_raw':field.get('value_raw'),
+                    }
+                    defaults.update(self.initial_defaults)
+                    answer, created = QuestionnaireAnswer.objects.update_or_create(defaults=defaults,
+                        questionnaire_entry=qEntry, question=question,
+                    )
+                    rdf.save(type(answer).__name__, answer)
+                    ## Link the Visitor to the Answer...
+                    rdf.addStatement(visitor, rdf.vast.vastAnswer, answer)
+                #break
+            except Exception as e:
+                logger.error("ImportVisitorsShowActivityStepForm(): save(): ERROR: %s", str(e))
+        #print(rdf.getURI(self.selected_activity_step.stimulus))
         del rdf
 
     def headerMarkdown(self):
