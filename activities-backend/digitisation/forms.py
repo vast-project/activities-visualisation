@@ -1026,7 +1026,7 @@ class ImportVisitorsShowActivityStepForm(CrispyForm):
                 rdf.save(type(answer).__name__, answer)
                 ## Link the Visitor to the Answer...
                 rdf.addStatement(visitor, rdf.vast.vastAnswer, answer)
-            break
+            #break
         print(rdf.getURI(self.selected_activity_step.stimulus))
         del rdf
 

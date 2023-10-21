@@ -632,8 +632,8 @@ class QuestionnaireAnswer(VASTObject):
     questionnaire_entry  = models.ForeignKey('QuestionnaireEntry',   on_delete=models.CASCADE, default=None, null=False, blank=False)
     question             = models.ForeignKey('QuestionnaireQuestion',on_delete=models.CASCADE, default=None, null=False, blank=False)
     answer_type          = models.CharField(max_length=32,           default=None, null=True, blank=True)
-    answer_value         = models.CharField(max_length=256,          default='', null=True, blank=True)
-    answer_value_raw     = models.CharField(max_length=256,          default='', null=True, blank=True)
+    answer_value         = models.CharField(max_length=1024,          default='', null=True, blank=True)
+    answer_value_raw     = models.CharField(max_length=1024,          default='', null=True, blank=True)
     class Meta(VASTObject.Meta):
         unique_together = [["question", "questionnaire_entry"]]
 
