@@ -315,7 +315,20 @@ class Context(VASTObject_NameUserGroupUnique):
 class Nature(VASTObject_NameUnique):
     pass
 
-class Activity(VASTObject_NameUserGroupUnique):
+def Activity_remove_spaces_from_image_filename(instance, filename):
+    filename_without_spaces = os.path.basename(filename)
+    filename_without_spaces = filename_without_spaces.replace(' ', '_')  # Replace spaces with underscores
+    return 'activity_images/' + filename_without_spaces
+
+def Activity_remove_spaces_from_filename(instance, filename):
+    filename_without_spaces = os.path.basename(filename)
+    filename_without_spaces = filename_without_spaces.replace(' ', '_')  # Replace spaces with underscores
+    return 'activity_documents/' + filename_without_spaces
+
+class Activity(VASTDAMDocument, VASTObject_NameUserGroupUnique):
+    document                 = models.FileField(upload_to=Activity_remove_spaces_from_filename, default=None, null=True, blank=True)
+    document_resource_id     = models.IntegerField(default=None, null=True, blank=True)
+    document_uriref          = models.URLField(max_length=512, null=True, blank=True)
     class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Activities'
 

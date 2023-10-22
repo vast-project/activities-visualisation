@@ -467,6 +467,9 @@ class RDFStoreVAST(RDFVAST):
 
     def Activity(self, obj):
         robj = self.createVASTObject(obj, self.vast.vastActivity)
+        if obj.document_resource_id:     robj.document_resource_id = Literal(obj.document_resource_id, datatype=XSD.integer)
+        if obj.document_uriref:          robj.document_uriref = URIRef(obj.document_uriref)
+        robj.add(self.g)
 
     def Stimulus(self, obj): # RDF Checked
         robj = self.createVASTObject(obj, self.vast.vastStimulus)
