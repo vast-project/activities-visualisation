@@ -202,7 +202,7 @@ function TextAnnotations() {
     return (
         <div className={styles.container}>
             <BsArrowLeftCircleFill onClick={() => setPrevious(true)} className={styles.leftArrow}/>
-            <h2>{isEnglish ? 'Text' : 'Κειμενο'}</h2>
+            <h2>{isEnglish ? 'Text' : 'Κείμενο'}</h2>
             <div className={styles.text} onClick={handleTextClick}>{text}</div>
             {renderSelectedText()}
             {selectText && (
