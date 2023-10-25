@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 24px;
     width: min(100%, 900px);
-    margin: 0 auto;
+    margin: 0 auto 40px;
 }
 
 .text {
@@ -12,7 +12,6 @@
     letter-spacing: .5px;
     line-height: 1.25;
     margin-bottom: 40px;
-
 }
 
 .selectedText {
