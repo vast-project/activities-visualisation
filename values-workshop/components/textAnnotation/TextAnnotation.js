@@ -1,4 +1,4 @@
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import Button from "@component/ui/button/Button";
 import First from "../first/First";
 import styles from './textAnnotation.module.css'
@@ -19,6 +19,14 @@ function TextAnnotations() {
     const [tooltipComment, setTooltipComment] = useState("");
     const [comments, setComments] = useState([]);
     const [selectText, setSelectText] = useState("");
+
+    // Check for selection change every 500ms. This makes the selection update in almost real time on Android,
+    // not required for iOS.
+    useEffect(() => {
+        const interval = setInterval(handleTextClick, 500);
+
+        return () => clearInterval(interval);
+    }, []);
 
     const text =
         isEnglish ?
