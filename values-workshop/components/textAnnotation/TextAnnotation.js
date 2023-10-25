@@ -9,7 +9,7 @@ import {LangContext} from "../layout/Layout";
 export const ValuesContext = createContext();
 
 function TextAnnotations() {
-    const {isEnglish, setIsEnglish} = useContext(LangContext)
+    const {isEnglish} = useContext(LangContext)
 
     const [next, setNext] = useState(false);
     const [previous, setPrevious] = useState(false);
@@ -127,13 +127,13 @@ function TextAnnotations() {
             );
 
     const handleTextClick = (e) => {
-        const selection = window.getSelection();
-        setSelectText(selection.toString());
-        console.log(selection.toString())
-        if (selection.toString()) {
-            const commentObj = {text: selection.toString(), value: tooltipComment};
-            // setComments([...comments, commentObj]);
-            setTooltipComment("");
+        const selection = window.getSelection().toString();
+        if (selection !== selectText && selection) {
+            setSelectText(selection);
+            // alert("New text selected: " + selection);
+            if (selection) {
+                setTooltipComment("");
+            }
         }
     };
 
@@ -200,15 +200,18 @@ function TextAnnotations() {
     }
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container} onTouchEnd={handleTextClick} onScroll={handleTextClick}>
             <BsArrowLeftCircleFill onClick={() => setPrevious(true)} className={styles.leftArrow}/>
             <h2>{isEnglish ? 'Text' : 'Κείμενο'}</h2>
-            <div className={styles.text} onClick={handleTextClick}>{text}</div>
+            <div className={styles.text} onMouseUp={handleTextClick}>
+                {text}
+            </div>
             {renderSelectedText()}
             {selectText && (
                 <Tooltip
                     isEnglish={isEnglish}
                     comment={tooltipComment}
+                    onFocus={handleTextClick}
                     onChange={handleTooltipChange}
                     onSave={() => {
                         if (!selectText || !tooltipComment) {
@@ -233,7 +236,7 @@ function TextAnnotations() {
             <Button onClick={() => setNext(!next)} color="#5C47C2" title={isEnglish ? 'NEXT' : 'ΕΠΟΜΕΝΟ'}/>
         </div>
     );
-};
+}
 
 const Tooltip = ({comment, onChange, onSave, onCancel, isEnglish}) => {
     return (
