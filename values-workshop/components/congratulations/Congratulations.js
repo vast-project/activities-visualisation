@@ -1,6 +1,6 @@
 import {useContext, useState} from 'react'
 import styles from './congratulations.module.css'
-import {IdContext} from '../welcome/Welcome'
+import {IdContext, TeamContext} from '../welcome/Welcome'
 import {LangContext} from "../layout/Layout";
 import {DotLoader} from "react-spinners";
 
@@ -34,10 +34,12 @@ function selectedValueToAnnotation(selectedValue) {
 function Congratulations({annotations, selectedValuesFromFirst, selectedValuesFromSecond, selectedValuesFromThird}) {
     const {isEnglish, setIsEnglish} = useContext(LangContext)
     const userId = useContext(IdContext);
+    const teamNumber = useContext(TeamContext);
     const [saving, setSaving] = useState(true);
 
     const data = {
         userId: userId,
+        teamNumber: teamNumber,
         annotations: annotations,
         valueLevels: [
             {
