@@ -32,15 +32,24 @@ def save_values_workshop(request):
     if not values_activity:
         return error_response
     
-    # Find visitor group, to use when creating the visitor
-    visitor_group = VisitorGroup.objects.get(name="Values Workshop Users", created_by=creator_user)
+    # Find event to use when creating visitor group
+    workshop_event = Event.objects.get(name="Values Workshop Event", created_by=creator_user)
+    if not workshop_event:
+        return error_response
+    
+    # Find or create visitor group based on the given team number, to use when creating the visitor
+    team_number = data["teamNumber"].strip()
+    visitor_group, _ = VisitorGroup.objects.get_or_create(name=f"Values Workshop Team {team_number}", 
+                                                          event=workshop_event,
+                                                          created_by=creator_user)
     if not visitor_group:
         return error_response
     
     # Create the visitor
     visitor_name = data["userId"]
     current_timestamp = datetime.now().strftime("%Y.%m.%d-%H.%M.%S")
-    visitor = Visitor.objects.create(name=f"ValuesWorkshop_{current_timestamp}_{visitor_name}",
+    visitor_object_name = f"ValuesWorkshop_{team_number}_{visitor_name}_current_timestamp"
+    visitor = Visitor.objects.create(name=visitor_object_name,
                                      created_by=creator_user,
                                      date_of_visit=datetime.now(),
                                      activity=values_activity,
