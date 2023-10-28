@@ -3,8 +3,8 @@ import styles from './instructions.module.css'
 import {BsArrowLeftCircleFill, BsCheck2Circle} from 'react-icons/bs'
 import Button from '@component/ui/button/Button';
 import TextAnnotations from '../textAnnotation/TextAnnotation';
-import Welcome from '../welcome/Welcome';
 import {LangContext} from "../layout/Layout";
+import Questionnaire from "@component/components/questionnaire/Questionnaire";
 
 
 function Instructions() {
@@ -16,7 +16,7 @@ function Instructions() {
         return <TextAnnotations/>
     }
     if (previous) {
-        return <Welcome/>
+        return <Questionnaire/>
     }
 
     return (

@@ -1,8 +1,8 @@
 import React, {createContext, useContext, useRef, useState} from 'react'
 import styles from './welcome.module.css'
-import Instructions from '../instructions/Instructions';
 import Button from '@component/ui/button/Button';
 import {LangContext} from "../layout/Layout";
+import Questionnaire from "@component/components/questionnaire/Questionnaire";
 
 // Create Context for the user ID
 export const IdContext = createContext();
@@ -22,7 +22,7 @@ function Welcome() {
         return (
             <IdContext.Provider value={userId}>
                 <TeamContext.Provider value={teamNumber}>
-                    <Instructions/>
+                    <Questionnaire/>
                 </TeamContext.Provider>
             </IdContext.Provider>
         )
@@ -67,7 +67,8 @@ function Welcome() {
 
                 <div className={styles.inputContainer}>
                     <label htmlFor="userid">{isEnglish ? 'Team number' : 'Αριθμός ομάδας'}</label>
-                    <input ref={teamNumberRef} name="teamNumber" value={teamNumber} onChange={(e) => setTeamNumber(e.target.value)}
+                    <input ref={teamNumberRef} name="teamNumber" value={teamNumber}
+                           onChange={(e) => setTeamNumber(e.target.value)}
                            className={styles.input} type="text"/>
                 </div>
                 {showTeamNumberWarning &&
