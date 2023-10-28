@@ -22,4 +22,13 @@
     position: absolute;
     bottom: 3%;
     right: 3%;
+    width:200px;
+    height: auto;
+}
+
+/* On smaller screens, make the logo half size */
+@media screen and (max-width: 600px){
+    .logo{
+        width: 100px;
+    }
 }
