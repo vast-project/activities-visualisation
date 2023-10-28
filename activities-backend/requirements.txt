@@ -15,6 +15,7 @@ django-htmx
 django-dashboards
 django-location-field
 django-matomo
+django-unfold
 crispy-bootstrap5
 whitenoise
 django-admin-soft-dashboard

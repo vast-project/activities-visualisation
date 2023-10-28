@@ -56,6 +56,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Application definition
 
 INSTALLED_APPS = [
+    'unfold',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -248,6 +249,14 @@ LOGGING = {
             "propagate": False,
         },
     },
+}
+
+##
+## UNFOLD: https://github.com/unfoldadmin/django-unfold
+##
+from django.templatetags.static import static
+UNFOLD = {
+    "SITE_ICON": lambda request: static("img/logo-ct-dark.svg"),
 }
 
 ##

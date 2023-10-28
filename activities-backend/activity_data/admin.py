@@ -3,10 +3,21 @@ from django.contrib.auth.models import User
 from django import forms
 from django.db import models
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
+from django.apps import apps
 from .models import *
 from itertools import chain
 
-class ReadonlyFieldsAdmin(admin.ModelAdmin):
+if apps.is_installed("unfold"):
+    from unfold.admin import ModelAdmin
+else:
+    ModelAdmin = admin.ModelAdmin
+
+admin.site.site_header = _('Model Admin')
+admin.site.site_title  = _('VAST Model Admin')
+
+#class ReadonlyFieldsAdmin(admin.ModelAdmin):
+class ReadonlyFieldsAdmin(ModelAdmin):
     ordering = ["name"]
     search_fields = ["name"]
     def get_readonly_fields(self, request, obj=None):
