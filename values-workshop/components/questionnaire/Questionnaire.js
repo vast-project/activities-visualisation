@@ -12,7 +12,7 @@ function Questionnaire() {
     const [next, setNext] = useState(false);
     const [previous, setPrevious] = useState(false);
 
-    const questionnaireBaseUrl = 'https://platform.vast-project.eu/values-portait-questionnaire-rur-en/?participant_id='
+    const questionnaireBaseUrl = 'https://platform.vast-project.eu/portrait-values-questionnaire-mscds/?participant_id='
 
     if (next) {
         return <Instructions/>
