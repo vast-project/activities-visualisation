@@ -257,6 +257,9 @@ LOGGING = {
 from django.templatetags.static import static
 UNFOLD = {
     "SITE_ICON": lambda request: static("img/logo-ct-dark.svg"),
+    "SIDEBAR": {
+        "show_search": True,  # Search in applications and models names
+    },
 }
 
 ##
