@@ -171,13 +171,13 @@ def save_statements(request):
     return Response({"saved_statements": saved_statements}, status=status.HTTP_201_CREATED)
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes((permissions.AllowAny,))
 def save_ftm_statements(request):
     error = Response(status=status.HTTP_400_BAD_REQUEST)
 
     # Get user to create the objects as
-    creator_user = User.objects.get(username='digitisation_ftm')
+    creator_user = User.objects.get(username="digitisation_ftm")
     if creator_user is None:
         return error
 
@@ -185,7 +185,7 @@ def save_ftm_statements(request):
     data = request.data
     
     # Find or create the activity
-    activity, _ = Activity.objects.get_or_create(name="FTM Annotation", created_by=creator_user)
+    activity, _ = Activity.objects.get_or_create(name="Values in Fairy Tales: An FTM Activity", created_by=creator_user)
     
     # Get language from request, and find the stimulus text from the DB (it should be created already)
     language = data["language"]
