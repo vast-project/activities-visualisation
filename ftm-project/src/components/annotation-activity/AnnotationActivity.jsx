@@ -116,10 +116,6 @@ const AnnotationActivity = () => {
                 </div>
             </div>
 
-
-            <pre className={styles.annotatorContainer}
-                 style={{textAlign: "left"}}>{JSON.stringify(annotations, null, 2)}</pre>
-
             <div className={styles.btnContainer}>
                 <button className={styles.btnBack}
                         onClick={() => setPrev(true)}>{isEnglish ? prevBtnText.en : prevBtnText.gr}</button>
