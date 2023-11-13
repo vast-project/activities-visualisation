@@ -6,6 +6,7 @@ import Button from "../../ui/Button/Button.jsx";
 import CardsActivity, {CharactersContext, FunctionsContext} from "../cards-activity/CardsActivity.jsx";
 import Congratulations from "../congratulations/Congratulations.jsx";
 import {AnnotationsContext} from "../annotation-activity/AnnotationActivity.jsx";
+import {DotLoader} from "react-spinners";
 
 import img1 from '../../../public/values/1.png'
 import img2 from '../../../public/values/2.png'
@@ -67,6 +68,7 @@ const WritingActivity = () => {
     const [prev, setPrev] = useState(false)
     const [storyText, setStoryText] = useState("")
     const [selectedValues, setSelectedValues] = useState([])
+    const [saving, setSaving] = useState(false)
 
     const numValues = 25; // number of total values that exist
     const valuesToChoose = 3;
@@ -203,8 +205,12 @@ const WritingActivity = () => {
         };
         console.log("Data for backend:", dataForBackend);
 
+        // Show loading animation
+        setSaving(true);
+
         // Make call to API
         saveData(dataForBackend).then(() => {
+            setSaving(false);
             setNext(true);
         });
     }
@@ -273,6 +279,19 @@ const WritingActivity = () => {
                       placeholder={isEnglish ? textareaPlaceholder.en : textareaPlaceholder.gr}
                       value={storyText}
                       onChange={handleStoryChange}></textarea>
+
+            {saving ?
+                <div>
+                    <div className={styles.dotLoader}>
+                        <DotLoader color="#69A082"/>
+                    </div>
+                    <div className={styles.savingText}>
+                        <span>{isEnglish ? "Saving data..." : "Αποθήκευση δεδομένων..."}</span>
+                    </div>
+                </div>
+                :
+                <div/>
+            }
 
             <div className={styles.btnContainer}>
                 <button className={styles.btnBack}
