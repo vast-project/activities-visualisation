@@ -218,11 +218,11 @@ class AutoUpdateTimeFields(models.Model):
 
 class VASTObject(AutoUpdateTimeFields):
     uuid              = models.UUIDField(default = uuid.uuid4, editable = False)
-    name              = models.CharField(max_length=255, default=None)
+    name              = models.CharField(max_length=512, default=None)
     name_md5          = models.CharField(max_length=64,  default=None, null=True, blank=True, editable=False)
-    description       = models.CharField(max_length=255, default=None, null=True, blank=True)
-    name_local        = models.CharField(max_length=255, default=None, null=True, blank=True)
-    description_local = models.CharField(max_length=255, default=None, null=True, blank=True)
+    description       = models.CharField(max_length=512, default=None, null=True, blank=True)
+    name_local        = models.CharField(max_length=512, default=None, null=True, blank=True)
+    description_local = models.CharField(max_length=512, default=None, null=True, blank=True)
     language_local    = models.ForeignKey('Language', on_delete=models.CASCADE, default=None, null=True, blank=True)
     created           = models.DateTimeField(auto_now_add=True, null=True)
     updated           = models.DateTimeField(auto_now=True, null=True)
@@ -271,7 +271,7 @@ class VASTObject(AutoUpdateTimeFields):
 
 
 class VASTObject_NameUnique(VASTObject):
-    name              = models.CharField(max_length=255, default=None, unique=True, null=False, blank=False)
+    name              = models.CharField(max_length=512, default=None, unique=True, null=False, blank=False)
     class Meta(VASTObject.Meta):
         abstract = True
 
@@ -383,15 +383,18 @@ class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
             return cls.wp_bloq_posts_choices
         wp = WPStoreVAST()
         posts = wp.get_posts_in_category()
+        pages = wp.get_pages_in_category()
         del wp
-        logger.info(f"{cls.__name__}: get_wp_blog_posts(): result: (len: {len(posts)})")
+        logger.info(f"{cls.__name__}: get_wp_blog_posts(): result: (len: {len(posts)}), get_wp_pages(): result: (len: {len(pages)})")
         choices = [('', '---------')]
         cls.wp_bloq_posts_data = {}
-        for post in posts:
-            choices.append((post['link'], f"{html.unescape(post['title']['rendered'])} [id: {post['id']}]"))
-            wp_form_id = re.search(r'<form\s+id="wpforms-form-(\d+)"', post['content']['rendered']).group(1)
-            #print(wp_form_id, post['id'])
-            cls.wp_bloq_posts_data[post['link']] = (post['id'], wp_form_id,)
+        for post in posts + pages:
+            match = re.search(r'<form\s+id="wpforms-form-(\d+)"', post['content']['rendered'])
+            if match:
+                wp_form_id = match.group(1)
+                choices.append((post['link'], f"{html.unescape(post['title']['rendered'])} [id: {post['id']}]"))
+                #print(wp_form_id, post['id'])
+                cls.wp_bloq_posts_data[post['link']] = (post['id'], wp_form_id,)
         cls.wp_bloq_posts_choices = choices
         return choices
 

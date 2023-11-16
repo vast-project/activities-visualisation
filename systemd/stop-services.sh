@@ -8,7 +8,7 @@ ACTIVITIES=(`ls -d --hide=".*/systemd/" -- "$ACTIVITIES_VISUALISATION_DIR"/*/`)
 SCRIPT="stop.sh"
 
 for path in ${ACTIVITIES[@]}; do
-  FILE="${path}docker/$SCRIPT"
+  FILE="${path}$SCRIPT"
   TOOL=$( basename "$path" )
   if [ -f "$FILE" ]; then
     echo "Starting Service: $TOOL"

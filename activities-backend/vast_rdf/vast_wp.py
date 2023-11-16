@@ -40,6 +40,20 @@ class WPStoreVAST:
             return posts
         return []
 
+    # Function to retrieve pages posts from a specific category
+    def get_pages_in_category(self, category_slug='surveys', per_page=100):
+        endpoint_url = f"{self.config.config['WORDPRESS_URL']}/wp-json/wp/v2/pages"
+        params = {
+            "category": category_slug,
+            "per_page": per_page,  # Adjust as needed
+        }
+        # logger.info(f"WPStoreVAST: endpoint: {endpoint_url}, params: {params}")
+        response = requests.get(endpoint_url, params=params)
+        if response.ok:
+            posts = response.json()
+            return posts
+        return []
+
     def wpforms_get_form_entries(self, form_id, status=('', 'abandoned', 'partial')):
         if not form_id:
             return None

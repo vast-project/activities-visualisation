@@ -42,6 +42,7 @@ class Command(BaseCommand):
                 'Visitor',
                 'Product',
                 'ProductStatement',
+                'ProductAnnotation',
                 'Statement',
                 'QuestionnaireEntry',
                 'QuestionnaireQuestion',
