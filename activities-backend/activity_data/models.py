@@ -42,10 +42,13 @@ logger = logging.getLogger('VASTModel')
 class VASTDAMImage:
     def save(self, *args, **kwargs):
         logger.info(f"{self.__class__.__name__}: save(): args: {args}, kwargs: {kwargs}")
-        ## If we have a prior resource in DAM, delete it...
-        self.delete_image_resource()
-        ## Try to save image in DAM...
-        self.create_image_resource()
+        ## Get modified fields...
+        modified = self.get_changed_fields()
+        if modified.get('image'):
+            ## If we have a prior resource in DAM, delete it...
+            self.delete_image_resource()
+            ## Try to save image in DAM...
+            self.create_image_resource()
         return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -122,10 +125,13 @@ class VASTDAMImage:
 class VASTDAMDocument:
     def save(self, *args, **kwargs):
         logger.info(f"{self.__class__.__name__}: save(): args: {args}, kwargs: {kwargs}")
-        ## If we have a prior resource in DAM, delete it...
-        self.delete_document_resource()
-        ## Try to save document in DAM...
-        self.create_document_resource()
+        ## Get modified fields...
+        modified = self.get_changed_fields()
+        if modified.get('document'):
+            ## If we have a prior resource in DAM, delete it...
+            self.delete_document_resource()
+            ## Try to save document in DAM...
+            self.create_document_resource()
         return super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
@@ -215,6 +221,16 @@ class AutoUpdateTimeFields(models.Model):
         for group in user.groups.all():
             group_users.update(User.objects.filter(groups__id=group.pk))
         return group_users
+
+    def get_changed_fields(self):
+        if self.pk is not None:
+            orig = self.__class__.objects.get(pk=self.pk)
+            field_names  = [field.name for field in self.__class__._meta.fields]
+            fields_stats = {}
+            for field_name in field_names:
+                fields_stats[field_name] = getattr(orig, field_name) != getattr(self, field_name)
+            return fields_stats
+        return {}
 
 class VASTObject(AutoUpdateTimeFields):
     uuid              = models.UUIDField(default = uuid.uuid4, editable = False)
@@ -315,6 +331,9 @@ class Context(VASTObject_NameUserGroupUnique):
 class Nature(VASTObject_NameUnique):
     pass
 
+class CulturalHeritageArtifact(VASTObject_NameUnique):
+    pass
+
 def Activity_remove_spaces_from_image_filename(instance, filename):
     filename_without_spaces = os.path.basename(filename)
     filename_without_spaces = filename_without_spaces.replace(' ', '_')  # Replace spaces with underscores
@@ -329,6 +348,10 @@ class Activity(VASTDAMDocument, VASTObject_NameUserGroupUnique):
     document                 = models.FileField(upload_to=Activity_remove_spaces_from_filename, default=None, null=True, blank=True)
     document_resource_id     = models.IntegerField(default=None, null=True, blank=True)
     document_uriref          = models.URLField(max_length=512, null=True, blank=True)
+    ch_artifact              = models.ManyToManyField('CulturalHeritageArtifact', default=None, blank=True, verbose_name="CH Artifacts")
+    age                      = models.ForeignKey('Age',          on_delete=models.CASCADE, default=None, null=True,  blank=True, verbose_name="Designed for Ages")
+    europeana_uriref         = models.URLField(max_length=8000, null=True, blank=True)
+
     class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Activities'
 
@@ -343,7 +366,7 @@ def Stimulus_remove_spaces_from_filename(instance, filename):
     return 'stimulus_documents/' + filename_without_spaces
 
 class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
-    stimulus_type            = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Game','Game'),('Presentation','Presentation'),('Tool','Tool'),('Questionnaire','Questionnaire'),('Live Performance','Live Performance'), ('Senses','Senses')], null=False, blank=False)
+    stimulus_type            = models.CharField(max_length=32, choices=[('Document','Document'),('Segment','Segment'),('Image','Image'),('Audio','Audio'),('Video','Video'),('Game','Game'),('Presentation','Presentation'),('Tool','Tool'),('Questionnaire','Questionnaire'),('Live Performance','Live Performance'), ('Senses','Senses'),('Template','Template'),('Template Mind-Map','Template Mind-Map'),], null=False, blank=False)
     uriref                   = models.URLField(max_length=512, default=None, null=True, blank=True)
     image                    = models.ImageField(upload_to=Stimulus_remove_spaces_from_image_filename, default=None, null=True, blank=True)
     image_resource_id        = models.IntegerField(default=None, null=True, blank=True)

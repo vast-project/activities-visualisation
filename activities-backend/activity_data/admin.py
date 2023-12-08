@@ -210,7 +210,8 @@ for model in (Organisation, Class, Age,
 for model in (Language, Gender, Nature, Education, Nationality,
               OrganisationType, Context,
               ProductType, DigitisationApplication,
-              ConceptType, Predicate, ):
+              ConceptType, Predicate,
+              CulturalHeritageArtifact, ):
     admin.site.register(model, ReadonlyFieldsAdmin)
     model.set_fields_verbose_names()
 

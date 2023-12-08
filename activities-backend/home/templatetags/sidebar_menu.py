@@ -12,7 +12,7 @@ def sidebar_menu(*args, **kwargs):
     match category:
         case 'dashboards':
             menu_items = (
-                {'title': 'Test',                   'url': 'dashboards:vast_dashboards_firstdashboard'},
+                {'title': 'Activities',             'url': 'dashboards:vast_dashboards_activitiesdashboard'},
             )
         case _:
             menu_items = (
@@ -29,7 +29,7 @@ def sidebar_menu(*args, **kwargs):
             )
     mi = []
     for item in menu_items:
-        item['reverse_url'] = reverse(item['url'])+'/' # Adding a slash to not having multiple menu items active
+        item['reverse_url'] = reverse(item['url'], kwargs=item.get('kwargs'))+'/' # Adding a slash to not having multiple menu items active
         mi.append(item)
     context = {'sidebar_menu_items': mi}
     for arg in args:

@@ -65,7 +65,7 @@ class HTMxTable(tables.Table):
         fields   = ('selected', 'name', 'graphdb', 'created_by')
         sequence = ('selected', '...')
         attrs = {
-            'class': 'table table-sm table-hover',
+            'class': 'table table-sm table-hover table-scrollable',
         }
         row_attrs = {
             'x-data': HTMxTable_row_x_data,

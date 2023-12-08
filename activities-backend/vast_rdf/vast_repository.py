@@ -17,6 +17,7 @@ logger = logging.getLogger('RDFStoreVAST')
 
 NAMESPACE_VAST                   = Namespace("https://www.vast-project.eu/vast#")
 VAST_GRAPH_OWNER: URIRef         = URIRef(f"{NAMESPACE_VAST.vastGraphObjectOwner}/digitisation_tool")
+GRAPH_ID_ELLOGON_ANNOTATION_TOOL = URIRef("https://www.vast-project.eu/vastOntology/EllogonAnnotationTool")
 GRAPH_ID_DIGITISATION_TOOLS      = URIRef("https://www.vast-project.eu/vastOntology/DigitisationTools")
 GRAPH_ID_SURVEY_DATA             = URIRef("https://www.vast-project.eu/vast/graphs#surveyData")
 
@@ -30,6 +31,8 @@ class RDFStoreObject:
     updated_at:            Literal = None
     created_by:            URIRef  = None
     updated_by:            URIRef  = None
+    relational_db_table:   Literal = None
+    relational_db_pk:      Literal = None
 
     # Organisation
     type:                  URIRef  = None
@@ -39,6 +42,8 @@ class RDFStoreObject:
 
     # Activity
     event:                 URIRef  = None
+    ch_artifact:          [Literal]= None
+    europeana_uriref:      URIRef  = None
 
     # Stimulus
     uriref:                URIRef  = None
@@ -126,7 +131,7 @@ class RDFStoreObject:
     answer_value_raw:      Literal = None
 
 
-    rdf_graph_owner:    Literal = VAST_GRAPH_OWNER
+    rdf_graph_owner:       Literal = VAST_GRAPH_OWNER
 
     def add(self, graph):
         if (self.id == None):
@@ -139,6 +144,8 @@ class RDFStoreObject:
         if (self.updated_at):           graph.add((self.id, NAMESPACE_VAST.vastUpdatedAt, self.updated_at))
         if (self.created_by):           graph.add((self.id, NAMESPACE_VAST.vastCreatedBy, self.created_by))
         if (self.updated_by):           graph.add((self.id, NAMESPACE_VAST.vastUpdatedBy, self.updated_by))
+        if (self.relational_db_table):  graph.add((self.id, NAMESPACE_VAST.vastRelationalDbTable, self.relational_db_table))
+        if (self.relational_db_pk):     graph.add((self.id, NAMESPACE_VAST.vastRelationalDbId,    self.relational_db_pk))
 
         # Organisation
         if (self.type):                 graph.add((self.id, NAMESPACE_VAST.vastOrganisationType, self.type))
@@ -148,6 +155,10 @@ class RDFStoreObject:
 
         # Activity
         if (self.event):                graph.add((self.id, NAMESPACE_VAST.vastAssociatedEvent, self.event))
+        if (self.ch_artifact):
+            for a in self.ch_artifact:
+                graph.add((self.id, NAMESPACE_VAST.vastAssociatedCHArtifact, a))
+        if (self.europeana_uriref):     graph.add((self.id, NAMESPACE_VAST.vastExternalArtifactURIRef, self.europeana_uriref))
 
         # Stimulus
         if (self.stimulus_type):        graph.add((self.id, NAMESPACE_VAST.vastStimulusType, self.stimulus_type))
@@ -166,7 +177,9 @@ class RDFStoreObject:
         if (self.questionnaire_wp_form_id): graph.add((self.id, NAMESPACE_VAST.vastQuestionnaireWPFormId, self.questionnaire_wp_form_id))
 
         # ActivityStep
-        if (self.activity):             graph.add((self.activity, NAMESPACE_VAST.vastStep, self.id))
+        if (self.activity):
+                                        graph.add((self.activity, NAMESPACE_VAST.vastStep, self.id))
+                                        graph.add((self.id, NAMESPACE_VAST.vastAssociatedActivity, self.activity))
         if (self.stimulus):             graph.add((self.id, NAMESPACE_VAST.vastStimulus, self.stimulus))
 
         # Event
@@ -408,6 +421,8 @@ class RDFStoreVAST(RDFVAST):
         self.AutoUpdateTimeFields(obj, robj)
         if obj.name:        robj.name=Literal(obj.name, lang=lang)
         if obj.description: robj.comment=Literal(obj.description, lang=lang)
+        robj.relational_db_table = Literal(type(obj).__name__, lang=lang)
+        robj.relational_db_pk    = self.getIntegerLiteral(obj.pk)
         robj.add(self.g)
         if obj.language_local:
             if obj.name_local:        robj.name=Literal(obj.name_local, lang=obj.language_local.code)
@@ -469,6 +484,12 @@ class RDFStoreVAST(RDFVAST):
         robj = self.createVASTObject(obj, self.vast.vastActivity)
         if obj.document_resource_id:     robj.document_resource_id = Literal(obj.document_resource_id, datatype=XSD.integer)
         if obj.document_uriref:          robj.document_uriref = URIRef(obj.document_uriref)
+        if obj.ch_artifact:
+            robj.ch_artifact = []
+            for v in obj.ch_artifact.all():
+                robj.ch_artifact.append(self.getLiteral(v))
+        if obj.europeana_uriref:         robj.europeana_uriref = URIRef(obj.document_uriref)
+        robj.age = self.getURIRef(self.vast.vastAge, obj.age)
         robj.add(self.g)
 
     def Stimulus(self, obj): # RDF Checked
@@ -630,6 +651,7 @@ class RDFStoreVAST(RDFVAST):
 
     def ProductStatement(self, obj): # RDF Checked
         robj = self.createVASTObject(obj, self.vast.vastStatement)
+        robj.product    = self.getURIRef(self.vast.vastProduct,   obj.subject)
         robj.subject    = self.getURIRef(self.vast.vastProduct,   obj.subject)
         robj.predicate  = self.getURIRef(self.vast.vastPredicate, obj.predicate)
         robj.object     = self.getURIRef(self.vast.vastConcept,   obj.object)

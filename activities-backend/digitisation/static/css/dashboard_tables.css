@@ -1,4 +1,17 @@
+/* Scrollable Tables */
+.table-scrollable {
+  th {
+    position: sticky;
+    top: 0;
+    background: white;
+  }
+}
 /* Table style */
+.table-container {
+  max-height: 400px;
+  overflow: auto;
+}
+
 .table-container th.asc:after {
     content: '\0000a0\0025b2';
     float: right;
