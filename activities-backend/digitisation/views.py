@@ -190,7 +190,7 @@ class ActivityHTMxTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
     table_class     = None
     queryset        = None
     filterset_class = None
-    paginate_by     = 1000
+    paginate_by     = 100
 
     def setup(self, *args, **kwargs):
         super().setup(*args, **kwargs)

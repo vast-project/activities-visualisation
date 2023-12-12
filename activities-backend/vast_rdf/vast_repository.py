@@ -43,6 +43,7 @@ class RDFStoreObject:
     # Activity
     event:                 URIRef  = None
     ch_artifact:          [Literal]= None
+    europeana_ch_artifact:[URIRef] = None
     europeana_uriref:      URIRef  = None
 
     # Stimulus
@@ -158,6 +159,10 @@ class RDFStoreObject:
         if (self.ch_artifact):
             for a in self.ch_artifact:
                 graph.add((self.id, NAMESPACE_VAST.vastAssociatedCHArtifact, a))
+        if (self.europeana_ch_artifact):
+            for a in self.europeana_ch_artifact:
+                graph.add((self.id, NAMESPACE_VAST.vastAssociatedEuropeanaCHArtifact, a))
+
         if (self.europeana_uriref):     graph.add((self.id, NAMESPACE_VAST.vastExternalArtifactURIRef, self.europeana_uriref))
 
         # Stimulus
@@ -280,6 +285,8 @@ class RDFVAST:
                 T = self.vast.vastEvent
             case "Context":
                 T = self.vast.vastContext
+            case "EuropeanaCulturalHeritageArtifact":
+                T = self.vast.vastEuropeanaCulturalHeritageArtifact
             case "Activity":
                 T = self.vast.vastActivity
             case "Stimulus":
@@ -480,6 +487,11 @@ class RDFStoreVAST(RDFVAST):
     # def Nature(self, obj):
     #     robj = self.createVASTObject(obj, self.vast.vastNature)
 
+    def EuropeanaCulturalHeritageArtifact(self, obj): # RDF Checked
+        robj = self.createVASTObject(obj, self.classNameToRDFType(obj))
+        if obj.europeana_uriref:         robj.europeana_uriref = URIRef(obj.europeana_uriref)
+        robj.add(self.g)
+
     def Activity(self, obj):
         robj = self.createVASTObject(obj, self.vast.vastActivity)
         if obj.document_resource_id:     robj.document_resource_id = Literal(obj.document_resource_id, datatype=XSD.integer)
@@ -488,7 +500,10 @@ class RDFStoreVAST(RDFVAST):
             robj.ch_artifact = []
             for v in obj.ch_artifact.all():
                 robj.ch_artifact.append(self.getLiteral(v))
-        if obj.europeana_uriref:         robj.europeana_uriref = URIRef(obj.document_uriref)
+        if obj.europeana_ch_artifact:
+            robj.europeana_ch_artifact = []
+            for v in obj.europeana_ch_artifact.all():
+                robj.europeana_ch_artifact.append(self.getURI(v))
         robj.age = self.getURIRef(self.vast.vastAge, obj.age)
         robj.add(self.g)
 

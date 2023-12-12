@@ -334,6 +334,10 @@ class Nature(VASTObject_NameUnique):
 class CulturalHeritageArtifact(VASTObject_NameUnique):
     pass
 
+class EuropeanaCulturalHeritageArtifact(VASTObject_NameUnique):
+    europeana_uriref         = models.URLField(max_length=8000, null=True, blank=True)
+
+
 def Activity_remove_spaces_from_image_filename(instance, filename):
     filename_without_spaces = os.path.basename(filename)
     filename_without_spaces = filename_without_spaces.replace(' ', '_')  # Replace spaces with underscores
@@ -350,7 +354,7 @@ class Activity(VASTDAMDocument, VASTObject_NameUserGroupUnique):
     document_uriref          = models.URLField(max_length=512, null=True, blank=True)
     ch_artifact              = models.ManyToManyField('CulturalHeritageArtifact', default=None, blank=True, verbose_name="CH Artifacts")
     age                      = models.ForeignKey('Age',          on_delete=models.CASCADE, default=None, null=True,  blank=True, verbose_name="Designed for Ages")
-    europeana_uriref         = models.URLField(max_length=8000, null=True, blank=True)
+    europeana_ch_artifact    = models.ManyToManyField('EuropeanaCulturalHeritageArtifact', default=None, blank=True, verbose_name="Europeana Artifacts")
 
     class Meta(VASTObject_NameUserGroupUnique.Meta):
         verbose_name_plural = 'Activities'

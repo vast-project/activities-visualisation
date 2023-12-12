@@ -31,6 +31,8 @@ router.register(r'events',                views.EventViewSet)
 router.register(r'contexts',              views.ContextViewSet)
 router.register(r'natures',               views.NatureViewSet)
 router.register(r'educations',            views.EducationViewSet)
+router.register(r'ch_artifacts',          views.CulturalHeritageArtifactViewSet)
+router.register(r'europeana_ch_artifacts',views.EuropeanaCulturalHeritageArtifactViewSet)
 router.register(r'activities',            views.ActivityViewSet)
 router.register(r'stimuli',               views.StimulusViewSet)
 router.register(r'activity_steps',        views.ActivityStepViewSet)
@@ -65,6 +67,7 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/',      include('activity_data.urls')),
+    path('api/rdf/',  include ('vast_rdf.urls')),
     path('rest/',     include(router.urls), name="rest"),
     path('digitisation/', include('digitisation.urls')),
     path('dashboards/',   include('dashboards.urls')),

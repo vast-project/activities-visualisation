@@ -79,6 +79,16 @@ class EducationSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelS
         model = Education
         fields = '__all__'
 
+class CulturalHeritageArtifactSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
+    class Meta:
+        model = CulturalHeritageArtifact
+        fields = '__all__'
+
+class EuropeanaCulturalHeritageArtifactSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
+    class Meta:
+        model = EuropeanaCulturalHeritageArtifact
+        fields = '__all__'
+
 class ActivitySerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
     class Meta:
         model = Activity

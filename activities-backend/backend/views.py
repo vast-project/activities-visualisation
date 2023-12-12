@@ -93,6 +93,28 @@ class EducationViewSet(viewsets.ModelViewSet):
     search_fields = ['name']
 
 
+class CulturalHeritageArtifactViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows CulturalHeritageArtifact objects to be viewed or edited.
+    """
+    queryset = CulturalHeritageArtifact.objects.all()
+    serializer_class = CulturalHeritageArtifactSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
+    search_fields = ['name']
+
+
+class EuropeanaCulturalHeritageArtifactViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows EuropeanaCulturalHeritageArtifact objects to be viewed or edited.
+    """
+    queryset = EuropeanaCulturalHeritageArtifact.objects.all()
+    serializer_class = EuropeanaCulturalHeritageArtifactSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filterset_fields = '__all__'
+    search_fields = ['name']
+
+
 class ActivityViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows Activity objects to be viewed or edited.

@@ -211,7 +211,7 @@ for model in (Language, Gender, Nature, Education, Nationality,
               OrganisationType, Context,
               ProductType, DigitisationApplication,
               ConceptType, Predicate,
-              CulturalHeritageArtifact, ):
+              CulturalHeritageArtifact, EuropeanaCulturalHeritageArtifact):
     admin.site.register(model, ReadonlyFieldsAdmin)
     model.set_fields_verbose_names()
 
