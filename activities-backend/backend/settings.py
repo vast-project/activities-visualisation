@@ -206,6 +206,9 @@ CORS_ORIGIN_ALLOW_ALL=True
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
 ]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.+\.vast-project\.eu$",
+]
 CORS_ALLOW_ALL_ORIGINS=True
 
 REST_FRAMEWORK = {

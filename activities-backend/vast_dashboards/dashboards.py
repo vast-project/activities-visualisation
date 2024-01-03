@@ -15,13 +15,13 @@ class VASTDashboardMixin:
         context.update({'segment': f'dashboards:vast_dashboards_{self.__class__.__name__.lower()}'})
         # print("VASTDashboard: get_context()", context)
         return context
-    class Media:
-        js = ("dashboards/js/dashboard.js",
-              "dashboards/vendor/js/plotly.min.js",
-              "dashboards/vendor/js/datatables.min.js")
-        css = {
-            "all": ("dashboards/vendor/css/datatables.min.css",),
-        }
+    # class Media:
+    #     js = ("dashboards/js/dashboard.js",
+    #           "dashboards/vendor/js/plotly.min.js",
+    #           "dashboards/vendor/js/datatables.min.js")
+    #     css = {
+    #         "all": ("dashboards/vendor/css/datatables.min.css",),
+    #     }
 
 
 class ActivitiesForm(DashboardForm):
@@ -43,10 +43,10 @@ class ActivitySerializer(TableSerializer):
         model = Activity
 
 class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
-    welcome = Text(value="Welcome to Django Dashboards!")
+    welcome = Text(value="VAST Activities")
     # activities_form = Form(form=ActivitiesForm,)
     # animals = Chart(defer=DashboardData.fetch_animals)
-    activities_table = Table(value=ActivitySerializer)
+    activities_table = Table(value=ActivitySerializer, grid_css_classes="span-12")
 
     class Meta:
         name = "Activities"

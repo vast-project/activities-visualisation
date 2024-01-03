@@ -1,0 +1,18 @@
+body .dashboards {
+  padding: 1em;
+  margin: 0 auto;
+  max-width: 100%;
+  min-height: 80vh;
+  background: var(--root-background);
+  color: var(--color-text-primary);
+}
+
+.light .dashboards {
+  background-color: #f8f9fa;
+  background: #f8f9fa;
+}
+
+.dark .dashboards {
+  background-color: #283149;
+  background: #283149;
+}

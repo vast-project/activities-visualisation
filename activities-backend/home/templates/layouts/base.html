@@ -30,6 +30,7 @@
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     <link href="{% static 'css/nucleo-svg.css' %}" rel="stylesheet" />
     <!-- CSS Files -->
+    {% block extrastyle_top %}{% endblock extrastyle_top %}
     <link id="pagestyle" href="{% static 'css/soft-ui-dashboard.css' %}" rel="stylesheet" />
     <link id="pagestyle_dark" href="{% static 'css/dark-theme-core.css' %}" rel="stylesheet" />
     <!-- jQuery (needed for django-location-field) -->
@@ -56,9 +57,9 @@
 
 </head>
 
-{% tracking_code %}
-
 <body class="g-sidenav-show bg-gray-100" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+
+{% tracking_code %}
 
     {% include "includes/sidebar.html" %}
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
@@ -67,6 +68,7 @@
             {% block content_title %}{% endblock content_title %}
             <div class="content">
                 {% block content %}{% endblock content %}
+		{% block content_footer %}{% endblock content_footer %}
             </div>
         {% endblock body %}
     </main>
