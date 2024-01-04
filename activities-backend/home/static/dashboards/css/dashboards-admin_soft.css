@@ -16,3 +16,26 @@ body .dashboards {
   background-color: #283149;
   background: #283149;
 }
+
+.table-description, .dashboards .table-description {
+  table-layout: fixed;
+  width: 100%;
+  word-wrap: break-word;
+  white-space: normal;
+  text-align: start;
+  font-size: 0.9em;
+}
+
+.table-description td, .table-description th,
+.dashboards .table-description td, .dashboards .table-description th {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.table-description th:nth-child(1) {
+  width: 25% !important;
+}
+
+.table-description th:nth-child(2) {
+  width: 75% !important;
+}

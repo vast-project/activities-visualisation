@@ -1,7 +1,8 @@
 from django import forms
 from dashboards.dashboard import Dashboard, ModelDashboard
-from dashboards.component import Text, Chart, Table, Form
-from dashboards.component.table import TableSerializer
+from dashboards.component import Text, Chart, Table, Form, BasicTable
+from dashboards.component.table import TableSerializer, SerializedTable
+from dashboards.component.layout import ComponentLayout, HTML, Card, Header, Div
 from dashboards.forms import DashboardForm
 from dashboards.registry import registry
 
@@ -51,13 +52,64 @@ class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
     class Meta:
         name = "Activities"
 
+# https://www.djangodashboards.com/
 class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
-    welcome = Text(value="Welcome to Django Dashboards!")
+    name = Text(mark_safe=True, icon='<i class="fa-up"></i>', grid_css_classes="span-12")
+    details = BasicTable(css_classes="table table-hover align-middle table-description", grid_css_classes="span-12")
     animals = Chart(defer=DashboardData.fetch_animals)
 
     class Meta:
         name = "Activity"
         model = Activity
+
+    class Layout(Dashboard.Layout):
+        components = ComponentLayout(
+            Card(
+                 Div("details",
+                     css_classes={"wrapper":"table-responsive"}, grid_css_classes="span-12"),
+                 #heading="\uf19c  Activity",
+                 grid_css_classes="span-12"
+            ),
+            "animals",
+            grid_css_classes="span-12"
+        )
+
+    def get_name_value(self, **kwargs):
+        print("get_name", self.object, self.object.name, kwargs)
+
+        ch_artifacts = []
+        for a in self.object.ch_artifact.all():
+            ch_artifacts.append(a.name)
+
+        content = f"<h4><i class=\"fa-solid fa-building-columns\"></i> Activity: &quot;{self.object.name}&quot;</h4>"
+        return content
+
+    def get_details_value(self, **kwargs):
+        data = [
+            {
+                "attribute": "<strong>Description</strong>:",
+                "value":     self.object.description
+            },
+            {
+                "attribute": "<strong>Age</strong>:",
+                "value":     self.object.age
+            },
+            {
+                "attribute": "<strong>VAST Annotated Cultural Heritage Artifacts</strong>:",
+                "value":     ', '.join([a.name for a in self.object.ch_artifact.all()])
+            },
+            {
+                "attribute": "<strong>Europeana Annotated Cultural Heritage Artifacts</strong>:",
+                "value":     ', '.join([f'<a href="{a.europeana_uriref}" target="_blank">&quot;{a.name}&quot;</a>' for a in self.object.europeana_ch_artifact.all()])
+            },
+        ]
+        return SerializedTable(
+            columns={"attribute": "<i class=\"fa-solid fa-building-columns\"></i> Activity:",
+                     "value": self.object.name},
+            data=data,
+            columns_datatables=[],
+            order=[],
+        )
 
 registry.register(ActivitiesDashboard)
 registry.register(ActivityDashboard)
