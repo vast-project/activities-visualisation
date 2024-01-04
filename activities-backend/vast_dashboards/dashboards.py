@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from collections import Counter
 from django import forms
 from django.utils.safestring import mark_safe
 from django.db.models import Q
@@ -15,11 +16,17 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+
 from vast_dashboards.data import DashboardData
 
 from activity_data.models import *
 
 from vast_rdf.vast_dam import DAMStoreVAST
+
+from .components import SVGChart
+from .serializers import SVGChartSerializer
 
 class VASTDashboardMixin:
     def get_context(self, **kwargs) -> dict:
@@ -155,6 +162,54 @@ class EventGanttSerialiser(ChartSerializer):
     class Meta:
         title = "Event Timeline"
 
+class ActivityWordcloudSerialiser(SVGChartSerializer):
+    def get_data(self, *args, filters=None, **kwargs) -> Counter:
+        if 'object' in kwargs:
+            statements = Statement.objects.filter(product__activity_step__activity__pk=kwargs['object'].pk)
+            product_statements = ProductStatement.objects.filter(subject__activity_step__activity__pk=kwargs['object'].pk)
+        else:
+            statements = Statement.objects.all()
+            product_statements = ProductStatement.objects.all()
+        eng = Counter()
+        local = Counter()
+        for s in statements:
+            eng[s.subject.name] += 1
+            eng[s.object.name]  += 1
+        for s in product_statements:
+            eng[s.object.name]  += 1
+        if not len(eng):
+            eng['empty'] += 1
+        return eng
+
+    def to_svg(self, data):
+        layout = {}
+        for attr in self.meta_layout_attrs:
+            layout[attr] = getattr(self._meta, attr)
+
+        if len(data):
+            wordcloud = WordCloud(**layout).generate_from_frequencies(dict(data))
+            return wordcloud.to_svg()
+        return ""
+
+    class Meta:
+        height = 450
+        width  = 500
+
+class ActivityWordHistogramSerialiser(ChartSerializer):
+    def get_data(self, *args, filters=None, **kwargs) -> pd.DataFrame:
+        counter = ActivityWordcloudSerialiser().get_data(*args, filters=filters, **kwargs)
+        data = [dict(word=i[0], count=i[1]) for i in counter.most_common()]
+        return pd.DataFrame(data)
+
+    def to_fig(self, df):
+        fig = px.bar(df, x="word", y="count", color="word")
+        fig.update_layout(
+            xaxis_title="Value Frequency",
+            yaxis_title=None,
+        )
+        fig.update_layout(margin=dict(l=20, r=20, t=40, b=20),)
+        return fig
+
 class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
     welcome = Text(value="VAST Activities")
     # activities_form = Form(form=ActivitiesForm,)
@@ -172,6 +227,9 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
     who     = Stat()
     where   = Map(value=EventMapSerializer)
     when    = Chart(value=EventGanttSerialiser)
+
+    cloud   = SVGChart(value=ActivityWordcloudSerialiser)
+    histo   = Chart(value=ActivityWordHistogramSerialiser)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -200,6 +258,9 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
             Card("who",   heading="Who",   grid_css_classes="span-12"),
             Card("where", heading="Where", grid_css_classes="span-6"),
             Card("when",  heading="When",  grid_css_classes="span-6"),
+            Card("cloud", heading="Value Cloud",  grid_css_classes="span-6"),
+            Card("histo", heading="Value Histogram",  grid_css_classes="span-6"),
+
             grid_css_classes="span-12"
         )
 

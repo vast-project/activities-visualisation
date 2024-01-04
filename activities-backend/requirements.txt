@@ -29,3 +29,4 @@ markdown
 fontawesomefree
 pandas
 plotly
+wordcloud

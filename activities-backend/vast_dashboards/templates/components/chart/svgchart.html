@@ -1,0 +1,7 @@
+<div id="{{ template_id }}" class="{{ css_classes|default_if_none:"" }}">
+{% if component.mark_safe %}
+{{ rendered_value|safe }}
+{% else %}
+{{ rendered_value }}
+{% endif %}
+</div>
