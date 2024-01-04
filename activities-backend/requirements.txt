@@ -27,3 +27,5 @@ python-dateutil
 requests
 markdown
 fontawesomefree
+pandas
+plotly

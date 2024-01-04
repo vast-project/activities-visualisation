@@ -17,25 +17,61 @@ body .dashboards {
   background: #283149;
 }
 
-.table-description, .dashboards .table-description {
+.dashboards .dashboard-component-inner {
+  padding: 0.5rem;
+}
+
+.table-description, .dashboards .table-description,
+.table-left, .dashboards .table-left {
   table-layout: fixed;
   width: 100%;
   word-wrap: break-word;
   white-space: normal;
   text-align: start;
-  font-size: 0.9em;
+  font-size: 1rem;
+  & a {
+    font-size: 1rem;
+  }
+}
+
+.font-size-075 {
+  font-size: 0.75rem !important;
+  & a {
+    font-size: 0.75rem !important;
+  }
 }
 
 .table-description td, .table-description th,
-.dashboards .table-description td, .dashboards .table-description th {
+.dashboards .table-description td, .dashboards .table-description th,
+.table-left td, .dashboards .table-left td,
+.table-left th, .dashboards .table-left th {
   word-wrap: break-word;
   white-space: normal;
 }
 
-.table-description th:nth-child(1) {
-  width: 25% !important;
+.table-description th:first-child {
+  width: 15% !important;
 }
 
 .table-description th:nth-child(2) {
-  width: 75% !important;
+  /*width: calc(75% - 80px) !important;*/
+}
+
+.table-description th:last-child {
+  width: 164px !important;
+}
+
+.table-last-fit th:last-child {
+  width: 1%;
+  white-space: nowrap;
+}
+
+hr {
+  background: var(--bs-heading-color);
+}
+
+.activity-card .header-title::before {
+  font: var(--fa-font-solid);
+  content: "\f19c";
+  padding-right: 10px;
 }

@@ -1,14 +1,25 @@
+from datetime import datetime, timedelta
 from django import forms
+from django.utils.safestring import mark_safe
+from django.db.models import Q
 from dashboards.dashboard import Dashboard, ModelDashboard
-from dashboards.component import Text, Chart, Table, Form, BasicTable
+from dashboards.component import Text, Chart, Table, Form, BasicTable, CTA, Map
+from dashboards.component.text import Stat, StatData
 from dashboards.component.table import TableSerializer, SerializedTable
-from dashboards.component.layout import ComponentLayout, HTML, Card, Header, Div
+from dashboards.component.layout import ComponentLayout, HTML, Card, Header, Div, HR
+from dashboards.component.chart import ChartSerializer
 from dashboards.forms import DashboardForm
 from dashboards.registry import registry
+
+import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
 
 from vast_dashboards.data import DashboardData
 
 from activity_data.models import *
+
+from vast_rdf.vast_dam import DAMStoreVAST
 
 class VASTDashboardMixin:
     def get_context(self, **kwargs) -> dict:
@@ -43,6 +54,107 @@ class ActivitySerializer(TableSerializer):
         order = ["-name"]
         model = Activity
 
+class ActivityStepSerializer(TableSerializer):
+
+    @staticmethod
+    def get_data(filters, **kwargs):
+        if 'object' in kwargs:
+            objects = ActivityStep.objects.filter(activity__pk=kwargs['object'].pk)
+        else:
+            objects = ActivityStep.objects.all()
+        return [{
+                    'name': o.name,
+                    'stm_name': f'<a>{o.stimulus.name}</a>',
+                    'stm_type': o.stimulus.stimulus_type,
+                } for o in objects]
+
+    class Meta:
+        title = "Activity Steps"
+        columns = {
+            "name": "Activity Step Name",
+            "stm_name": "Stimulus Name",
+            "stm_type": "Stimulus Type",
+        }
+        order = ["-name"]
+
+class EventMapSerializer(ChartSerializer):
+    def get_data(self, *args, filters=None, **kwargs) -> pd.DataFrame:
+        if 'object' in kwargs:
+            objects = Event.objects.filter(activity__pk=kwargs['object'].pk)
+        else:
+            objects = Event.objects.all()
+
+        return pd.DataFrame(
+            [
+                {
+                    "lat": float(e.location.split(",")[0]),
+                    "lon": float(e.location.split(",")[1]),
+                    "text": f"{e.city}",
+                }
+                for e in objects
+            ]
+        )
+
+    def to_fig(self, data):
+        fig = go.Figure()
+
+        if data is None:
+            fig.add_trace(go.Scattergeo())
+        else:
+            fig.add_trace(
+                go.Scattergeo(
+                    lon=data["lon"],
+                    lat=data["lat"],
+                    hoverinfo="text",
+                    text=data["text"],
+                    mode="lines+markers",
+                )
+            )
+            fig.update_layout(
+                geo={
+                    "lonaxis": {
+                        "range": [min(data["lon"]) - 10, max(data["lon"]) + 10],
+                    },
+                    "lataxis": {
+                        "range": [min(data["lat"]) - 10, max(data["lat"]) + 10],
+                    },
+                }
+            )
+            fig.update_layout(margin=dict(l=0, r=0, t=40, b=20),)
+
+        return fig
+    class Meta:
+        title = "Event Locations"
+
+class EventGanttSerialiser(ChartSerializer):
+    def get_data(self, *args, filters=None, **kwargs) -> pd.DataFrame:
+        if 'object' in kwargs:
+            objects = Event.objects.filter(activity__pk=kwargs['object'].pk)
+        else:
+            objects = Event.objects.all()
+        # data = [dict(Task=e.name,
+        #              Start=e.date_from if e.date_from else e.date,
+        #              Finish=e.date_to if e.date_to else e.date + timedelta(hours=24)) for e in objects]
+        data = []
+        for e in objects:
+            start = e.date_from if e.date_from else e.date
+            end   = e.date_to if e.date_to else e.date
+            if start == end:
+                end += timedelta(hours=24)
+            data.append(dict(Task=f'{e.name} ({e.city})', Start=start, Finish=end, Location=e.city))
+        return pd.DataFrame(data)
+
+    def to_fig(self, data):
+        fig = px.timeline(data, x_start="Start", x_end="Finish", y="Task")
+        #fig.update_layout(autosize=True, width=200, height=200,)
+        fig.update_yaxes(autorange="reversed") # otherwise tasks are listed from the bottom up
+        fig.update_yaxes(visible=False, showticklabels=False)
+        fig.update_layout(margin=dict(l=20, r=20, t=40, b=20),)
+        return fig
+
+    class Meta:
+        title = "Event Timeline"
+
 class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
     welcome = Text(value="VAST Activities")
     # activities_form = Form(form=ActivitiesForm,)
@@ -54,9 +166,19 @@ class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
 
 # https://www.djangodashboards.com/
 class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
-    name = Text(mark_safe=True, icon='<i class="fa-up"></i>', grid_css_classes="span-12")
+    name    = Text(mark_safe=True)
     details = BasicTable(css_classes="table table-hover align-middle table-description", grid_css_classes="span-12")
-    animals = Chart(defer=DashboardData.fetch_animals)
+    steps   = Table(value=ActivityStepSerializer, css_classes="table table-hover align-middle table-left font-size-075", grid_css_classes="span-12")
+    who     = Stat()
+    where   = Map(value=EventMapSerializer)
+    when    = Chart(value=EventGanttSerialiser)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        dam = DAMStoreVAST()
+        json_data = dam.get_resource(self.object.document_resource_id)
+        self.thm_url = dam.get_size(json_data, size='thm')['url']
+        del dam
 
     class Meta:
         name = "Activity"
@@ -67,10 +189,17 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
             Card(
                  Div("details",
                      css_classes={"wrapper":"table-responsive"}, grid_css_classes="span-12"),
-                 #heading="\uf19c  Activity",
-                 grid_css_classes="span-12"
+                 HR(),
+                 Header(heading="Steps and Stimuli", size=4),
+                 Div("steps",
+                     css_classes={"wrapper":"table-responsive"}, grid_css_classes="span-6"),
+                 heading = mark_safe("<i class=\"fa-solid fa-building-columns me-3\"></i>Activity"),
+                 actions = [("http://google.com", "Google")],
+                 css_classes="card", grid_css_classes="span-12"
             ),
-            "animals",
+            Card("who",   heading="Who",   grid_css_classes="span-12"),
+            Card("where", heading="Where", grid_css_classes="span-6"),
+            Card("when",  heading="When",  grid_css_classes="span-6"),
             grid_css_classes="span-12"
         )
 
@@ -84,32 +213,62 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
         content = f"<h4><i class=\"fa-solid fa-building-columns\"></i> Activity: &quot;{self.object.name}&quot;</h4>"
         return content
 
+    def get_thm_value(self, **kwards):
+        return f'<a href="{self.object.document_uriref}" target="_blank"><img src="{self.thm_url}" width="141px"</a>'
+
     def get_details_value(self, **kwargs):
         data = [
             {
                 "attribute": "<strong>Description</strong>:",
-                "value":     self.object.description
+                "value":     self.object.description,
+                "handbook":  self.get_thm_value(**kwargs),
             },
             {
                 "attribute": "<strong>Age</strong>:",
-                "value":     self.object.age
+                "value":     self.object.age,
+                "handbook":  ""
             },
             {
                 "attribute": "<strong>VAST Annotated Cultural Heritage Artifacts</strong>:",
-                "value":     ', '.join([a.name for a in self.object.ch_artifact.all()])
+                "value":     ', '.join([a.name for a in self.object.ch_artifact.all()]),
+                "handbook":  ""
             },
             {
                 "attribute": "<strong>Europeana Annotated Cultural Heritage Artifacts</strong>:",
-                "value":     ', '.join([f'<a href="{a.europeana_uriref}" target="_blank">&quot;{a.name}&quot;</a>' for a in self.object.europeana_ch_artifact.all()])
+                "value":     ', '.join([f'<a href="{a.europeana_uriref}" target="_blank">&quot;{a.name}&quot;</a>' for a in self.object.europeana_ch_artifact.all()]),
+                "handbook":  ""
             },
         ]
         return SerializedTable(
             columns={"attribute": "<i class=\"fa-solid fa-building-columns\"></i> Activity:",
-                     "value": self.object.name},
+                     "value": self.object.name, "handbook": "Handbook"},
             data=data,
             columns_datatables=[],
             order=[],
         )
+
+    def get_who_value(self, **kwargs):
+
+        s_c  = Statement.objects.filter(product__activity_step__activity__pk=self.object.pk).count()
+        ps_c = ProductStatement.objects.filter(subject__activity_step__activity__pk=self.object.pk).count()
+        sep = ", "
+        content = f"<strong>Events</strong>: {Event.objects.filter(activity__pk=self.object.pk).count()}"
+        content += sep
+        content += f"<strong>Participants</strong>: {Visitor.objects.filter(activity__pk=self.object.pk).count()}"
+        content += sep
+        content += f"<strong>Products</strong>: {Product.objects.filter(activity_step__activity__pk=self.object.pk).count()}"
+        content += sep
+        content += f"<strong>Statements</strong>: {s_c + ps_c}"
+        sub_content = f"<strong>Statements</strong>: {s_c}"
+        sub_content += sep
+        sub_content += f"<strong>Product Statements</strong>: {ps_c}"
+
+        return StatData(
+            text=mark_safe(content),
+            sub_text = mark_safe(sub_content),
+        )
+
+
 
 registry.register(ActivitiesDashboard)
 registry.register(ActivityDashboard)
