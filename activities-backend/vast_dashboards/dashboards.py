@@ -28,6 +28,10 @@ from vast_rdf.vast_dam import DAMStoreVAST
 from .components import SVGChart
 from .serializers import SVGChartSerializer
 
+def register(cls):
+    registry.register(cls)
+    return cls
+
 class VASTDashboardMixin:
     def get_context(self, **kwargs) -> dict:
         context = super().get_context(**kwargs)
@@ -71,7 +75,7 @@ class ActivityStepSerializer(TableSerializer):
             objects = ActivityStep.objects.all()
         return [{
                     'name': o.name,
-                    'stm_name': f'<a>{o.stimulus.name}</a>',
+                    'stm_name': f'<a href="{o.stimulus.get_dashboard_absolute_url()}" target="_blank">{o.stimulus.name}</a>',
                     'stm_type': o.stimulus.stimulus_type,
                 } for o in objects]
 
@@ -248,6 +252,7 @@ class ActivityProductImagesSerializer(TableSerializer):
             "img8": "Image",
         }
 
+@register
 class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
     welcome = Text(value="VAST Activities")
     # activities_form = Form(form=ActivitiesForm,)
@@ -258,8 +263,9 @@ class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
         name = "Activities"
 
 # https://www.djangodashboards.com/
+@register
 class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
-    name    = Text(mark_safe=True)
+    # name    = Text(mark_safe=True)
     details = BasicTable(css_classes="table table-hover align-middle table-description", grid_css_classes="span-12")
     steps   = Table(value=ActivityStepSerializer, css_classes="table table-hover align-middle table-left font-size-075", grid_css_classes="span-12")
     who     = Stat()
@@ -294,7 +300,7 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
                  Div("steps",
                      css_classes={"wrapper":"table-responsive"}, grid_css_classes="span-6"),
                  heading = mark_safe("<i class=\"fa-solid fa-building-columns me-3\"></i>Activity"),
-                 actions = [("http://google.com", "Google")],
+                 #actions = [("http://google.com", "Google")],
                  css_classes="card", grid_css_classes="span-12"
             ),
             Card("who",   heading="Who",   grid_css_classes="span-12"),
@@ -309,12 +315,6 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
         )
 
     def get_name_value(self, **kwargs):
-        print("get_name", self.object, self.object.name, kwargs)
-
-        ch_artifacts = []
-        for a in self.object.ch_artifact.all():
-            ch_artifacts.append(a.name)
-
         content = f"<h4><i class=\"fa-solid fa-building-columns\"></i> Activity: &quot;{self.object.name}&quot;</h4>"
         return content
 
@@ -375,5 +375,272 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
             sub_text = mark_safe(sub_content),
         )
 
-registry.register(ActivitiesDashboard)
-registry.register(ActivityDashboard)
+class VASTModelDashboard(VASTDashboardMixin, ModelDashboard):
+    name    = Text(mark_safe=True, grid_css_classes="span-12")
+    details = BasicTable(css_classes="table table-hover align-middle table-description-2", grid_css_classes="span-12")
+
+    def get_icon(self, classes=''):
+        return f'<i class="fa-solid fa-box {classes}"></i>'
+
+    def get_class_name(self):
+        return self._meta.model._meta.model.__name__
+
+    def get_name_value(self, **kwargs):
+        content = f'<h4>{self.get_icon("me-3")} {self.get_class_name()}: &quot;{self.object.name}&quot;</h4>'
+        return content
+
+    def get_details_columns(self):
+        return {"attribute": self.get_icon() + ' ' + self.get_class_name() + ':',
+                     "value": self.object.name}
+    def get_details_attributes(self):
+        print([f.name for f in self.object._meta.get_fields()])
+        return [f.name for f in self.object._meta.get_fields()]
+    def get_details_data_attribute_hide_fields(self):
+        return ('id', 'uuid', 'name_md5', 'created', 'updated', 'created_by')
+    def get_details_data_attribute_show(self, a, v):
+        if a in self.get_details_data_attribute_hide_fields():
+            return False
+        return True if v else False
+    def get_details_data_attribute_name(self, a, v):
+        return f"<strong>{a.replace('_', ' ').title()}</strong>:"
+    def get_details_data_attribute_value(self, a, v):
+        if isinstance(v, AutoUpdateTimeFields):
+            url = v.get_dashboard_absolute_url()
+            if url:
+                return f'<a href="{url}" target="_blank">{v.name} <i class="fa-solid fa-arrow-up-right-from-square ms-3"></i></a>'
+            return v.name
+        return f'<a href="{v}" target="_blank">{v}</a>' if isinstance(v, str) and v.startswith('http') else v
+    def get_details_data(self):
+        for a in self.get_details_attributes():
+            print(a, getattr(self.object, a, None), type(getattr(self.object, a, None)))
+        return [{
+                    "attribute": self.get_details_data_attribute_name(a, v),
+                    "value":     self.get_details_data_attribute_value(a, v),
+                } for a in self.get_details_attributes() if (self.get_details_data_attribute_show(a, v := getattr(self.object, a, None)))]
+
+    def get_details_value(self, **kwargs):
+        return SerializedTable(
+            columns=self.get_details_columns(),
+            data=self.get_details_data(),
+            columns_datatables=[],
+            order=[],
+        )
+
+    class _Layout(Dashboard.Layout):
+        def __init__(self, dashboard):
+            self.dashboard = dashboard
+            self.components = ComponentLayout(
+                Card("name", "details",
+                    heading = mark_safe(f'{self.dashboard.get_icon("me-3")} {self.dashboard.get_class_name()}'),
+                    css_classes="card", grid_css_classes="span-12"
+                ),
+            )
+    def Layout(self):
+        return self._Layout(self)
+
+@register
+class StimulusDashboard(VASTModelDashboard):
+
+    def get_icon(self, classes=''):
+        match self.object.stimulus_type:
+            case 'Document':
+                icon = f'<i class="fa-regular fa-file {classes}"></i>'
+            case 'Segment':
+                icon = f'<i class="fa-solid fa-bars-staggered {classes}"></i>'
+            case 'Image':
+                icon = f'<i class="fa-regular fa-image {classes}"></i>'
+            case 'Audio':
+                icon = f'<i class="fa-regular fa-file-audio {classes}"></i>'
+            case 'Video':
+                icon = f'<i class="fa-regular fa-file-video {classes}"></i>'
+            case 'Game':
+                icon = f'<i class="fa-solid fa-gamepad {classes}"></i>'
+            case 'Presentation':
+                icon = f'<i class="fa-solid fa-person-chalkboard {classes}"></i>'
+            case 'Tool':
+                icon = f'<i class="fa-solid fa-gear {classes}"></i>'
+            case 'Questionnaire':
+                icon = f'<i class="fa-solid fa-question {classes}"></i>'
+            case 'Live Performance':
+                icon = f'<i class="fa-solid fa-ear-listen {classes}"></i>'
+            case 'Senses':
+                icon = ''
+            case 'Template':
+                icon = f'<i class="fa-regular fa-file-lines {classes}"></i>'
+            case 'Template Mind-Map':
+                icon = f'<i class="fa-solid fa-diagram-project {classes}"></i>'
+            case _:
+                icon = ''
+        return icon
+
+    def get_name_value(self, **kwargs):
+        return f'<h4>{self.get_icon("me-6 fs-1")} {self.get_class_name()}: &quot;{self.object.name}&quot;</h4>'
+
+    class Meta:
+        model = Stimulus
+
+@register
+class ActivityStepDashboard(VASTModelDashboard):
+    class Meta:
+        model = ActivityStep
+
+@register
+class EventDashboard(VASTModelDashboard):
+    class Meta:
+        model = Event
+
+@register
+class VisitorGroupDashboard(VASTModelDashboard):
+    class Meta:
+        model = VisitorGroup
+
+@register
+class VisitorDashboard(VASTModelDashboard):
+    class Meta:
+        model = Visitor
+
+@register
+class VirtualVisitorDashboard(VASTModelDashboard):
+    class Meta:
+        model = VirtualVisitor
+
+@register
+class ProductDashboard(VASTModelDashboard):
+    class Meta:
+        model = Product
+
+@register
+class ProductStatementDashboard(VASTModelDashboard):
+    class Meta:
+        model = ProductStatement
+
+@register
+class StatementDashboard(VASTModelDashboard):
+    class Meta:
+        model = Statement
+
+@register
+class QuestionnaireEntryDashboard(VASTModelDashboard):
+    class Meta:
+        model = QuestionnaireEntry
+
+@register
+class QuestionnaireQuestionDashboard(VASTModelDashboard):
+    class Meta:
+        model = QuestionnaireQuestion
+
+@register
+class QuestionnaireAnswerDashboard(VASTModelDashboard):
+    class Meta:
+        model = QuestionnaireAnswer
+
+@register
+class AgeDashboard(VASTModelDashboard):
+    class Meta:
+        model = Age
+
+@register
+class EducationDashboard(VASTModelDashboard):
+    class Meta:
+        model = Education
+
+@register
+class NationalityDashboard(VASTModelDashboard):
+    class Meta:
+        model = Nationality
+
+@register
+class OrganisationDashboard(VASTModelDashboard):
+    class Meta:
+        model = Organisation
+
+@register
+class OrganisationTypeDashboard(VASTModelDashboard):
+    class Meta:
+        model = OrganisationType
+
+@register
+class LanguageDashboard(VASTModelDashboard):
+    class Meta:
+        model = Language
+
+@register
+class ClassDashboard(VASTModelDashboard):
+    class Meta:
+        model = Class
+
+@register
+class ContextDashboard(VASTModelDashboard):
+    class Meta:
+        model = Context
+
+@register
+class NatureDashboard(VASTModelDashboard):
+    class Meta:
+        model = Nature
+
+@register
+class CulturalHeritageArtifactDashboard(VASTModelDashboard):
+    class Meta:
+        model = CulturalHeritageArtifact
+
+@register
+class EuropeanaCulturalHeritageArtifactDashboard(VASTModelDashboard):
+    class Meta:
+        model = EuropeanaCulturalHeritageArtifact
+
+@register
+class GenderDashboard(VASTModelDashboard):
+    class Meta:
+        model = Gender
+
+@register
+class ProductTypeDashboard(VASTModelDashboard):
+    class Meta:
+        model = ProductType
+
+@register
+class ConceptTypeDashboard(VASTModelDashboard):
+    class Meta:
+        model = ConceptType
+
+@register
+class ConceptDashboard(VASTModelDashboard):
+    class Meta:
+        model = Concept
+
+@register
+class PredicateDashboard(VASTModelDashboard):
+    class Meta:
+        model = Predicate
+
+@register
+class ProductAnnotationDashboard(VASTModelDashboard):
+    class Meta:
+        model = ProductAnnotation
+
+@register
+class DigitisationApplicationDashboard(VASTModelDashboard):
+    class Meta:
+        model = DigitisationApplication
+
+@register
+class VisitorGroupQRCodeDashboard(VASTModelDashboard):
+    class Meta:
+        model = VisitorGroupQRCode
+
+#registry.register(ActivitiesDashboard)
+#registry.register(ActivityDashboard)
+#registry.register(StimulusDashboard)
+#registry.register(ActivityStepDashboard)
+#registry.register(EventDashboard)
+#registry.register(VisitorGroupDashboard)
+#registry.register(VisitorDashboard)
+#registry.register(VirtualVisitorDashboard)
+#registry.register(ProductDashboard)
+#registry.register(ProductStatementDashboard)
+#registry.register(StatementDashboard)
+#registry.register(QuestionnaireEntryDashboard)
+#registry.register(QuestionnaireQuestionDashboard)
+#registry.register(QuestionnaireAnswerDashboard)
+#registry.register(AgeDashboard)
