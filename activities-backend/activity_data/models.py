@@ -11,7 +11,7 @@ from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.db import models
 from django.utils.html import mark_safe
-from django.urls import reverse
+from django.urls import reverse, NoReverseMatch
 from django.utils.html import format_html
 
 # For generic relations...
@@ -214,6 +214,12 @@ class AutoUpdateTimeFields(models.Model):
 
     def get_absolute_url(self, action='change'):
         return reverse(f'admin:activity_data_{self._meta.model._meta.model_name}_{action}', args=[self.pk])
+
+    def get_dashboard_absolute_url(self, action='detail'):
+        try:
+            return reverse(f'dashboards:vast_dashboards_{self._meta.model._meta.model_name}dashboard_{action}', args=[self.pk])
+        except NoReverseMatch:
+            return ""
 
     @classmethod
     def get_group_users(cls, user):

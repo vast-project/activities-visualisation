@@ -210,6 +210,44 @@ class ActivityWordHistogramSerialiser(ChartSerializer):
         fig.update_layout(margin=dict(l=20, r=20, t=40, b=20),)
         return fig
 
+class ActivityProductImagesSerializer(TableSerializer):
+    @staticmethod
+    def chunker(seq, size):
+        return (seq[pos:pos + size] for pos in range(0, len(seq), size))
+
+    @staticmethod
+    def get_data(filters, **kwargs):
+        if 'object' in kwargs:
+            objects = Product.objects.filter(activity_step__activity__pk=kwargs['object'].pk)
+        else:
+            objects = Product.objects.all()
+        objects = filter(lambda o: o.image_uriref, objects)
+        data = []
+        for chunk in ActivityProductImagesSerializer.chunker(list(objects), 8):
+            col = 1
+            row = {}
+            for o in chunk:
+                row.update({
+                    f'name{col}': o.name,
+                    f'img{col}': f'<a href="{o.image_uriref}" data-toggle="tooltip" title="{o.name}" target="_blank"><img src="{o.image_uriref}" alt="{o.name}" width="100px" height="auto"></a>',
+                })
+                col +=1
+            data.append(row)
+        return data
+
+    class Meta:
+        title = "Activity Product Gallery"
+        columns = {
+            "img1": "Image",
+            "img2": "Image",
+            "img3": "Image",
+            "img4": "Image",
+            "img5": "Image",
+            "img6": "Image",
+            "img7": "Image",
+            "img8": "Image",
+        }
+
 class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
     welcome = Text(value="VAST Activities")
     # activities_form = Form(form=ActivitiesForm,)
@@ -231,11 +269,15 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
     cloud   = SVGChart(value=ActivityWordcloudSerialiser)
     histo   = Chart(value=ActivityWordHistogramSerialiser)
 
+    gallery = Table(value=ActivityProductImagesSerializer, page_size=2, searching=False, ordering=False, css_classes="table align-middle", grid_css_classes="span-12")
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         dam = DAMStoreVAST()
         json_data = dam.get_resource(self.object.document_resource_id)
-        self.thm_url = dam.get_size(json_data, size='thm')['url']
+        self.thm_url = dam.get_size(json_data, size='thm')
+        if self.thm_url:
+            self.thm_url = self.thm_url['url']
         del dam
 
     class Meta:
@@ -260,6 +302,8 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
             Card("when",  heading="When",  grid_css_classes="span-6"),
             Card("cloud", heading="Value Cloud",  grid_css_classes="span-6"),
             Card("histo", heading="Value Histogram",  grid_css_classes="span-6"),
+            Card(Div("gallery", css_classes={"wrapper":"table-responsive"}, grid_css_classes="span-12"),
+                 heading="Products Gallery", grid_css_classes="span-12"),
 
             grid_css_classes="span-12"
         )
@@ -275,7 +319,10 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
         return content
 
     def get_thm_value(self, **kwards):
-        return f'<a href="{self.object.document_uriref}" target="_blank"><img src="{self.thm_url}" width="141px"</a>'
+        if self.object.document_uriref:
+            return f'<a href="{self.object.document_uriref}" target="_blank"><img src="{self.thm_url}" width="141px"</a>'
+        else:
+            return ""
 
     def get_details_value(self, **kwargs):
         data = [
@@ -309,7 +356,6 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
         )
 
     def get_who_value(self, **kwargs):
-
         s_c  = Statement.objects.filter(product__activity_step__activity__pk=self.object.pk).count()
         ps_c = ProductStatement.objects.filter(subject__activity_step__activity__pk=self.object.pk).count()
         sep = ", "
@@ -328,8 +374,6 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
             text=mark_safe(content),
             sub_text = mark_safe(sub_content),
         )
-
-
 
 registry.register(ActivitiesDashboard)
 registry.register(ActivityDashboard)

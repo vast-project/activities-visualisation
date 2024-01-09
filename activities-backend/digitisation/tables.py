@@ -37,9 +37,21 @@ class HTMxTable(tables.Table):
     name = tables.Column(linkify=True, attrs={
         'a': {'target': 'blank_'}
     })
-    graphdb = tables.URLColumn(verbose_name="@", orderable=False, text=lambda record: record.get_repository_url(attrs={
-        'target': 'blank_', 'class': 'graphdb_link_table'
-    }))
+    # graphdb = tables.URLColumn(verbose_name="@", orderable=False, text=lambda record: record.get_repository_url(attrs={
+    #     'target': 'blank_', 'class': 'graphdb_link_table'
+    # }))
+    links   = tables.TemplateColumn(verbose_name="", orderable=False, 
+        template_code="""{% load model_filters %}
+        <span class="flex-row-nowrap">
+        <a href="https://graph.vast-project.eu/resource?uri={{record|get_repository_uri|urlencode}}&role=all" target="_blank" class="text-info"><i class="fa-solid fa-circle-nodes"></i></a>
+        {% with url=record|get_dashboard_absolute_url%}
+        {% if url %}
+        <a href="{{url}}" target="_blank" class="text-success ps-1"><i class="fa-solid fa-eye"></i></a>
+        {% endif %}
+        {% endwith %}
+        <a href="{{record|get_absolute_url}}" target="_blank" class="text-warning ps-1"><i class="fa-solid fa-pen-to-square"></i></a>
+        </span>
+        """)
     def __init__(self, selected_rows=None, selection_data=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.id  = self._meta.model.__name__
@@ -62,7 +74,7 @@ class HTMxTable(tables.Table):
 
     class Meta:
         template_name = "tables/bootstrap_htmx.html"
-        fields   = ('selected', 'name', 'graphdb', 'created_by')
+        fields   = ('selected', 'name', 'links', 'created_by')
         sequence = ('selected', '...')
         attrs = {
             'class': 'table table-sm table-hover table-scrollable',
@@ -71,7 +83,7 @@ class HTMxTable(tables.Table):
             'x-data': HTMxTable_row_x_data,
             'x-init': HTMxTable_row_x_init,
             ':class': "{ 'highlight-me table-primary': checkboxes[rowIndex].isChecked }",
-            '@click': "checkboxes[rowIndex].isChecked = !checkboxes[rowIndex].isChecked; $nextTick(() => $store.dashboardInteractiveFiltering.notify())",
+            #'@click': "checkboxes[rowIndex].isChecked = !checkboxes[rowIndex].isChecked; $nextTick(() => $store.dashboardInteractiveFiltering.notify())",
         }
         #show_header = False
 

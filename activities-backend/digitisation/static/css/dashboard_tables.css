@@ -233,6 +233,23 @@ input[type=checkbox] {
     width:1.5em; /* your image width */
     overflow:hidden;
 }
+.graphdb_link_table2 {
+    background:url(/static/img/graphdb-logo-sq.vertical.svg) 0 0 no-repeat;
+    display:inline;
+    height:1.0em; /* your image height */
+    width:1.0em; /* your image width */
+    vertical-align: -.125em;
+}
+
+.table thead th {
+  padding: 0.5rem 0.5rem;
+}
+
+.flex-row-nowrap {
+  display:flex;
+  flex-direction:row;
+  flex-wrap:nowrap;
+}
 
 @media (min-width: 1200px) {
   .sidenav.fixed-start ~ .main-content {

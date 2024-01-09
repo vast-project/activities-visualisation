@@ -100,7 +100,7 @@ class DAMStoreVAST:
         return json.loads(response.text)
 
     def json_get_object_matching_property(self, json_data, attr='size_code', value='original'):
-        return next(o for o in json_data if o[attr] == value)
+        return next((o for o in json_data if o[attr] == value), None)
 
     def get_size(self, json_data, size='original'):
         return self.json_get_object_matching_property(json_data, 'size_code', size)
