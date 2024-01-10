@@ -69,7 +69,7 @@ class ActivitySerializer(TableSerializer):
             'visitors': Visitor.objects.filter(activity__pk=o.pk).count(),
             'products': Product.objects.filter(activity_step__activity__pk=o.pk).count(),
             'statements': Statement.objects.filter(product__activity_step__activity__pk=o.pk).count() + \
-                           ProductStatement.objects.filter(subject__activity_step__activity__pk=o.pk).count(),
+                          ProductStatement.objects.filter(subject__activity_step__activity__pk=o.pk).count(),
         } for o in objects]
     class Meta:
         title = "Activities"
@@ -92,8 +92,8 @@ class ActivityStepSerializer(TableSerializer):
         else:
             objects = ActivityStep.objects.all()
         return [{
-                    'name': o.name,
-                    'stm_name': f'<a href="{o.stimulus.get_dashboard_absolute_url()}" target="_blank">{o.stimulus.name}</a>',
+                    'name': f'<a href="{o.get_dashboard_absolute_url()}" target="_blank">{o.name} <i class="fa-solid fa-arrow-up-right-from-square ms-3"></a>',
+                    'stm_name': f'<a href="{o.stimulus.get_dashboard_absolute_url()}" target="_blank">{o.stimulus.name} <i class="fa-solid fa-arrow-up-right-from-square ms-3"></a>',
                     'stm_type': o.stimulus.stimulus_type,
                 } for o in objects]
 
@@ -272,9 +272,7 @@ class ActivityProductImagesSerializer(TableSerializer):
 
 @register
 class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
-    welcome = Text(value="VAST Activities")
     # activities_form = Form(form=ActivitiesForm,)
-    # animals = Chart(defer=DashboardData.fetch_animals)
     activities_table = Table(value=ActivitySerializer, css_classes="table table-hover align-middle table-left", grid_css_classes="span-12")
 
     class Meta:
