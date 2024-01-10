@@ -57,10 +57,28 @@ class ActivitiesForm(DashboardForm):
         )
     )
 class ActivitySerializer(TableSerializer):
+    @staticmethod
+    def get_data(filters, **kwargs):
+        if 'object' in kwargs and kwargs['object']:
+            objects = Activity.objects.filter(pk=kwargs['object'].pk)
+        else:
+            objects = Activity.objects.all()
+        return [{
+            'name': f'<a href="{o.get_dashboard_absolute_url()}" target="_blank">{o.name} <i class="fa-solid fa-arrow-up-right-from-square ms-3"></a>',
+            'events': Event.objects.filter(activity__pk=o.pk).count(),
+            'visitors': Visitor.objects.filter(activity__pk=o.pk).count(),
+            'products': Product.objects.filter(activity_step__activity__pk=o.pk).count(),
+            'statements': Statement.objects.filter(product__activity_step__activity__pk=o.pk).count() + \
+                           ProductStatement.objects.filter(subject__activity_step__activity__pk=o.pk).count(),
+        } for o in objects]
     class Meta:
         title = "Activities"
         columns = {
             "name": "Name",
+            "events": "Events",
+            "visitors": "Participants",
+            "products": "Products",
+            "statements": "Statements",
         }
         order = ["-name"]
         model = Activity
@@ -257,7 +275,7 @@ class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
     welcome = Text(value="VAST Activities")
     # activities_form = Form(form=ActivitiesForm,)
     # animals = Chart(defer=DashboardData.fetch_animals)
-    activities_table = Table(value=ActivitySerializer, grid_css_classes="span-12")
+    activities_table = Table(value=ActivitySerializer, css_classes="table table-hover align-middle table-left", grid_css_classes="span-12")
 
     class Meta:
         name = "Activities"
