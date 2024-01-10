@@ -168,7 +168,12 @@ class EventGanttSerialiser(ChartSerializer):
         for e in objects:
             start = e.date_from if e.date_from else e.date
             end   = e.date_to if e.date_to else e.date
-            if start == end:
+            if not start:
+                # Use creation date...
+                start = e.created
+            if not end:
+                end = start + timedelta(hours=24)
+            if end and start == end:
                 end += timedelta(hours=24)
             data.append(dict(Task=f'{e.name} ({e.city})', Start=start, Finish=end, Location=e.city))
         return pd.DataFrame(data)
@@ -184,24 +189,28 @@ class EventGanttSerialiser(ChartSerializer):
     class Meta:
         title = "Event Timeline"
 
-class ActivityWordcloudSerialiser(SVGChartSerializer):
-    def get_data(self, *args, filters=None, **kwargs) -> Counter:
+class ActivityWordMixin:
+    @staticmethod
+    def get_data_counters(filters=None, **kwargs) -> Counter:
         if 'object' in kwargs:
             statements = Statement.objects.filter(product__activity_step__activity__pk=kwargs['object'].pk)
             product_statements = ProductStatement.objects.filter(subject__activity_step__activity__pk=kwargs['object'].pk)
         else:
             statements = Statement.objects.all()
             product_statements = ProductStatement.objects.all()
-        eng = Counter()
-        local = Counter()
+        counter = Counter()
         for s in statements:
-            eng[s.subject.name] += 1
-            eng[s.object.name]  += 1
+            counter[(s.subject.name, s.subject.name_local)] += 1
+            counter[(s.object.name,  s.object.name_local)]  += 1
         for s in product_statements:
-            eng[s.object.name]  += 1
-        if not len(eng):
-            eng['empty'] += 1
-        return eng
+            counter[(s.object.name, s.object.name_local)]   += 1
+        if not len(counter):
+            counter[('empty', 'empty')] += 1
+        return counter
+
+class ActivityWordcloudSerialiser(ActivityWordMixin, SVGChartSerializer):
+    def get_data(self, *args, filters=None, **kwargs) -> Counter:
+        return self.get_data_counters(filters=filters, **kwargs)
 
     def to_svg(self, data):
         layout = {}
@@ -209,7 +218,7 @@ class ActivityWordcloudSerialiser(SVGChartSerializer):
             layout[attr] = getattr(self._meta, attr)
 
         if len(data):
-            wordcloud = WordCloud(**layout).generate_from_frequencies(dict(data))
+            wordcloud = WordCloud(**layout).generate_from_frequencies({w[0][0]:w[1] for w in data.most_common()})
             return wordcloud.to_svg()
         return ""
 
@@ -217,20 +226,36 @@ class ActivityWordcloudSerialiser(SVGChartSerializer):
         height = 450
         width  = 500
 
-class ActivityWordHistogramSerialiser(ChartSerializer):
+class ActivityWordHistogramSerialiser(ActivityWordMixin, ChartSerializer):
     def get_data(self, *args, filters=None, **kwargs) -> pd.DataFrame:
-        counter = ActivityWordcloudSerialiser().get_data(*args, filters=filters, **kwargs)
-        data = [dict(word=i[0], count=i[1]) for i in counter.most_common()]
+        counter = self.get_data_counters(filters=filters, **kwargs)
+        data = [dict(word=i[0][0], count=i[1]) for i in counter.most_common()]
         return pd.DataFrame(data)
 
     def to_fig(self, df):
         fig = px.bar(df, x="word", y="count", color="word")
         fig.update_layout(
-            xaxis_title="Value Frequency",
-            yaxis_title=None,
+            yaxis_title="Value Frequency",
+            xaxis_title=None,
         )
         fig.update_layout(margin=dict(l=20, r=20, t=40, b=20),)
         return fig
+
+class ActivityWordTableSerialiser(ActivityWordMixin, TableSerializer):
+    @staticmethod
+    def get_data(filters, **kwargs):
+        counter = ActivityWordTableSerialiser.get_data_counters(filters=filters, **kwargs)
+        return [{'value': w[0][0], 'local': w[0][1], 'freq': w[1]} for w in counter.most_common()]
+
+    class Meta:
+        title = "Values"
+        columns = {
+            "value": "Value",
+            "local": "Value (local)",
+            "freq":  "Frequency",
+        }
+        order = ["-freq"]
+
 
 class ActivityProductImagesSerializer(TableSerializer):
     @staticmethod
@@ -273,7 +298,7 @@ class ActivityProductImagesSerializer(TableSerializer):
 @register
 class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
     # activities_form = Form(form=ActivitiesForm,)
-    activities_table = Table(value=ActivitySerializer, css_classes="table table-hover align-middle table-left", grid_css_classes="span-12")
+    activities_table = Table(value=ActivitySerializer, css_classes="table table-hover align-middle table-left table-first-w-50 table-not-first-align-center", grid_css_classes="span-12")
 
     class Meta:
         name = "Activities"
@@ -298,6 +323,7 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
     when    = Chart(value=EventGanttSerialiser)
 
     cloud   = SVGChart(value=ActivityWordcloudSerialiser)
+    table   = Table(value=ActivityWordTableSerialiser)
     histo   = Chart(value=ActivityWordHistogramSerialiser)
 
     gallery = Table(value=ActivityProductImagesSerializer, page_size=2, searching=False, ordering=False, css_classes="table align-middle", grid_css_classes="span-12")
@@ -331,8 +357,10 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
             Card("who",   heading="Who",   grid_css_classes="span-12"),
             Card("where", heading="Where", grid_css_classes="span-6"),
             Card("when",  heading="When",  grid_css_classes="span-6"),
-            Card("cloud", heading="Value Cloud",  grid_css_classes="span-6"),
-            Card("histo", heading="Value Histogram",  grid_css_classes="span-6"),
+            Card("cloud", heading="Values Cloud",  grid_css_classes="span-6"),
+            Card("histo", heading="Values Histogram",  grid_css_classes="span-6"),
+            Card(Div("table", css_classes={"wrapper":"table-responsive"}, grid_css_classes="span-12"),
+                 heading="Values Frequencies", grid_css_classes="span-12"),
             Card(Div("gallery", css_classes={"wrapper":"table-responsive"}, grid_css_classes="span-12"),
                  heading="Products Gallery", grid_css_classes="span-12"),
 
