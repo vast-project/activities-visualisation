@@ -280,6 +280,15 @@ class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
     class Meta:
         name = "Activities"
 
+    class Layout(Dashboard.Layout):
+        components = ComponentLayout(
+            Card("activities_table", 
+                 heading = mark_safe("<i class=\"fa-solid fa-building-columns me-3\"></i> VAST Activities"),
+                 css_classes="card", grid_css_classes="span-12"
+            ),
+        )
+
+
 # https://www.djangodashboards.com/
 @register
 class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
