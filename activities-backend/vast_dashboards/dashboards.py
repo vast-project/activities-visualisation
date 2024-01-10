@@ -368,7 +368,7 @@ class ActivityDashboard(VASTDashboardMixin, ModelDashboard):
             },
             {
                 "attribute": "<strong>Europeana Annotated Cultural Heritage Artifacts</strong>:",
-                "value":     ', '.join([f'<a href="{a.europeana_uriref}" target="_blank">&quot;{a.name}&quot;</a>' for a in self.object.europeana_ch_artifact.all()]),
+                "value":     ', '.join([f'<a href="{a.europeana_uriref}" target="_blank">&quot;{a.name}&quot; <i class="fa-solid fa-arrow-up-right-from-square ms-1 me-1"></i></a>' for a in self.object.europeana_ch_artifact.all()]),
                 "handbook":  ""
             },
         ]
