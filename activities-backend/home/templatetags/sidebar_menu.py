@@ -13,6 +13,7 @@ def sidebar_menu(*args, **kwargs):
         case 'dashboards':
             menu_items = (
                 {'title': 'Activities',             'url': 'dashboards:vast_dashboards_activitiesdashboard'},
+                {'title': 'Values',                 'url': 'dashboards:vast_dashboards_valuesdashboard'},
             )
         case _:
             menu_items = (

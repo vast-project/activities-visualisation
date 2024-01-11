@@ -150,6 +150,8 @@ exception_wizard = ActivityDigitisationWizardView.as_view(
 ##
 urlpatterns = [
     path('dashboard/table/<str:model>',                     login_required(ActivityHTMxTableView.as_view()),       name='dashboard-table-model'),
+    path('dashboard/autocomplete/<str:model>',                             VASTModelAutocompleteView.as_view(),    name='dashboard-autocomplete-model'),
+    path('dashboard/autocomplete/',                                        VASTModelAutocompleteView.as_view(),    name='dashboard-autocomplete-model-concept'),
     re_path(r'^wizard/activity/(?P<step>.+)/$',             login_required(activity_wizard),                       name='activity-wizard-step'),
     path('wizard/activity',                                 login_required(activity_wizard),                       name='activity-wizard'),
     re_path(r'^wizard/event-visitorgroup/(?P<step>.+)/$',   login_required(event_visitorgroup_wizard),             name='event-visitorgroup-wizard-step'),

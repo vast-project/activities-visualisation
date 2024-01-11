@@ -252,3 +252,24 @@ class ActivityHTMxTableView(LoginRequiredMixin, SingleTableMixin, FilterView):
         context.update(self.kwargs)
         # print('get_context_data():', context)
         return context
+
+##
+## Model Search Autocomplete...
+##
+from dal import autocomplete
+
+class VASTModelAutocompleteView(autocomplete.Select2QuerySetView):
+
+    def dispatch(self, request, *args, **kwargs):
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        print(args, kwargs)
+        self.class_name = self.kwargs.get('model', 'Concept')
+        self.class_model = getattr(sys.modules[__name__], self.class_name)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        qs = self.class_model.objects.all()
+        if self.q:
+            qs = qs.filter(name__icontains=self.q)
+        return qs
+

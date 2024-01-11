@@ -3,6 +3,7 @@ from collections import Counter
 from django import forms
 from django.utils.safestring import mark_safe
 from django.db.models import Q
+from django.urls import reverse, reverse_lazy
 from dashboards.dashboard import Dashboard, ModelDashboard
 from dashboards.component import Text, Chart, Table, Form, BasicTable, CTA, Map
 from dashboards.component.text import Stat, StatData
@@ -17,7 +18,6 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 from wordcloud import WordCloud
-import matplotlib.pyplot as plt
 
 from vast_dashboards.data import DashboardData
 
@@ -27,6 +27,8 @@ from vast_rdf.vast_dam import DAMStoreVAST
 
 from .components import SVGChart
 from .serializers import SVGChartSerializer
+
+from dal import autocomplete
 
 def register(cls):
     registry.register(cls)
@@ -63,6 +65,13 @@ class ActivitySerializer(TableSerializer):
             objects = Activity.objects.filter(pk=kwargs['object'].pk)
         else:
             objects = Activity.objects.all()
+        if filters and "value" in filters and filters["value"] != "all":
+            # Select all products having this value...
+            objects = Activity.objects.filter(Q(visitor__product__statement__subject=filters["value"]) |
+                                              Q(visitor__product__statement__object=filters["value"])  |
+                                              Q(visitor__product__ps_subject__object=filters["value"]) |
+                                              Q(visitor__product__productannotation__value=filters["value"])
+                                             )
         return [{
             'name': f'<a href="{o.get_dashboard_absolute_url()}" target="_blank">{o.name} <i class="fa-solid fa-arrow-up-right-from-square ms-3"></a>',
             'events': Event.objects.filter(activity__pk=o.pk).count(),
@@ -245,11 +254,13 @@ class ActivityWordTableSerialiser(ActivityWordMixin, TableSerializer):
     @staticmethod
     def get_data(filters, **kwargs):
         counter = ActivityWordTableSerialiser.get_data_counters(filters=filters, **kwargs)
-        return [{'value': w[0][0], 'local': w[0][1], 'freq': w[1]} for w in counter.most_common()]
+        c = 0
+        return [{'id':i+1, 'value': w[0][0], 'local': w[0][1], 'freq': w[1]} for i,w in enumerate(counter.most_common())]
 
     class Meta:
         title = "Values"
         columns = {
+            "id": "ID",
             "value": "Value",
             "local": "Value (local)",
             "freq":  "Frequency",
@@ -295,9 +306,34 @@ class ActivityProductImagesSerializer(TableSerializer):
             "img8": "Image",
         }
 
+class SearchValuesForm(DashboardForm):
+    value = forms.ModelChoiceField(queryset=Concept.objects.all(), initial='')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        #self.fields['search'].widget.url = reverse('dashboard-autocomplete-model', kwargs={'model': 'Concept'})
+    class Meta:
+        widgets = {
+            'value': autocomplete.ModelSelect2(url='dashboard-autocomplete-model-concept', attrs={
+                # Set some placeholder
+                'data-placeholder': 'Autocomplete ...',
+                # Only trigger autocompletion after 3 characters have been typed
+                'data-minimum-input-length': 3,
+            },)
+        }
+    class Media:
+        js = ('admin/js/vendor/select2/select2.full.js',
+              'autocomplete_light/autocomplete_light.min.js',
+              'autocomplete_light/select2.min.js')
+        css = {'screen': (
+              'admin/css/vendor/select2/select2.min.css',
+              'admin/css/autocomplete.css',
+              'autocomplete_light/select2.css',
+             ),
+        }
+
 @register
 class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
-    # activities_form = Form(form=ActivitiesForm,)
     activities_table = Table(value=ActivitySerializer, css_classes="table table-hover align-middle table-left table-first-w-50 table-not-first-align-center", grid_css_classes="span-12")
 
     class Meta:
@@ -311,6 +347,25 @@ class ActivitiesDashboard(VASTDashboardMixin, Dashboard):
             ),
         )
 
+@register
+class ValuesDashboard(VASTDashboardMixin, Dashboard):
+    value = Form(value='', form=SearchValuesForm, dependents=["activities_table"],)
+    activities_table = Table(value=ActivitySerializer, css_classes="table table-hover align-middle table-left table-first-w-50 table-not-first-align-center", grid_css_classes="span-12")
+
+    class Meta:
+        name = "Values"
+
+    class Layout(Dashboard.Layout):
+        components = ComponentLayout(
+            Card("value", 
+                 heading = mark_safe("<i class=\"fa-solid fa-building-columns me-3\"></i> Values Search"),
+                 css_classes="card", grid_css_classes="span-12"
+            ),
+            Card("activities_table", 
+                 heading = mark_safe("<i class=\"fa-solid fa-building-columns me-3\"></i> VAST Activities"),
+                 css_classes="card", grid_css_classes="span-12"
+            ),
+        )
 
 # https://www.djangodashboards.com/
 @register
