@@ -17,7 +17,7 @@
                   <h3 class="font-weight-bolder text-info text-gradient">
                     {% trans "Sign IN" %}
                   </h3>
-		  {% if socialaccount_providers %}
+                  {% if socialaccount_providers %}
                   <p class="mb-0">{% blocktrans with site.name as site_name %}Please sign in with one
                     of your existing third party accounts:{% endblocktrans %}</p>
 
@@ -43,7 +43,7 @@
                     {% if msg %}
                       <span class="text-danger">{{ msg | safe }}</span>
                     {% else %}
-		    If you have <a href="{{ signup_url }}" class="text-primary">registered</a>, please add your credentials:
+                    If you have <a href="{{ signup_url }}" class="text-primary">registered</a>, please add your credentials:
                     {% endif %}                      
                   </p>
 

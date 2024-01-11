@@ -66,6 +66,18 @@
 <body class="g-sidenav-show bg-gray-100" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
 {% tracking_code %}
+<!--
+  {% if messages %}
+  <div>
+    <strong>{% trans "Messages:" %}</strong>
+    <ul>
+      {% for message in messages %}
+      <li>{{message}}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+-->
 
     {% include "includes/sidebar.html" %}
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">

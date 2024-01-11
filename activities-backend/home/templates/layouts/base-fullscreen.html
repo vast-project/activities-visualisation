@@ -25,7 +25,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="apple-touch-icon" sizes="76x76" href="{% static 'img/apple-icon.png' %}">
-  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+  <link rel="shortcut icon" type="image/png" href="{% static 'img/vast-no-text-500x500.svg' %}">
+  <link rel="icon" type="image/png" href="{% static 'img/vast-no-text-500x500.svg' %}">
+  <!--<link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">-->
 
   <title>
     VAST Platform - {% block title %}{% endblock %}{% block head_title %}{% endblock %}
@@ -54,6 +56,7 @@
 </head>
 <body class="">
 {% block body %}
+<!--
   {% if messages %}
   <div>
     <strong>{% trans "Messages:" %}</strong>
@@ -64,6 +67,7 @@
     </ul>
   </div>
   {% endif %}
+-->
 
   {% block content-before %}{% endblock content-before %}
   {% block content %}{% endblock content %}

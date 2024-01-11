@@ -30,9 +30,9 @@ def sidebar_menu(*args, **kwargs):
             )
     mi = []
     for item in menu_items:
-        item['reverse_url'] = reverse(item['url'], kwargs=item.get('kwargs'))+'/' # Adding a slash to not having multiple menu items active
+        item['reverse_url'] = reverse(item['url'], kwargs=item.get('kwargs')) #+'/' # Adding a slash to not having multiple menu items active
         mi.append(item)
-    context = {'sidebar_menu_items': mi}
+    context = {'sidebar_menu_items': mi, 'category': category}
     for arg in args:
         context.update(arg)
 
