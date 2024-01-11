@@ -58,7 +58,14 @@ class ActivitiesForm(DashboardForm):
             ("c", "C"),
         )
     )
-class ActivitySerializer(TableSerializer):
+class VASTTableSerializerMixin:
+    class Media:
+        js = ("dashboards/vendor/js/datatables.min.js",)
+        css = {
+            "all": ("dashboards/vendor/css/datatables.min.css",),
+        }
+
+class ActivitySerializer(VASTTableSerializerMixin, TableSerializer):
     @staticmethod
     def get_data(filters, **kwargs):
         if 'object' in kwargs and kwargs['object']:
@@ -92,7 +99,7 @@ class ActivitySerializer(TableSerializer):
         order = ["-name"]
         model = Activity
 
-class ActivityStepSerializer(TableSerializer):
+class ActivityStepSerializer(VASTTableSerializerMixin, TableSerializer):
 
     @staticmethod
     def get_data(filters, **kwargs):
@@ -250,7 +257,7 @@ class ActivityWordHistogramSerialiser(ActivityWordMixin, ChartSerializer):
         fig.update_layout(margin=dict(l=20, r=20, t=40, b=20),)
         return fig
 
-class ActivityWordTableSerialiser(ActivityWordMixin, TableSerializer):
+class ActivityWordTableSerialiser(ActivityWordMixin, VASTTableSerializerMixin, TableSerializer):
     @staticmethod
     def get_data(filters, **kwargs):
         counter = ActivityWordTableSerialiser.get_data_counters(filters=filters, **kwargs)
@@ -268,7 +275,7 @@ class ActivityWordTableSerialiser(ActivityWordMixin, TableSerializer):
         order = ["-freq"]
 
 
-class ActivityProductImagesSerializer(TableSerializer):
+class ActivityProductImagesSerializer(VASTTableSerializerMixin, TableSerializer):
     @staticmethod
     def chunker(seq, size):
         return (seq[pos:pos + size] for pos in range(0, len(seq), size))
@@ -307,7 +314,7 @@ class ActivityProductImagesSerializer(TableSerializer):
         }
 
 class SearchValuesForm(DashboardForm):
-    value = forms.ModelChoiceField(queryset=Concept.objects.all(), initial='')
+    value = forms.ModelChoiceField(queryset=Concept.objects.all())
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

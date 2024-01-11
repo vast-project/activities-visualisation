@@ -32,12 +32,12 @@
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
     <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
     <link href="{% static 'css/nucleo-svg.css' %}" rel="stylesheet" />
-    <!-- CSS Files -->
+    <!-- CSS Files extrastyle_top -->
     {% block extrastyle_top %}{% endblock extrastyle_top %}
     <link id="pagestyle" href="{% static 'css/soft-ui-dashboard.css' %}" rel="stylesheet" />
     <link id="pagestyle_dark" href="{% static 'css/dark-theme-core.css' %}" rel="stylesheet" />
     <!-- jQuery (needed for django-location-field) -->
-    <script src="{% static 'js/jquery-3.7.0.min.js' %}"></script>
+    <!--<script src="{% static 'js/jquery-3.7.0.min.js' %}"></script>-->
     <!-- HTMX -->
     <script src="{% static 'js/htmx.min.js' %}" defer></script>
     <!-- Alpine -->
@@ -48,8 +48,11 @@
     <!-- Form fixes -->
     <!--<link href="{% static 'css/form_widgets.css' %}" rel="stylesheet" />-->
 
+    <!-- dashboards_form_media -->
     {% block dashboards_form_media %}{% endblock dashboards_form_media %}
+    <!-- extrahead -->
     {% block extrahead %}{% endblock extrahead %}
+    <!-- extrastyle -->
     {% block extrastyle %}{% endblock extrastyle %}
 
     <style type="text/css">
@@ -57,7 +60,6 @@
         height: calc(100vh - 4.875rem - 4rem);
       }
     </style>
-
 
 </head>
 
