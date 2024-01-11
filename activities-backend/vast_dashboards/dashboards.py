@@ -71,7 +71,7 @@ class ActivitySerializer(TableSerializer):
                                               Q(visitor__product__statement__object=filters["value"])  |
                                               Q(visitor__product__ps_subject__object=filters["value"]) |
                                               Q(visitor__product__productannotation__value=filters["value"])
-                                             )
+                                             ).distinct()
         return [{
             'name': f'<a href="{o.get_dashboard_absolute_url()}" target="_blank">{o.name} <i class="fa-solid fa-arrow-up-right-from-square ms-3"></a>',
             'events': Event.objects.filter(activity__pk=o.pk).count(),
