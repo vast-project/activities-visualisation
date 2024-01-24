@@ -1,11 +1,11 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}{% if request.user.is_authenticated %}Dashboard{% else %}Home{% endif %}{% endblock %}
 
 {% block content %}
+{% if request.user.is_authenticated %}
 <div class="container-fluid py-4" x-data="dashboard()" x-init="init()">
 <div x-ref="dashboard">
-  {% if request.user.is_authenticated %}
   <div class="row my-4">
   {% include "includes/dashboard-model-table.html" with model='Activity' %}
   {% include "includes/dashboard-model-table.html" with model='ActivityStep' %}
@@ -30,8 +30,10 @@
   {% include "includes/dashboard-model-table.html" with model='QuestionnaireAnswer' %}
   {% include "includes/dashboard-model-table.html" with model='QuestionnaireEntry' %}
   </div>
-  {% endif %}
 </div>
+{% else %}
+{% include "pages/home.html" %}
+{% endif %}
 
   {% include "includes/footer.html" %}
 </div>
@@ -52,7 +54,7 @@ function dashboard() {
                 $root.querySelectorAll('[x-ref="vastobject_table"]').forEach((el) => {el.dispatchEvent(
                     new Event('selection-changed', { bubbles: false }))}
                 );
-	    },
+            },
 
             addPK(vast_class, pk, checked=true) {
                 if (this.selected[vast_class] == undefined) {

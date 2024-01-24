@@ -1,0 +1,183 @@
+{% load static %}
+<div class="card">
+  <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1 text-center">
+    <a href="https://digitisation.vast-project.eu" class="d-block">
+    <img src="{% static 'img/vast.svg' %}" class="img-fluid border-radius-lg" width="50%">
+    <h1 class="mt-5">VAST Digitisation Tool</h1>
+    </a>
+  </div>
+
+  <div class="card-body pt-2">
+    <!--<span class="text-gradient text-primary text-uppercase text-xs font-weight-bold my-2">House</span>-->
+    <a href="javascript:;" class="card-title h5 d-block text-darker">
+      The VAST Digitisation Tool
+    </a>
+    <p class="card-description mb-4">
+      The VAST Digitisation Tool is an application that supports the digitisation of educational activities.<br>
+      The tool supports:
+       <ol>
+         <li>the definition of activities of multiple events and steps, as well as of the stimuli related to each step,</li>
+         <li>the digitisation of activities' products including both raw data (such as digitised images) and the declaration of statements.</li>
+       </ol>
+       It also allows to include for each activity general information, such as target group characteristics,
+       the companion handbook and related sources to <a href="https://www.europeana.eu/" target="_blank">Europeana</a>.
+    </p>
+    <!--
+    <div class="author align-items-center">
+      <img src="{% static 'img/team-2.jpg' %}" alt="..." class="avatar shadow">
+      <div class="name ps-3">
+        <span>Mathew Glock</span>
+        <div class="stats">
+          <small>Posted on 28 February</small>
+        </div>
+      </div>
+    </div>
+    -->
+  </div>
+</div>
+
+<div class="card-group mt-4">
+  <div class="card">
+    <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1">
+      <a href="/accounts/login/" class="d-block">
+        <img src="{% static 'img/stock/istockphoto-636226496-1024x1024.webp' %}" class="img-fluid border-radius-lg">
+      </a>
+    </div>
+
+    <div class="card-body pt-2">
+      <span class="text-gradient text-primary text-uppercase text-xs font-weight-bold my-2">I am a curator/educator</span>
+      <a href="/accounts/login/" class="card-title h5 d-block text-darker">
+        I want to digitise activity products <span class="badge bg-gradient-info ms-2">Login Required</span>
+      </a>
+      <p class="card-description mb-4">
+        If you have implemented an activity in "pen and paper", and you want to digitise the activity's products, this is the tool for you!
+      </p>
+      <a href="/accounts/login/" class="card-title h5 d-block text-darker">
+        I want to design/define an activity <span class="badge bg-gradient-info ms-2">Login Required</span>
+      </a>
+      <p class="card-description mb-4">
+        If you want to implement an activity, and you want to search for implemented activities, documentation, and customise an existing activity to your needs, this is the tool for you!
+      </p>
+      <a href="/dashboards/vast_dashboards/activitiesdashboard/" class="card-title h5 d-block text-darker">
+        I want to just browse existing activities
+      </a>
+      <p class="card-description mb-4">
+        You can browse implemented activities <a href="/dashboards/vast_dashboards/activitiesdashboard/">here</a>!
+      </p>
+      <a href="/dashboards/vast_dashboards/valuesdashboard/" class="card-title h5 d-block text-darker">
+        I want to browse existing activities, related to specific values
+      </a>
+      <p class="card-description mb-4">
+        You can browse implemented activities, whose products are associated with specific values <a href="/dashboards/vast_dashboards/valuesdashboard/">here</a>!
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header p-0 mx-3 mt-3 position-relative z-index-1">
+      <a href="https://platform.vast-project.eu" class="d-block">
+        <img src="{% static 'img/stock/vast-platform.png' %}" class="img-fluid border-radius-lg">
+      </a>
+      <div class="alert alert-dark font-weight-bold text-white mt-4 mb-4" role="alert">
+        <strong>Not a curator/educator?</strong> <a href="https://platform.vast-project.eu" class="font-weight-bold text-white">There are even more VAST tools</a>!
+      </div>
+    </div>
+
+    <div class="card-body pt-2">
+      <span class="text-gradient text-primary text-uppercase text-xs font-weight-bold my-2">I am not a curator/educator</span>
+      <a href="https://platform.vast-project.eu" class="card-title h5 d-block text-darker">
+        Not interested in implementing/digitising an activity?
+      </a>
+      <p class="card-description mb-4">
+      Perhaps this tool is not for you. But don't worry, the <a href="https://platform.vast-project.eu">VAST Platform</a> has many more tools. Visit the <a href="https://platform.vast-project.eu">VAST Platform</a> and find all avaialble tools.
+      </p>
+    </div>
+  </div>
+</div>
+<!--
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+      <span>One of three columns</span>
+    </div>
+    <div class="col-sm">
+      <span>One of three columns</span>
+    </div>
+    <div class="col-sm">
+      <span>One of three columns</span>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="card bg-gradient-default">
+  <div class="card-body">
+    <h3 class="card-title text-info text-gradient">Testimonial</h3>
+    <blockquote class="blockquote text-white mb-0">
+      <p class="text-dark ms-3">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
+      <footer class="blockquote-footer text-gradient text-info text-sm ms-3">Someone famous in <cite title="Source Title">Source Title</cite></footer>
+    </blockquote>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="card bg-cover text-center" style="background-image: url('https://demos.creative-tim.com/soft-ui-design-system-pro/assets/img/curved-images/curved1.jpg')">
+      <div class="card-body z-index-2 py-9">
+        <h2 class="text-white">Social Analytics</h2>
+        <p class="text-white">
+          Insight to help you create, connect, and convert. Understand Your Audience's Interests, Influence, Interactions, and Intent. Discover emerging topics and influencers to reach new audiences.
+        </p>
+        <label class="badge badge-light text-dark">Analytics</label>
+      </div>
+      <div class="mask bg-gradient-primary border-radius-lg"></div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <a href="javascript:;">
+      <div class="card card-background move-on-hover">
+        <div class="full-background" style="background-image: url('https://images.unsplash.com/photo-1521620112244-f1d36327c766?ixlib=rb-1.2.1&amp;ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&amp;auto=format&amp;fit=crop&amp;w=1300&amp;q=80')"></div>
+        <div class="card-body pt-12">
+          <h4 class="text-white">Search and Discovery</h4>
+          <p>Website visitors today demand a frictionless user expericence  especially when using search. Because of the hight standards.</p>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="col-md-8 mt-4">
+    <div class="card">
+      <img class="card-img-top" src="{% static 'img/home-decor-1.jpg' %}">
+      <div class="position-relative" style="height: 50px;overflow: hidden;margin-top: -50px;z-index:2;position: relative;">
+        <div class="position-absolute w-100 top-0" style="z-index: 1;">
+            <svg class="waves waves-sm" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 40" preserveAspectRatio="none" shape-rendering="auto">
+              <defs>
+                <path id="card-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
+              </defs>
+              <g class="moving-waves">
+                <use xlink:href="#card-wave" x="48" y="-1" fill="rgba(255,255,255,0.30"></use>
+                <use xlink:href="#card-wave" x="48" y="3" fill="rgba(255,255,255,0.35)"></use>
+                <use xlink:href="#card-wave" x="48" y="5" fill="rgba(255,255,255,0.25)"></use>
+                <use xlink:href="#card-wave" x="48" y="8" fill="rgba(255,255,255,0.20)"></use>
+                <use xlink:href="#card-wave" x="48" y="13" fill="rgba(255,255,255,0.15)"></use>
+                <use xlink:href="#card-wave" x="48" y="16" fill="rgba(255,255,255,0.99)"></use>
+              </g>
+            </svg>
+          </div>
+      </div>
+      <div class="card-body">
+        <h4>
+          Soft UI Design System
+        </h4>
+        <p>
+          One of the most beautiful and complex UI Kits built by the team behind Creative Tim. That's pretty impressive.
+        </p>
+        <a href="javascript:;" class="text-primary icon-move-right">More about us
+          <i class="fas fa-arrow-right text-xs ms-1" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+-->
