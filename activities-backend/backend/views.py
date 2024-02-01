@@ -1,13 +1,14 @@
 from rest_framework import permissions, status
 from rest_framework import viewsets
 from rest_framework.response import Response
+from django_filters import rest_framework as filters
 
 from backend.serializers import *
 from allauth.socialaccount.models import *
 
 
 class FilteringModelViewSet(viewsets.ModelViewSet):
-    filterset_fields = '__all__'
+      filterset_fields = '__all__'
     # @action(methods=['GET'], detail=False)
     # def filter(self, request): 
     #     queryset = self.get_queryset()
@@ -15,6 +16,9 @@ class FilteringModelViewSet(viewsets.ModelViewSet):
     #     serializer = self.serializer_class(filtered_queryset, context={'request': request}, many=True)
     #     return Response(serializer.data, status=status.HTTP_200_OK)
 
+class VASTModelFilter(filters.FilterSet):
+    class Meta:
+        exclude = ['document', 'image', 'qr_code']
 
 class LanguageViewSet(viewsets.ModelViewSet):
     """
@@ -23,7 +27,8 @@ class LanguageViewSet(viewsets.ModelViewSet):
     queryset = Language.objects.all()
     serializer_class = LanguageSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name', 'code']
 
 
@@ -34,7 +39,8 @@ class OrganisationTypeViewSet(viewsets.ModelViewSet):
     queryset = OrganisationType.objects.all()
     serializer_class = OrganisationTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -45,7 +51,8 @@ class OrganisationViewSet(viewsets.ModelViewSet):
     queryset = Organisation.objects.all()
     serializer_class = OrganisationSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -56,7 +63,8 @@ class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -67,7 +75,8 @@ class ContextViewSet(viewsets.ModelViewSet):
     queryset = Context.objects.all()
     serializer_class = ContextSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -78,7 +87,8 @@ class NatureViewSet(viewsets.ModelViewSet):
     queryset = Nature.objects.all()
     serializer_class = NatureSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -89,7 +99,8 @@ class EducationViewSet(viewsets.ModelViewSet):
     queryset = Education.objects.all()
     serializer_class = EducationSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -100,7 +111,8 @@ class CulturalHeritageArtifactViewSet(viewsets.ModelViewSet):
     queryset = CulturalHeritageArtifact.objects.all()
     serializer_class = CulturalHeritageArtifactSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -111,7 +123,8 @@ class EuropeanaCulturalHeritageArtifactViewSet(viewsets.ModelViewSet):
     queryset = EuropeanaCulturalHeritageArtifact.objects.all()
     serializer_class = EuropeanaCulturalHeritageArtifactSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -122,7 +135,8 @@ class ActivityViewSet(viewsets.ModelViewSet):
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    #filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -133,7 +147,8 @@ class StimulusViewSet(viewsets.ModelViewSet):
     queryset = Stimulus.objects.all()
     serializer_class = StimulusSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -144,7 +159,8 @@ class ActivityStepViewSet(viewsets.ModelViewSet):
     queryset = ActivityStep.objects.all()
     serializer_class = ActivityStepSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -155,7 +171,8 @@ class AgeViewSet(viewsets.ModelViewSet):
     queryset = Age.objects.all()
     serializer_class = AgeSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -166,7 +183,8 @@ class GenderViewSet(viewsets.ModelViewSet):
     queryset = Gender.objects.all()
     serializer_class = GenderSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -177,7 +195,8 @@ class NationalityViewSet(viewsets.ModelViewSet):
     queryset = Nationality.objects.all()
     serializer_class = NationalitySerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -188,7 +207,8 @@ class ClassViewSet(viewsets.ModelViewSet):
     queryset = Class.objects.all()
     serializer_class = ClassSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -199,7 +219,8 @@ class VisitorGroupViewSet(viewsets.ModelViewSet):
     queryset = VisitorGroup.objects.all()
     serializer_class = VisitorGroupSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -209,7 +230,8 @@ class VisitorViewSet(viewsets.ModelViewSet):
     """
     queryset = Visitor.objects.all()
     serializer_class = VisitorSerializer
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -220,7 +242,8 @@ class ProductTypeViewSet(viewsets.ModelViewSet):
     queryset = ProductType.objects.all()
     serializer_class = ProductTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -231,7 +254,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -242,7 +266,8 @@ class ConceptTypeViewSet(viewsets.ModelViewSet):
     queryset = ConceptType.objects.all()
     serializer_class = ConceptTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 class ConceptViewSet(viewsets.ModelViewSet):
@@ -252,7 +277,8 @@ class ConceptViewSet(viewsets.ModelViewSet):
     queryset = Concept.objects.all()
     serializer_class = ConceptSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name', 'concept_type']
 
 
@@ -263,7 +289,8 @@ class PredicateViewSet(viewsets.ModelViewSet):
     queryset = Predicate.objects.all()
     serializer_class = PredicateSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -274,7 +301,8 @@ class StatementViewSet(viewsets.ModelViewSet):
     queryset = Statement.objects.all()
     serializer_class = StatementSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 class ProductStatementViewSet(viewsets.ModelViewSet):
@@ -284,7 +312,8 @@ class ProductStatementViewSet(viewsets.ModelViewSet):
     queryset = ProductStatement.objects.all()
     serializer_class = ProductStatementSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 class ProductAnnotationViewSet(viewsets.ModelViewSet):
@@ -294,7 +323,8 @@ class ProductAnnotationViewSet(viewsets.ModelViewSet):
     queryset = ProductAnnotation.objects.all()
     serializer_class = ProductAnnotationSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 class QuestionnaireEntryViewSet(viewsets.ModelViewSet):
@@ -304,7 +334,8 @@ class QuestionnaireEntryViewSet(viewsets.ModelViewSet):
     queryset = QuestionnaireEntry.objects.all()
     serializer_class = QuestionnaireEntrySerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 class QuestionnaireQuestionViewSet(viewsets.ModelViewSet):
@@ -314,7 +345,8 @@ class QuestionnaireQuestionViewSet(viewsets.ModelViewSet):
     queryset = QuestionnaireQuestion.objects.all()
     serializer_class = QuestionnaireQuestionSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 class QuestionnaireAnswerViewSet(viewsets.ModelViewSet):
@@ -324,7 +356,8 @@ class QuestionnaireAnswerViewSet(viewsets.ModelViewSet):
     queryset = QuestionnaireAnswer.objects.all()
     serializer_class = QuestionnaireAnswerSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 class DigitisationApplicationViewSet(viewsets.ModelViewSet):
@@ -334,7 +367,8 @@ class DigitisationApplicationViewSet(viewsets.ModelViewSet):
     queryset = DigitisationApplication.objects.all()
     serializer_class = DigitisationApplicationSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
@@ -345,7 +379,8 @@ class VisitorGroupQRCodeViewSet(viewsets.ModelViewSet):
     queryset = VisitorGroupQRCode.objects.all()
     serializer_class = VisitorGroupQRCodeSerializer
     permission_classes = [permissions.IsAuthenticated]
-    # filterset_fields = '__all__'
+    # # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     filterset_fields = ['name', 'description', 'name_local', 'description_local',
                         'event', 'activity', 'activity_step', 'visitor_group', 'application']
     search_fields = ['name']
@@ -358,7 +393,8 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['username','email']
 
 
@@ -369,7 +405,8 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['name']
 
 class SidebarMenuItemViewSet(viewsets.ModelViewSet):
@@ -379,5 +416,6 @@ class SidebarMenuItemViewSet(viewsets.ModelViewSet):
     queryset = SidebarMenuItem.objects.all()
     serializer_class = SidebarMenuItemSerializer
     permission_classes = [permissions.IsAuthenticated]
-    filterset_fields = '__all__'
+    # filterset_fields = '__all__'
+    filterset_class = VASTModelFilter
     search_fields = ['title']

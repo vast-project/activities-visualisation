@@ -457,6 +457,10 @@ class ActivityStep(VASTObject_NameUserGroupUnique):
     activity          = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None, null=False, blank=False)
     stimulus          = models.ForeignKey('Stimulus',     on_delete=models.CASCADE, default=None, null=False, blank=False)
 
+    class Meta(VASTObject_NameUserGroupUnique.Meta):
+        ordering = None
+        order_with_respect_to = "activity"
+
 ## Events...
 class Event(VASTObject_NameUserGroupUnique):
     activity          = models.ForeignKey('Activity',     on_delete=models.CASCADE, null=False, blank=False)
