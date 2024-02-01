@@ -71,20 +71,24 @@ class VASTObjectFilter(django_filters.FilterSet):
         parent = super().qs
         user = getattr(self.request, 'user', None)
         if user.is_superuser:
-            return parent
-        group_users = {user, }
-        for group in user.groups.all():
-            group_users.update(User.objects.filter(groups__id=group.pk))
-        # print("Users:", group_users)
-        result = parent.filter(created_by__in=group_users)
+            result = parent
+        else:
+            group_users = {user, }
+            for group in user.groups.all():
+                group_users.update(User.objects.filter(groups__id=group.pk))
+            # print("Users:", group_users)
+            result = parent.filter(created_by__in=group_users)
+        # print(result.model, parent.count(), result.count())
         # Check if we need to do additional filtering...
         if self.selection_data and self.filter_if_selected:
             for key,value in self.filter_if_selected.items():
                 if key in self.selection_data:
                     pks = self.selection_data[key]
                     if len(pks):
-                        result = result.filter(**{value: pks})
-        return result
+                        # print(result.model, value, pks, result.count())
+                        result = result.filter(**{value: pks}).distinct()
+                        # print("===>", result.count())
+        return result.distinct()
 
     class Meta:
         model = VASTObject
@@ -176,11 +180,23 @@ class QuestionnaireEntryFilter(VASTObjectFilter):
         model = QuestionnaireEntry
 
 class QuestionnaireQuestionFilter(VASTObjectFilter):
+    filter_if_selected = {
+        'Visitor': 'questionnaireanswer__questionnaire_entry__product__visitor__in',
+        'ActivityStep': 'questionnaireanswer__questionnaire_entry__product__activity_step__in',
+        'Activity': 'questionnaireanswer__questionnaire_entry__product__visitor__activity__in',
+        'VisitorGroup': 'questionnaireanswer__questionnaire_entry__product__visitor__visitor_group__in',
+        'Product': 'questionnaireanswer__questionnaire_entry__product__in',
+    }
     class Meta(VASTObjectFilter.Meta):
         model = QuestionnaireQuestion
 
 class QuestionnaireAnswerFilter(VASTObjectFilter):
     filter_if_selected = {
+        'Visitor': 'questionnaire_entry__product__visitor__in',
+        'ActivityStep': 'questionnaire_entry__product__activity_step__in',
+        'Activity': 'questionnaire_entry__product__visitor__activity__in',
+        'VisitorGroup': 'questionnaire_entry__product__visitor__visitor_group__in',
+        'Product': 'questionnaire_entry__product__in',
         'QuestionnaireEntry': 'questionnaire_entry__in',
         'QuestionnaireQuestion': 'question__in',
     }
