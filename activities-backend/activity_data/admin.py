@@ -30,8 +30,14 @@ class ReadonlyFieldsAdmin(ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         fields = ()
         if obj:
-            fields = ["created_by"]
-            for f in ("qr_code", "uriref", "image_resource_id", "image_uriref", "image_preview", "document_resource_id", "document_uriref", "questionnaire_wp_form_id", "get_repository_url"):
+            if request.user.is_superuser:
+                fields = []
+            else:
+                fields = ["created_by"]
+            ro_fields = ("qr_code", "image_resource_id", "image_uriref", "image_preview", "document_resource_id", "document_uriref", "questionnaire_wp_form_id", "get_repository_url")
+            if not isinstance(obj, DigitisationApplication):
+                ro_fields += ("uriref",)
+            for f in ro_fields:
                 if getattr(obj, f, False):
                     fields.append(f)
 
@@ -251,9 +257,12 @@ for model in (Event, ):
     admin.site.register(model, FilterUserObjectsShowActivityAdmin)
     model.set_fields_verbose_names()
 
-class ActivityStepAdmin(FilterUserObjectsShowActivityAdmin):
-    list_display = ["name", "step_order", "activity"]
-    ordering     = ["activity", "step_order", "name"]
+class ActivityStepAdmin(SortableAdminMixin, FilterUserObjectsAdmin):
+    #list_display = ["name", "step_order", "step_order", "activity"]
+    ordering     = ["step_order"]
+    list_display = []
+    search_fields = ["name", "activity__name"]
+    pass
 
 for model in (ActivityStep, ):
     admin.site.register(model, ActivityStepAdmin)

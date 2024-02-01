@@ -2,6 +2,7 @@ from rest_framework import permissions, status
 from rest_framework import viewsets
 from rest_framework.response import Response
 from django_filters import rest_framework as filters
+from django_filters.utils import get_all_model_fields
 
 from backend.serializers import *
 from allauth.socialaccount.models import *
@@ -18,9 +19,18 @@ class FilteringModelViewSet(viewsets.ModelViewSet):
 
 class VASTModelFilter(filters.FilterSet):
     class Meta:
+        fields = '__all__'
         exclude = ['document', 'image', 'qr_code']
 
-class LanguageViewSet(viewsets.ModelViewSet):
+class ExtractFieldsMixin:
+    exclude_fields = ('document', 'image', 'qr_code')
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        opts = self.queryset.model._meta
+        fields = get_all_model_fields(self.queryset.model)
+        self.filterset_fields = [f for f in fields if f not in self.exclude_fields]
+
+class LanguageViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Language objects to be viewed or edited.
     """
@@ -28,11 +38,11 @@ class LanguageViewSet(viewsets.ModelViewSet):
     serializer_class = LanguageSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name', 'code']
 
 
-class OrganisationTypeViewSet(viewsets.ModelViewSet):
+class OrganisationTypeViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows OrganisationTypes to be viewed or edited.
     """
@@ -40,11 +50,11 @@ class OrganisationTypeViewSet(viewsets.ModelViewSet):
     serializer_class = OrganisationTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class OrganisationViewSet(viewsets.ModelViewSet):
+class OrganisationViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Organisation objects to be viewed or edited.
     """
@@ -52,11 +62,11 @@ class OrganisationViewSet(viewsets.ModelViewSet):
     serializer_class = OrganisationSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class EventViewSet(viewsets.ModelViewSet):
+class EventViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Event objects to be viewed or edited.
     """
@@ -64,11 +74,11 @@ class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class ContextViewSet(viewsets.ModelViewSet):
+class ContextViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Context objects to be viewed or edited.
     """
@@ -76,11 +86,11 @@ class ContextViewSet(viewsets.ModelViewSet):
     serializer_class = ContextSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class NatureViewSet(viewsets.ModelViewSet):
+class NatureViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Nature objects to be viewed or edited.
     """
@@ -88,11 +98,11 @@ class NatureViewSet(viewsets.ModelViewSet):
     serializer_class = NatureSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class EducationViewSet(viewsets.ModelViewSet):
+class EducationViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Education objects to be viewed or edited.
     """
@@ -100,11 +110,11 @@ class EducationViewSet(viewsets.ModelViewSet):
     serializer_class = EducationSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class CulturalHeritageArtifactViewSet(viewsets.ModelViewSet):
+class CulturalHeritageArtifactViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows CulturalHeritageArtifact objects to be viewed or edited.
     """
@@ -112,11 +122,11 @@ class CulturalHeritageArtifactViewSet(viewsets.ModelViewSet):
     serializer_class = CulturalHeritageArtifactSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class EuropeanaCulturalHeritageArtifactViewSet(viewsets.ModelViewSet):
+class EuropeanaCulturalHeritageArtifactViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows EuropeanaCulturalHeritageArtifact objects to be viewed or edited.
     """
@@ -124,11 +134,11 @@ class EuropeanaCulturalHeritageArtifactViewSet(viewsets.ModelViewSet):
     serializer_class = EuropeanaCulturalHeritageArtifactSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class ActivityViewSet(viewsets.ModelViewSet):
+class ActivityViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Activity objects to be viewed or edited.
     """
@@ -136,11 +146,12 @@ class ActivityViewSet(viewsets.ModelViewSet):
     serializer_class = ActivitySerializer
     permission_classes = [permissions.IsAuthenticated]
     #filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    ## filterset_class = VASTModelFilter
+    #filterset_fields = ['name']
     search_fields = ['name']
 
 
-class StimulusViewSet(viewsets.ModelViewSet):
+class StimulusViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Stimulus objects to be viewed or edited.
     """
@@ -148,11 +159,11 @@ class StimulusViewSet(viewsets.ModelViewSet):
     serializer_class = StimulusSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class ActivityStepViewSet(viewsets.ModelViewSet):
+class ActivityStepViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows ActivityStep objects to be viewed or edited.
     """
@@ -160,11 +171,11 @@ class ActivityStepViewSet(viewsets.ModelViewSet):
     serializer_class = ActivityStepSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class AgeViewSet(viewsets.ModelViewSet):
+class AgeViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Age objects to be viewed or edited.
     """
@@ -172,11 +183,11 @@ class AgeViewSet(viewsets.ModelViewSet):
     serializer_class = AgeSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class GenderViewSet(viewsets.ModelViewSet):
+class GenderViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Gender objects to be viewed or edited.
     """
@@ -184,11 +195,11 @@ class GenderViewSet(viewsets.ModelViewSet):
     serializer_class = GenderSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class NationalityViewSet(viewsets.ModelViewSet):
+class NationalityViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Nationality objects to be viewed or edited.
     """
@@ -196,11 +207,11 @@ class NationalityViewSet(viewsets.ModelViewSet):
     serializer_class = NationalitySerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class ClassViewSet(viewsets.ModelViewSet):
+class ClassViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Class objects to be viewed or edited.
     """
@@ -208,11 +219,11 @@ class ClassViewSet(viewsets.ModelViewSet):
     serializer_class = ClassSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class VisitorGroupViewSet(viewsets.ModelViewSet):
+class VisitorGroupViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows VisitorGroup objects to be viewed or edited.
     """
@@ -220,22 +231,22 @@ class VisitorGroupViewSet(viewsets.ModelViewSet):
     serializer_class = VisitorGroupSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class VisitorViewSet(viewsets.ModelViewSet):
+class VisitorViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Visitor objects to be viewed or edited.
     """
     queryset = Visitor.objects.all()
     serializer_class = VisitorSerializer
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class ProductTypeViewSet(viewsets.ModelViewSet):
+class ProductTypeViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows ProductType objects to be viewed or edited.
     """
@@ -243,11 +254,11 @@ class ProductTypeViewSet(viewsets.ModelViewSet):
     serializer_class = ProductTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class ProductViewSet(viewsets.ModelViewSet):
+class ProductViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Product objects to be viewed or edited.
     """
@@ -255,11 +266,11 @@ class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class ConceptTypeViewSet(viewsets.ModelViewSet):
+class ConceptTypeViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows ConceptType objects to be viewed or edited.
     """
@@ -267,10 +278,10 @@ class ConceptTypeViewSet(viewsets.ModelViewSet):
     serializer_class = ConceptTypeSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
-class ConceptViewSet(viewsets.ModelViewSet):
+class ConceptViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Concept objects to be viewed or edited.
     """
@@ -278,11 +289,11 @@ class ConceptViewSet(viewsets.ModelViewSet):
     serializer_class = ConceptSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name', 'concept_type']
 
 
-class PredicateViewSet(viewsets.ModelViewSet):
+class PredicateViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Predicate objects to be viewed or edited.
     """
@@ -290,11 +301,11 @@ class PredicateViewSet(viewsets.ModelViewSet):
     serializer_class = PredicateSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class StatementViewSet(viewsets.ModelViewSet):
+class StatementViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows Statement objects to be viewed or edited.
     """
@@ -302,10 +313,10 @@ class StatementViewSet(viewsets.ModelViewSet):
     serializer_class = StatementSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
-class ProductStatementViewSet(viewsets.ModelViewSet):
+class ProductStatementViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows ProductStatement objects to be viewed or edited.
     """
@@ -313,10 +324,10 @@ class ProductStatementViewSet(viewsets.ModelViewSet):
     serializer_class = ProductStatementSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
-class ProductAnnotationViewSet(viewsets.ModelViewSet):
+class ProductAnnotationViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows ProductAnnotation objects to be viewed or edited.
     """
@@ -324,10 +335,10 @@ class ProductAnnotationViewSet(viewsets.ModelViewSet):
     serializer_class = ProductAnnotationSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
-class QuestionnaireEntryViewSet(viewsets.ModelViewSet):
+class QuestionnaireEntryViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows QuestionnaireEntry objects to be viewed or edited.
     """
@@ -335,10 +346,10 @@ class QuestionnaireEntryViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionnaireEntrySerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
-class QuestionnaireQuestionViewSet(viewsets.ModelViewSet):
+class QuestionnaireQuestionViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows QuestionnaireQuestion objects to be viewed or edited.
     """
@@ -346,10 +357,10 @@ class QuestionnaireQuestionViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionnaireQuestionSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
-class QuestionnaireAnswerViewSet(viewsets.ModelViewSet):
+class QuestionnaireAnswerViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows QuestionnaireAnswer objects to be viewed or edited.
     """
@@ -357,10 +368,10 @@ class QuestionnaireAnswerViewSet(viewsets.ModelViewSet):
     serializer_class = QuestionnaireAnswerSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
-class DigitisationApplicationViewSet(viewsets.ModelViewSet):
+class DigitisationApplicationViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows DigitisationApplication objects to be viewed or edited.
     """
@@ -368,11 +379,11 @@ class DigitisationApplicationViewSet(viewsets.ModelViewSet):
     serializer_class = DigitisationApplicationSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
 
-class VisitorGroupQRCodeViewSet(viewsets.ModelViewSet):
+class VisitorGroupQRCodeViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows VisitorGroupQRCode objects to be viewed or edited.
     """
@@ -380,13 +391,13 @@ class VisitorGroupQRCodeViewSet(viewsets.ModelViewSet):
     serializer_class = VisitorGroupQRCodeSerializer
     permission_classes = [permissions.IsAuthenticated]
     # # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
-    filterset_fields = ['name', 'description', 'name_local', 'description_local',
-                        'event', 'activity', 'activity_step', 'visitor_group', 'application']
+    # filterset_class = VASTModelFilter
+    #filterset_fields = ['name', 'description', 'name_local', 'description_local',
+    #                    'event', 'activity', 'activity_step', 'visitor_group', 'application']
     search_fields = ['name']
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
@@ -394,11 +405,11 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['username','email']
 
 
-class GroupViewSet(viewsets.ModelViewSet):
+class GroupViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
@@ -406,10 +417,10 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['name']
 
-class SidebarMenuItemViewSet(viewsets.ModelViewSet):
+class SidebarMenuItemViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
@@ -417,5 +428,5 @@ class SidebarMenuItemViewSet(viewsets.ModelViewSet):
     serializer_class = SidebarMenuItemSerializer
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
-    filterset_class = VASTModelFilter
+    # filterset_class = VASTModelFilter
     search_fields = ['title']
