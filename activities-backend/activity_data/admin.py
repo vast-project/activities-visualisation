@@ -5,6 +5,9 @@ from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from django.apps import apps
+# https://djangopackages.org/grids/g/model-ordering/
+# https://github.com/django-ordered-model/django-ordered-model
+# https://django-admin-sortable2.readthedocs.io/en/latest/
 from adminsortable2.admin import SortableAdminMixin, SortableAdminBase, SortableStackedInline
 from .models import *
 from itertools import chain
@@ -25,6 +28,7 @@ class ShowNameActivityMixin:
 
 #class ReadonlyFieldsAdmin(admin.ModelAdmin):
 class ReadonlyFieldsAdmin(ModelAdmin):
+    list_display = ["name",]
     ordering = ["name"]
     search_fields = ["name"]
     def get_readonly_fields(self, request, obj=None):
@@ -257,12 +261,10 @@ for model in (Event, ):
     admin.site.register(model, FilterUserObjectsShowActivityAdmin)
     model.set_fields_verbose_names()
 
-class ActivityStepAdmin(SortableAdminMixin, FilterUserObjectsAdmin):
-    #list_display = ["name", "step_order", "step_order", "activity"]
-    ordering     = ["step_order"]
-    list_display = []
+class ActivityStepAdmin(FilterUserObjectsAdmin):
+    list_display = ["name", "step_order", "activity"]
+    ordering     = ["activity", "step_order", "name"]
     search_fields = ["name", "activity__name"]
-    pass
 
 for model in (ActivityStep, ):
     admin.site.register(model, ActivityStepAdmin)
