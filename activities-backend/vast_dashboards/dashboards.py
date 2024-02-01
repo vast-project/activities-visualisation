@@ -132,8 +132,8 @@ class EventMapSerializer(ChartSerializer):
         return pd.DataFrame(
             [
                 {
-                    "lat": float(e.location.split(",")[0]),
-                    "lon": float(e.location.split(",")[1]),
+                    "lat": float(e.location.split(",")[0]) if e.location else 0,
+                    "lon": float(e.location.split(",")[1]) if e.location else 0,
                     "text": f"{e.city}",
                 }
                 for e in objects

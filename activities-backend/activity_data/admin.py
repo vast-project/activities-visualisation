@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 from django.apps import apps
+from adminsortable2.admin import SortableAdminMixin, SortableAdminBase, SortableStackedInline
 from .models import *
 from itertools import chain
 
@@ -15,6 +16,12 @@ else:
 
 admin.site.site_header = _('Model Admin')
 admin.site.site_title  = _('VAST Model Admin')
+
+class ShowNameActivityMixin:
+    list_display = ["name", "activity"]
+    ordering = ["activity", "name"]
+    search_fields = ["name", "activity__name"]
+    #list_display_links = ["activity"]
 
 #class ReadonlyFieldsAdmin(admin.ModelAdmin):
 class ReadonlyFieldsAdmin(ModelAdmin):
@@ -181,7 +188,7 @@ Stimulus.set_fields_verbose_names()
 
 ## Expose two interfaces to Visitor: Visitor & VirtualVisitor
 @admin.register(Visitor)
-class VisitorAdmin(FilterUserObjectsAdmin):
+class VisitorAdmin(ShowNameActivityMixin, FilterUserObjectsAdmin):
     exclude = ('visitor_type', 'visitors_number', 'visitors')
     #def get_queryset(self, request):
     #    queryset = super().get_queryset(request)
@@ -200,11 +207,56 @@ class VirtualVisitorAdmin(FilterUserObjectsAdmin):
     form = VirtualVisitorAdminForm
 VirtualVisitor.set_fields_verbose_names()
 
+##
+## Activity Inline Steps...
+##
+#class ActivityStepsInline(admin.StackedInline):
+class ActivityStepsInline(SortableStackedInline):
+    model = ActivityStep
+    extra = 0
+    fieldsets = [
+        (
+            None,
+            {
+                "fields": ["name", "description", "stimulus", "step_order"],
+            },
+        ),
+        (
+            "Advanced options",
+            {
+                "classes": ["collapse"],
+                "fields": ["name_local", "description_local", "language_local"],
+            },
+        ),
+    ]
+
+@admin.register(Activity)
+class ActivityAdmin(SortableAdminBase, FilterUserObjectsAdmin):
+    inlines = [
+        ActivityStepsInline,
+    ]
+Activity.set_fields_verbose_names()
+
 for model in (Organisation, Class, Age,
-              Activity, ActivityStep, Event, VisitorGroup, VisitorGroupQRCode,
+              VisitorGroup, VisitorGroupQRCode,
               Product, Concept,
               QuestionnaireEntry, QuestionnaireQuestion, QuestionnaireAnswer):
     admin.site.register(model, FilterUserObjectsAdmin)
+    model.set_fields_verbose_names()
+
+class FilterUserObjectsShowActivityAdmin(ShowNameActivityMixin, FilterUserObjectsAdmin):
+    pass
+
+for model in (Event, ):
+    admin.site.register(model, FilterUserObjectsShowActivityAdmin)
+    model.set_fields_verbose_names()
+
+class ActivityStepAdmin(FilterUserObjectsShowActivityAdmin):
+    list_display = ["name", "step_order", "activity"]
+    ordering     = ["activity", "step_order", "name"]
+
+for model in (ActivityStep, ):
+    admin.site.register(model, ActivityStepAdmin)
     model.set_fields_verbose_names()
 
 for model in (Language, Gender, Nature, Education, Nationality,

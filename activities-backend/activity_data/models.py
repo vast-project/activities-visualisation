@@ -456,10 +456,11 @@ class Stimulus(VASTDAMImage, VASTDAMDocument, VASTObject_NameUserGroupUnique):
 class ActivityStep(VASTObject_NameUserGroupUnique):
     activity          = models.ForeignKey('Activity',     on_delete=models.CASCADE, default=None, null=False, blank=False)
     stimulus          = models.ForeignKey('Stimulus',     on_delete=models.CASCADE, default=None, null=False, blank=False)
+    step_order        = models.PositiveIntegerField(default=0, blank=False, null=False, db_index=True, verbose_name="Order")
 
     class Meta(VASTObject_NameUserGroupUnique.Meta):
-        ordering = None
-        order_with_respect_to = "activity"
+        ordering = ['step_order']
+    #   order_with_respect_to = "activity"
 
 ## Events...
 class Event(VASTObject_NameUserGroupUnique):

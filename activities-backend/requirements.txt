@@ -20,6 +20,7 @@ django-autocomplete-light
 crispy-bootstrap5
 whitenoise
 django-admin-soft-dashboard
+django-admin-sortable2
 pillow
 qrcode
 rdflib

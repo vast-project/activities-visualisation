@@ -61,6 +61,7 @@ class RDFStoreObject:
     # ActivityStep
     activity:              URIRef  = None
     stimulus:              URIRef  = None
+    step_order:            Literal = None
 
     # Event
     event_activity:        URIRef  = None
@@ -186,6 +187,7 @@ class RDFStoreObject:
                                         graph.add((self.activity, NAMESPACE_VAST.vastStep, self.id))
                                         graph.add((self.id, NAMESPACE_VAST.vastAssociatedActivity, self.activity))
         if (self.stimulus):             graph.add((self.id, NAMESPACE_VAST.vastStimulus, self.stimulus))
+        if (self.step_order is not None): graph.add((self.id, NAMESPACE_VAST.vastStepOrder, self.step_order))
 
         # Event
         if (self.event_activity):
@@ -459,7 +461,7 @@ class RDFStoreVAST(RDFVAST):
         return None
 
     def getIntegerLiteral(self, obj):
-        if obj:
+        if obj is not None:
             return Literal(int(obj), datatype=XSD.integer)
         return None
 
@@ -546,8 +548,9 @@ class RDFStoreVAST(RDFVAST):
 
     def ActivityStep(self, obj): # RDF Checked
         robj = self.createVASTObject(obj, self.vast.vastActivityStep)
-        robj.activity = self.getURIRef(self.vast.vastActivity, obj.activity)
-        robj.stimulus = self.getURIRef(self.vast.vastStimulus, obj.stimulus)
+        robj.activity   = self.getURIRef(self.vast.vastActivity, obj.activity)
+        robj.stimulus   = self.getURIRef(self.vast.vastStimulus, obj.stimulus)
+        robj.step_order = self.getIntegerLiteral(obj.step_order)
         robj.add(self.g)
 
     def Age(self, obj): # RDF Checked

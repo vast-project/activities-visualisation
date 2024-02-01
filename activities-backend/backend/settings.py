@@ -83,6 +83,7 @@ INSTALLED_APPS = [
     'dashboards',
     'vast_dashboards',
     'location_field.apps.DefaultConfig',
+    'adminsortable2',
 
     # django-allauth
     'django.contrib.sites',
