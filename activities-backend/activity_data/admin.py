@@ -249,7 +249,7 @@ Activity.set_fields_verbose_names()
 
 for model in (Organisation, Class, Age,
               VisitorGroup, VisitorGroupQRCode,
-              Product, Concept,
+              Product,
               QuestionnaireEntry, QuestionnaireQuestion, QuestionnaireAnswer):
     admin.site.register(model, FilterUserObjectsAdmin)
     model.set_fields_verbose_names()
@@ -273,7 +273,7 @@ for model in (ActivityStep, ):
 for model in (Language, Gender, Nature, Education, Nationality,
               OrganisationType, Context,
               ProductType, DigitisationApplication,
-              ConceptType, Predicate,
+              Concept, ConceptType, Predicate,
               CulturalHeritageArtifact, EuropeanaCulturalHeritageArtifact):
     admin.site.register(model, ReadonlyFieldsAdmin)
     model.set_fields_verbose_names()

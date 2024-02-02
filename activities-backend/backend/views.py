@@ -290,7 +290,7 @@ class ConceptViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     # filterset_fields = '__all__'
     # filterset_class = VASTModelFilter
-    search_fields = ['name', 'concept_type']
+    search_fields = ['name']
 
 
 class PredicateViewSet(ExtractFieldsMixin, viewsets.ModelViewSet):
