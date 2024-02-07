@@ -213,6 +213,35 @@ class VisitorGroupQRCodeSerializer(serializers.HyperlinkedModelSerializer, AutoU
         model = VisitorGroupQRCode
         fields = '__all__'
 
+
+class ProductStatementSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
+    class Meta:
+        model = ProductStatement
+        fields = '__all__'
+
+class ProductAnnotationSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
+    class Meta:
+        model = ProductAnnotation
+        fields = '__all__'
+
+class QuestionnaireEntrySerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
+    class Meta:
+        model = QuestionnaireEntry
+        fields = '__all__'
+
+class QuestionnaireAnswerSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
+    class Meta:
+        model = QuestionnaireAnswer
+        fields = '__all__'
+
+class QuestionnaireQuestionSerializer(serializers.HyperlinkedModelSerializer, AutoUserModelSerializer):
+    class Meta:
+        model = QuestionnaireQuestion
+        fields = '__all__'
+
+##
+## Django (not VAST) models
+##
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
@@ -231,29 +260,4 @@ class SocialAppSerializer(serializers.HyperlinkedModelSerializer):
 class SidebarMenuItemSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = SidebarMenuItem
-        fields = '__all__'
-
-class ProductStatementSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = ProductStatement
-        fields = '__all__'
-
-class ProductAnnotationSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = ProductAnnotation
-        fields = '__all__'
-
-class QuestionnaireEntrySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = QuestionnaireEntry
-        fields = '__all__'
-
-class QuestionnaireAnswerSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = QuestionnaireAnswer
-        fields = '__all__'
-
-class QuestionnaireQuestionSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = QuestionnaireQuestion
         fields = '__all__'

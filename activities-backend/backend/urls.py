@@ -59,6 +59,8 @@ router.register(r'users',                 views.UserViewSet)
 router.register(r'groups',                views.GroupViewSet)
 router.register(r'sidebar_menu_items',    views.SidebarMenuItemViewSet)
 
+router.registry.sort(key=lambda x: x[0])
+
 #router.register(r'social_apps',          views.SocialAppViewSet)
 
 
