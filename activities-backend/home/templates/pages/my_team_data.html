@@ -1,0 +1,68 @@
+<div class="container-fluid py-4" x-data="dashboard()" x-init="init()">
+<div x-ref="dashboard">
+  <div class="row my-4">
+  {% include "includes/dashboard-model-table.html" with model='Activity' %}
+  {% include "includes/dashboard-model-table.html" with model='ActivityStep' %}
+  </div>
+  <div class="row my-4">
+  {% include "includes/dashboard-model-table.html" with model='Event' %}
+  {% include "includes/dashboard-model-table.html" with model='VisitorGroup' %}
+  </div>
+  <div class="row my-4">
+  {% include "includes/dashboard-model-table.html" with model='Visitor' %}
+  {% include "includes/dashboard-model-table.html" with model='VirtualVisitor' %}
+  </div>
+  <div class="row my-4">
+  {% include "includes/dashboard-model-table.html" with model='Product' %}
+  {% include "includes/dashboard-model-table.html" with model='ProductStatement' %}
+  </div>
+  <div class="row my-4">
+  {% include "includes/dashboard-model-table.html" with model='Statement' %}
+  {% include "includes/dashboard-model-table.html" with model='QuestionnaireQuestion' %}
+  </div>
+  <div class="row my-4">
+  {% include "includes/dashboard-model-table.html" with model='QuestionnaireAnswer' %}
+  {% include "includes/dashboard-model-table.html" with model='QuestionnaireEntry' %}
+  </div>
+</div>
+
+<!-- Specific JS goes HERE -->
+{% block scripts %}
+<!-- AlpineJS global store -->
+<script>
+function dashboard() {
+    return { init: function() {
+        $root = this.$root;
+        Alpine.store('dashboardInteractiveFiltering', {
+            // selected: $persist(new Object()).using(sessionStorage),
+            selected: new Object(),
+
+            notify() {
+                $root.querySelectorAll('[x-ref="vastobject_table"]').forEach((el) => {el.dispatchEvent(
+                    new Event('selection-changed', { bubbles: false }))}
+                );
+            },
+
+            addPK(vast_class, pk, checked=true) {
+                if (this.selected[vast_class] == undefined) {
+                    this.selected[vast_class] = new Set();
+                }
+                if (checked) {
+                    this.selected[vast_class].add(pk);
+                } else {
+                    this.selected[vast_class].delete(pk);
+                }
+                // console.error(vast_class, this.selected[vast_class]);
+                // console.error(vast_class, JSON.parse(JSON.stringify(this.selected)));
+                console.error(vast_class, JSON.stringify(this.selected));
+
+                /*$root.querySelectorAll('[x-ref="vastobject_table"]').forEach((el) => {el.dispatchEvent(
+                    new Event('selection-changed', { bubbles: true, detail: {} }))}
+                );*/
+            }
+        });
+    }};
+};
+</script>
+
+{% endblock scripts %}
