@@ -182,7 +182,7 @@ function Form() {
                         <select value={visitorData.gender} name="gender" onChange={handleChange} required>
                             <option value="">{isItalian ? "Selezionare  Genere..." : "Select Gender..."}</option>
                             <option value="Male">{isItalian ? "Maschio" : "Male"}</option>
-                            <option value="Female">{isItalian ? "Maschia" : "Female"}</option>
+                            <option value="Female">{isItalian ? "Femmina" : "Female"}</option>
                         </select>
                     </div>
 
