@@ -17,7 +17,7 @@
           {% for app in app_list %}
               {% if app.has_perms and not app.pinned %}
                 <li class="nav-item">
-                  <span class="nav-link{% if app_label != app.label and app.url not in request.path|urlencode  %} collapsed{% endif %} d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#submenu-{{ app.app_label }}">
+                  <span class="nav-link{% if app_label != app.label and app.url not in request.path|urlencode  %} collapsed{% endif %} d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#submenu-{{ app.app_label }}" data-bs-toggle="tooltip" title="{{ app.label }}">
                     <span class="d-flex justify-content-between align-items-center">
                       <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                         <span class="sidebar-icon {{ app.icon }}"></span>
@@ -29,13 +29,13 @@
                   </span>
 
                   {% if app.models %}
-                    <div class="multi-level ms-5 collapse {% if 'tables-bootstrap-' in segment or app_label == app.label or app.url in request.path|urlencode %} show {% endif %}" role="list" id="submenu-{{ app.app_label }}"                                                                                                       aria-expanded="{% if app_label == app.label or app.url in request.path|urlencode %}true{% else %}false{% endif %}">
+                    <div class="multi-level ms-5 collapse {% if 'tables-bootstrap-' in segment or app_label == app.label or app.url in request.path|urlencode %} show {% endif %}" role="list" id="submenu-{{ app.app_label }}" aria-expanded="{% if app_label == app.label or app.url in request.path|urlencode %}true{% else %}false{% endif %}">
                       <ul class="flex-column nav">
                         {% for model in app.models %}
                           {% if model.url %}
                             <li class="nav-item{% if 'bootstrap-tables' in segment or model.url in request.path|urlencode %} active {% endif %} list-unstyled">
-                              <a class="nav-link" href="{{ model.url }}">
-                                <span class="nav-link-text ms-1">{{ model.label }}</span>
+                              <a class="nav-link" href="{{ model.url }}" data-bs-toggle="tooltip" title="{{ model.label }}" data-bs-title="{{ model.label }}">
+                                <span class="nav-link-text ms-1" >{{ model.label }}</span>
                               </a>
                             </li>
                           {% else %}
